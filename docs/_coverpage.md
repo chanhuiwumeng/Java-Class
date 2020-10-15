@@ -8,5 +8,5 @@
 - 新特性全解
 - 众多主题
 
-[GitHub](https://github.com/docsifyjs/docsify/)
-[Get Started](Java简介和发展历史.md)
+[GitHub](https://github.com/chanhuiwumeng/Java-Class.git)
+[Get Started](README.md)
