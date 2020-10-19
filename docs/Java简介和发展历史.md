@@ -85,7 +85,7 @@ J2EE：Java技术中应用最广泛的部分，J2EE提供了企业应用开发�
 6：泛型(Generic)
 7.For-Each循环
 
-###JDK 1.6
+###J DK 1.6
 
 1：Desktop类和SystemTray类
 2：使用JAXB2来实现对象与XML之间的映射

@@ -161,13 +161,66 @@ total=2799
 > 3. 8进制
 > 4. 十六进制
 
+![image-20201019155538888](_media/image-20201019155538888.png)
+
 ## 6. 变量
 
 > 1. 从本质上讲，变量其实是内存中的一小块区域，使用变量名来访问这块区域，因此，每一个变量使用前必须要先申请（声明），然后必须进行赋值（填充内容），在通过变量的名称引用到这块区域中保存的值才能使用。
 >    	数据类型  变量名 = 变量值
+>    	
 > 2. 为什么要定义变量呢
 >
 >     用来不断的存放同一类型的常量，并可以重复使用
+>
+> 3. 变量一定要先初始化才能使用
+
+```java
+/** 变量:
+*       计算机的内存:
+ *          物理内存: 持久性的数据
+ *          运行内存: 临时的数据
+*   本质: 就是在内存中开辟一段空间，在这个空间中放入一个数值，在使用一个变量名去引用到这段空间中的值。
+ *   变量的声明:
+ *      数据类型  变量名称  = 变量的值;
+ *      int  num = 200;
+ *    注意:java是强数据类型语言
+ *    声明的数据类型 必须和赋值值的数据类型一致。
+ *    变量的值是否变化:
+ *      值可以变化的:
+ *      值不可以变化的(常量):
+ *    值没有变化的变量:
+ *      数字类型:
+ *      浮点类型:
+ *      字符串:
+ *   整数常量:
+ *   1. 十进制
+ *   2. 二进制   0b开头
+ *   3. 八进制  以0开头
+ *   4. 十六进制  以0x开头
+* */
+public class FinalVariable {
+
+    public static void main(String[] args) {
+        int num = 200;
+        //变量重新赋值
+            num = 300;
+        int num1 = 200;
+        System.out.println(num + num1);//500
+        //整数常量:
+        //二进制常量
+        int sum = 0b111;
+        //八进制
+        int  age = 0101;
+        //十六进制
+        int total = 0xabc;
+
+        System.out.println(sum);
+        System.out.println(age);
+        System.out.println(total);
+    }
+
+}
+```
 
 ## 7. 数据类型
 
@@ -249,6 +302,48 @@ total=2799
 > - char 数据类型可以储存任何字符；
 > - 例子：char letter = 'A';。
 
+```java
+/**
+ * 基本数据类型:
+ *  1. byte  字节    -128---127
+ *  2. short 短整数类型  -2^15---2^15-1  基本不用
+ *  3. int  整数类型   -2^31----2^31-1
+ *  4. long 长整型  -2^63-----2^63-1  必须以L结尾  为了区别明显一点一般使用大写
+ *  5. float 单精度浮点类型   -2^32---2^31-1  以F结尾  为了区别明显一点一般使用大写
+ *  6. double 双精度浮点类型  -2^31-----2^31-1  以D结尾 但是在java中浮点类型默认就是double 所以可以省略后缀不写
+ *  7. boolean  布尔类型  true/false
+ *  8. char  字符类型  以单引号包括的就是字符类型  一个字符类型只能有一个字母或者汉字
+ * */
+public class NumberType {
+    public static void main(String[] args) {
+        //基本数据类型
+        byte  by = 127;
+        short  sh = 12345;
+        int num = 9999999;
+        long total = 9998888888777L;
+        float  price = 99.888F;
+        double  totalPrice = 88.99999999d;
+        boolean flag = true;
+        char a = 'a';
+        char name = '张';
+        //引用数据类型
+        //字符串类型
+        String   str = "Hello World";
+        
+        System.out.println(by);
+        System.out.println(sh);
+        System.out.println(num);
+        System.out.println(price);
+        System.out.println(totalPrice);
+        System.out.println(flag);
+        System.out.println(a+0);//97
+        System.out.println(name+0);//24352
+        System.out.println(str);
+    }
+}
+
+```
+
 ### 7.9 数据类型的默认值
 
 | **数据类型**           | **默认值** |
@@ -274,8 +369,8 @@ total=2799
 | \0     | 空字符 (0x0)             |
 | \s     | 空格 (0x20)              |
 | \t     | 制表符                   |
-| \"     | 双引号                   |
-| \'     | 单引号                   |
+| \\"    | 双引号                   |
+| \\'    | 单引号                   |
 | \\     | 反斜杠                   |
 | \ddd   | 八进制字符 (ddd)         |
 | \uxxxx | 16进制Unicode字符 (xxxx) |
@@ -306,6 +401,27 @@ total=2799
 >    
 
 ```java
+/**
+ * 数据类型转换:
+ * 1. 默认转换:  将小的数据类型的值 赋给大的数据类型的变量
+ *
+ * 2. 强制转换:
+ *  a. 大的数据类型的值赋值给小的数据类型的变量，精度会丢失。
+ *  b. 强转就是先将值给()转换为需要的数据类型在赋值给接收的数据类型的变量，
+ *      但是如果值超出小的数据类型的范围依然会精度丢失
+ * */
+public class NumberTypeTransform {
+    public static void main(String[] args) {
+        int  num = 128;
+        byte by = 122;
+            // 0000 0000 0000 0000   = 0000 0000
+            //num = by;
+            by =  (byte) num;
+        System.out.println(num);
+        System.out.println(by);
+        
+    }
+}
 
 ```
 
@@ -318,6 +434,20 @@ total=2799
 > 
 > byte,short,char—> int —> long—> float —> double 
 > ```
+
+![image-20201019164354238](_media/image-20201019164354238.png)
+
+### 7.12 字符集和字符编码表
+
+> [字符](https://baike.baidu.com/item/字符/4768913)（Character）是各种文字和符号的总称，包括各国家文字、标点符号、图形符号、数字等。字符集（Character set）是多个字符的集合，字符集种类较多，每个字符集包含的字符个数不同，常见字符集名称：ASCII字符集、GB2312字符集、BIG5字符集、 GB18030字符集、Unicode字符集等。计算机要准确的处理各种字符集文字，就需要进行[字符编码](https://baike.baidu.com/item/字符编码/8446880)，以便计算机能够识别和存储各种文字。中文文字数目大，而且还分为简体中文和[繁体中文](https://baike.baidu.com/item/繁体中文/2677789)两种不同书写规则的文字，而计算机最初是按英语单[字节](https://baike.baidu.com/item/字节/1096318)字符设计的，因此，对中文字符进行编码，是中文信息交流的技术基础。
+>
+> + ASCII字符集  最早的字符编码表
+> + GBK  简体
+> + gb2312    
+> + Unicode码表
+> + UTF-8
+> + UTF-16
+> + UTF-32
 
 ## 8. 运算符
 

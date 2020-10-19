@@ -6,7 +6,7 @@
 
 - 基于JDK8
 - 新特性全解
-- 众多主题
+- 最新版JAVA学习资料
 
 [GitHub](https://github.com/chanhuiwumeng/Java-Class.git)
 [Get Started](README.md)
