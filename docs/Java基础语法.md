@@ -167,7 +167,7 @@ total=2799
 
 > 1. 从本质上讲，变量其实是内存中的一小块区域，使用变量名来访问这块区域，因此，每一个变量使用前必须要先申请（声明），然后必须进行赋值（填充内容），在通过变量的名称引用到这块区域中保存的值才能使用。
 >    	数据类型  变量名 = 变量值
->    	
+>    
 > 2. 为什么要定义变量呢
 >
 >     用来不断的存放同一类型的常量，并可以重复使用
@@ -467,6 +467,8 @@ public class NumberTypeTransform {
 | ++     | 自增: 操作数的值增加1             | B++ 或 ++B 等于 21（区别详见下文） |
 | --     | 自减: 操作数的值减少1             | B-- 或 --B 等于 19（区别详见下文） |
 
+
+
 ### 8.2 赋值运算符
 
 | 操作符  | 描述                                                         | 例子                                     |
@@ -552,6 +554,104 @@ variable x = (expression) ? value if true : value if false
 | 条件     | ？：                                       | 从右到左 |
 | 赋值     | = + = - = * = / =％= >> = << =＆= ^ = \| = | 从右到左 |
 | 逗号     | ，                                         | 左到右   |
+
+```java
+/** 运算符: 我们在程序中要进行 加减乘除...的运算，使用到的连接符
+ *  1· 算数运算符
+ *      +
+ *      -
+ *      *
+ *      /
+ *      % 取模  相除求余数 小的数取模于大的数结果仍是小的数
+ *      ++ 在原来的基数上自增加1
+ *          前++ 先运算再赋值  先在原来的基数上加1 然后将新的值赋值给这个基数变量在使用。
+ *          后++ 先赋值再运算  先在原来的基数上赋值给原来的数值，在下次使用基数变量的时候在进行加1以后的运算。
+ *      --在原来的基数上自增减1
+ *
+ *  2. 赋值运算符
+ *      =
+ *      += -= *= /= %=
+ *
+ *  3. 比较运算符(关系运算符) 结果是boolean值
+ *      > < >=  <=  !=
+ *      ==  在基本数据类型中我们比较的是值是否相等
+ *          在引用数据类型中我们比较的是地址值是否相等(面向对象中说)
+ *  4. 逻辑运算符  逻辑运算符左右两侧都是布尔表达式 (布尔表达式运算结果是true 或者 false)
+ *      &&  与  左右两侧都成立 结果成立
+ *      || 或  左右两个一个成立结果成立  中断开关 前面成立就不用看后边的结果了
+ *      ! 非  取反  去相反的结果值
+ *  5. 位运算符  所有的位运算符都是基于二进制  位运算式最快的
+ *    &  相对位是1结果是1 否则为 0
+ *    |  相对位是0 结果是0 否则 为1
+ *    ^  相对位值相同结果是0  否则为1
+ *    >>  左移
+ *    << 右移
+ *  6. 三元运算符(三目运算符)  布尔表达式成立执行冒号前面的不成立执行冒号后边的
+ *     布尔表达式 ? "成立":"不成立";
+ *  表达式: 使用运算符连接起来的 就是表达式
+*
+* */
+public class ArithmeticOperator {
+    public static void main(String[] args) {
+        System.out.println("------算数运算符--------");
+        //算数运算符
+        int num = 999;
+        int num1 = 300;
+        System.out.println(num + num1);//1299
+        System.out.println(num - num1);//699
+        System.out.println(num * num1);//299700
+        System.out.println(num / num1);//3
+        System.out.println(num % num1);//99
+        System.out.println(300 % 999);//300
+
+        System.out.println(++num1);//301
+
+        System.out.println(num++);//999
+        System.out.println(num);//1000
+
+        int price = 888;
+        System.out.println(--price);//887
+        System.out.println(price ++);//887
+        System.out.println(price);//888
+
+        System.out.println("----------赋值运算符--------");
+         String  name = "joke";
+         int sum = 666;
+         //先给原来的变量+20 在将结果赋值给原来的变量
+         //sum = sum + 20;
+         sum += 20; //上面的简写形式
+        System.out.println("-------比较运算符----------");
+        System.out.println(100 > 20);//true
+        System.out.println(100 >  200);//false
+        System.out.println(100 != 300);//true
+        System.out.println(100 == 300);//false
+
+        System.out.println("--------逻辑运算符---------");
+
+        System.out.println(100 > 20 && 200 > 100);//true
+        System.out.println(100 > 20 && 200 < 100);//false
+
+        System.out.println(100 > 20 || 200 < 100);//true
+        System.out.println(100 < 20 || 200 > 100);//true
+
+        System.out.println(!(100 > 20 ));//false
+
+
+        System.out.println("---------位运算符-----------");
+        System.out.println(8 & 6);//1000  0110    ====>  0
+        System.out.println(13 | 10);// 1101  1010 =====> 1111
+        System.out.println(13 ^ 10 );//0111
+        System.out.println(2 << 3);// 0010  ===> 10000 ====>  16
+        System.out.println(2 >> 2);//0
+
+        //计算 2  的 5次方
+        System.out.println(2*2*2*2*2);
+        System.out.println("------------三元表达式----------");
+        System.out.println(10 > 2 ? "成立":"不成立");//成立
+    }
+}
+
+```
 
 ## 9. 语句
 
