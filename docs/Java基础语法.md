@@ -1174,27 +1174,149 @@ Process finished with exit code 0
 
 **水仙花数:**
 
-
+```java
+ //水仙花数
+        for (int i = 100; i < 1000; i++) {
+            // 个位数
+            int a = i % 10;
+            //十位数
+            int b = i / 10 % 10;
+            //百位数
+            int c = i / 100;
+            if ((a * a * a +   b * b * b + c * c * c) == i ) {
+                System.out.println("水仙花数有:"+i);
+            }
+        }
+//结果
+水仙花数有:153
+水仙花数有:370
+水仙花数有:371
+水仙花数有:407
+```
 
 **求100以内的奇数 / 偶数:**
 
+```java
+//求100以内奇数  偶数
 
+        for (int i = 1; i <= 100; i++) {
+            if (i % 2 == 0){
+                System.out.println("偶数:"+i);
+            }else {
+                System.out.println("奇数:"+i);
+            }
+        }
+```
 
 **打印出菱形:**
 
+```java
+//菱形
+        //菱形的上半部分
+        int num = 6;
+        for(int i = 1;i<=num;i++){
+            for(int k = num -i;k>=0;k--){
+                System.out.print(" ");
+            }
+            for(int j = 1;j<=2*i-1;j++){
+                System.out.print("*");
+            }
+            System.out.println();
+        }
+    //菱形的下半部分
+        for(int e = num -1 ; e >= 1 ;e--){
+            //前半部分的空格是递增的
+            for(int f = 0;f <= num -e ; f++){
+                System.out.print(" ");
+            }
+            //后半部分的*是递减的
+            for(int h = 2 *e - 1; h>=1;h--){
+                System.out.print("*");
+            }
+            System.out.println();
+        }
 
+//菱形
+      *
+     ***
+    *****
+   *******
+  *********
+ ***********
+  *********
+   *******
+    *****
+     ***
+      *
+
+```
 
 **鸡兔同笼:**
 
 > 今有雉兔同笼，上有三十五头，下有九十四足，问雉兔各几何？
 
+```java
+int head = 35 ;
+        int foot = 94 ;
+        //i 是 鸡
+        for(int i = 0 ; i<=35;i++ ){
+            if( i*2 + (35-i)*4 == 94){
+                System.out.println("鸡的数量是:"+i);
+                System.out.println("兔的数量是:"+(head-i));
+            }
+
+        }
+```
+
+
+
 **一年生多少兔子:**
 
-> 有一对兔子，从出生后第3个月起每个月都生一对兔子，小兔子长到第三个月后每个月又生一对兔子，假如兔子都不死，问一年后的兔子总数为多少？
+> 有一对兔子，从出生后第3个月起每个月都生一对兔子，小兔子长到第三个月后每个月又生一对兔子，假如兔子都不死，问一年后的兔子总数为多少？(斐波那契额数列问题)
+>
+> 1    1     2    3    5   8    13  21  
+
+```java
+//月份
+       int  mouth = 12;
+       //第一月
+       int first = 1;
+       //第二月
+       int second = 1;
+       //总数
+        int count = 0;
+
+        for(int i = 3 ;i<=12 ;i++){
+            count = first + second;
+            //进行换位
+            first = second ;
+            second = count ;
+            System.out.println(i+"月份的生的兔子的总数是:"+count*2); //144
+    }
+
+//结果
+3月份的生的兔子的总数是:4
+4月份的生的兔子的总数是:6
+5月份的生的兔子的总数是:10
+6月份的生的兔子的总数是:16
+7月份的生的兔子的总数是:26
+8月份的生的兔子的总数是:42
+9月份的生的兔子的总数是:68
+10月份的生的兔子的总数是:110
+11月份的生的兔子的总数是:178
+12月份的生的兔子的总数是:288
+
+Process finished with exit code 0
+
+```
 
 
 
+**DEBUG调试工具:**
 
+![image-20201021160809470](_media/image-20201021160809470.png)
+
+![image-20201021161313850](_media/image-20201021161313850.png)
 
 #### 9.4.5  指定跳转的位置(java的标签):
 
