@@ -651,19 +651,524 @@ public class ArithmeticOperator {
 
 ```
 
-## 9. 语句
+## 9.流程控制语句
 
-+ 顺序语句
-+ 分支语句
++ 顺序语句  代码在执行的时候是从上到下 从左到右依次执行
++ 分支语句  
 + 循环语句
 
 ### 9.1 表达式
 
+> 运算符连接，返回一个值
+
 ### 9.2 顺序语句
+
+> 代码在执行的时候是从上到下 从左到右依次执行
 
 ### 9.3 分支语句
 
++ if语句
++ if else 语句
++ if else  if else 语句
++ switch语句
+
+![image-20201021091914547](_media/image-20201021091914547.png)
+
+#### 9.3.1 If语句
+
+> if(布尔表达式或者布尔值){ // 表达式或者布尔值是true 执行里面的代码。
+>
+> ​	执行代码:
+>
+> }
+
+```java
+//if 语句
+        int num = 10;
+        if(num > 5){
+            System.out.println("10 > 5");
+        }
+```
+
+#### 9.3.2 if else
+
+> if(布尔表达式或者布尔值){// 表达式或者布尔值是true 执行里面的代码。
+>
+> }else{//// 表达式或者布尔值是false 执行里面的代码。
+>
+> }
+
+```java
+ //if else 语句
+        if(10 > 100){
+            System.out.println("10 > 100");
+        }else {
+            System.out.println("10 < 100");
+        }
+```
+
+#### 9.3.3  if else if else 
+
+```java
+//if else if else  多层判断
+        int age = 20;
+        double height = 120.0;
+        if(age==10){
+            System.out.println("age == 10");
+        }else if(height > 100){
+            System.out.println("height > 100");
+        }else{
+            System.out.println("height < 100");
+        }
+```
+
+> 阿里Java开发手册规定:
+>
+> if else if else 最多不要超过三层。
+
+> 如果你的if 或者else 后边执行代码只有一行 我们就可以省略 {}，及时只有一行也不要省略。
+>
+> 代码结构不完整，容易出错。
+
+#### 9.3.4 控制台输入
+
+> 我们前面说过我们的jdk中给我们提供了java核心的jar包,rt.jar
+>
+> 但是java中已经帮我们写好了大概接近五千个类，供我们使用。在实际开发中我们不可能把说有的jar包引入到项目中。
+>
+> 核心的ja包中的类是默认引入的。(java.lang包是默认引入的),其他包中的类我们需要手动导入
+>
+> + import  java.util.Scanner;  import   包名.类名;
+> + import  java.util.\*;   引入包中所有的类;
+
+```java
+/**导入Scanner的包    导包*/
+
+import java.util.Scanner;
+
+/**
+ * ClassName ScannerDemo
+ * Description:控制台输入
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2020-10-21-9:34
+ */
+public class ScannerDemo {
+    public static void main(String[] args) {
+        //根据用户输入的成绩判断是哪一个等级   优 甲 乙 丙 丁
+        Scanner s = new Scanner(System.in); //System.in系统标准的输入流
+        // 获取控制台输入的 数据
+           //String name =  s.next();//next() 接收控制台的字符串
+            //String name = s.nextLine();//接收一行的数据
+        int score = s.nextInt();
+       // System.out.println(name);
+        System.out.println(score);
+        //判断成绩的大小
+        if(score > 90){
+            System.out.println("优");
+        }else if(score > 80){
+            System.out.println("甲");
+        }else if(score > 60 ){
+            System.out.println("乙");
+        }
+    }
+}
+
+```
+
+#### 9.3.5 switch 语句
+
+> 判断同一个变量在不同取值的时候执行不同的代码
+>
+> switch 默认的判断变量的数据类型只有:
+>
+> + int
+> + char
+> + byte
+> + short
+> + String  （JDK1.7新增的）
+
+```java
+package com.xzy.controls;
+
+import java.util.Scanner;
+
+/**
+ * ClassName SwitchDemo
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2020-10-21-9:53
+ */
+public class SwitchDemo {
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in); //alt + enter 导包
+        int  score = s.nextInt();//接收控制台输入的数字类型的字符串转为int类型
+        //switch 在判断的时候只能判断值相等  不能做比较
+        switch(score / 10){
+            case 9: //case后边只能是值  不能是关系表达式
+                System.out.println("优");
+                break;//终止
+            case 8 :
+                System.out.println("甲");
+                break;
+            case 6:
+                System.out.println("乙");
+                break;
+            default: //上面的条件都不成立的时候执行
+                System.out.println("丙");
+                break;
+        }
+
+    }
+}
+
+```
+
+> switch语句中的break不能省略，不然就会出现case穿透现象。
+
+```java
+ public static void main(String[] args) {
+        Scanner s = new Scanner(System.in); //alt + enter 导包
+        int  score = s.nextInt();//接收控制台输入的数字类型的字符串转为int类型
+        //switch 在判断的时候只能判断值相等  不能做比较
+        switch(score / 10){
+            case 9: //case后边只能是值  不能是关系表达式
+                System.out.println("优");
+            case 8 :
+                System.out.println("甲");
+            case 6:
+                System.out.println("乙");
+            default: //上面的条件都不成立的时候执行
+                System.out.println("丙");
+                break;
+        }
+
+    }
+```
+
+> case穿透就是所有的语句都会执行.
+
 ### 9.4 循环语句
+
+> 循环及时干重复的事情.
+>
+> java 中的循环语句:
+>
+> **while 循环**
+>
+> while(布尔表达式或者布尔值){ //布尔表达式或者布尔值是true 就执行循环体
+>
+> ​	循环体:
+>
+> }
+>
+> **do while循环**      无论条件是否成立  do中的代码都会执行一次
+>
+> do{
+>
+> ​	循环体:
+>
+> }while(布尔表达式或者布尔值)循环:
+>
+> **for循环**
+>
+> for(初始语句;循环条件;迭代体){
+>
+> ​		循环体;
+>
+> }
+
+#### 9.4.1  while循环
+
+> while循环中的值是true是死循环。不容易控制。
+>
+> 如果出现死循环。不及时停止机会出现值栈溢出。 **stackoverflow**（内存溢出）。
+>
+> 所以在使用while循环的时候我们要进行，在适当的时候中止循环.
+>
+> + 结合我们的if else 使用.  
+>   + break关键字  中止循环
+>   + continue 关键字  中止当前次数的循环 继续下一次循环
+> + 根据循环的变量条件值控制循环次数
+
+```java
+ /* while (true){
+            System.out.println("Hello while");
+        }*/
+
+
+    //控制 循环条件的变量值  固定循环次数
+       int flag = 10;
+       while(flag > 0 ){
+           System.out.println("循环正常执行  "+flag);
+           flag --;
+       }
+```
+
+```java
+ int  num = 10;
+    while(true){
+        System.out.println("循环正常运行 "+num);
+        if(num < 0){
+            //终止循环 直接退出循环最外层 循环不在执行了
+            break;
+        }
+        num --;
+    }
+```
+
+```java
+int  num = 10;
+while(num  > 0){
+            num --;
+            if(num == 5){
+                // 终止当前次数的循环   继续下一次循环  直至循环结束
+                continue;
+            }
+            System.out.println("循环正常运行 "+num);
+        }
+//控制台打印的结果
+循环正常运行 9
+循环正常运行 8
+循环正常运行 7
+循环正常运行 6
+循环正常运行 4
+循环正常运行 3
+循环正常运行 2
+循环正常运行 1
+循环正常运行 0
+
+Process finished with exit code 0
+
+```
+
+#### 9.4.2  do while循环
+
+> ```
+>  //do while循环  及时条件不成立业也会执行一次
+> /* do{
+>      System.out.println(" do while循环");
+>  }while(false);*/
+> ```
+
+```java
+ //条件成立就是死循环所以我们要控制
+
+        int  num  = 10;
+        do{
+            System.out.println("循环正常执行 "+num);
+            num --;
+        }while(num > 0);
+```
+
+```java
+int  num  = 10;
+        do{
+            if(num == 5){
+                break;
+            }
+            System.out.println("循环正常执行 "+num);
+            num --;
+        }while(true);
+//控制台输出
+循环正常执行 10
+循环正常执行 9
+循环正常执行 8
+循环正常执行 7
+循环正常执行 6
+```
+
+```java
+ int  num  = 10;
+        do{
+            num --;
+            if(num == 5){
+                continue;
+            }
+            System.out.println("循环正常执行 "+num);
+
+        }while(num > 0);
+//控制台输出
+循环正常执行 9
+循环正常执行 8
+循环正常执行 7
+循环正常执行 6
+循环正常执行 4
+循环正常执行 3
+循环正常执行 2
+循环正常执行 1
+循环正常执行 0
+```
+
+#### 9.4.3 for 循环
+
+> for循环一般是在固定循环次数的循环中使用.
+>
+> 但是for循环也可以出现死循环.
+>
+> 语法结构：
+>
+> for(初始的变量值;循环条件;迭代体){
+>
+> ​	循环体;
+>
+> }
+>
+> for(int i=0;i<=10;i++){ //循环 11 次
+>
+> }
+
+```java
+//循环次数是根据 初始的变量值和 循环的条件 计算的出的。
+        // i++ 和 ++i 在for循环中没有区别
+        for(int i =0; i<=10 ; i++){
+            System.out.println("循环正常执行 "+i);
+        }
+//控制台输出
+循环正常执行 0
+循环正常执行 1
+循环正常执行 2
+循环正常执行 3
+循环正常执行 4
+循环正常执行 5
+循环正常执行 6
+循环正常执行 7
+循环正常执行 8
+循环正常执行 9
+循环正常执行 10
+
+Process finished with exit code 0
+
+```
+
+> print和println的区别:
+>
+> + print 直接输出
+> + pritln 换行输出
+
+```java
+ for(int i =0; i<=10 ; i++){
+            System.out.print("循环正常执行 "+i);
+        }
+//控制台输出
+循环正常执行 0循环正常执行 1循环正常执行 2循环正常执行 3循环正常执行 4循环正常执行 5循环正常执行 6循环正常执行 7循环正常执行 8循环正常执行 9循环正
+```
+
+**循环嵌套:**
+
+> 我们可以使用循环去做很多的事情:
+>
+> 打印九九乘法表
+>
+> 输出正三角形
+>
+> 输出菱形
+>
+> 输出等腰三角形
+>
+> 求1000以内的水仙花数  
+>
+> ​	三位数   没位数的三次方之和扔等于这个数  这个数就是水仙花数  a^3+ b^3 + c^ 3=abc
+>
+> 求1000以内的素数  
+>
+> ​	只能被自己和1整除的数
+>
+> 求100以内的7的倍数
+>
+> 求100以内的偶数  奇数
+>
+> .......
+
+```java
+ public static void main(String[] args) {
+        //九九乘法表
+        //外层循环控制行
+        for (int i = 1; i <=9; i++) {
+            //内层循环控制列
+            for(int k = 1 ; k<=9;k++){
+                System.out.print(" k ");
+            }
+            //换行
+            System.out.println();
+        }
+    }
+
+//九行九列
+ k  k  k  k  k  k  k  k  k 
+ k  k  k  k  k  k  k  k  k 
+ k  k  k  k  k  k  k  k  k 
+ k  k  k  k  k  k  k  k  k 
+ k  k  k  k  k  k  k  k  k 
+ k  k  k  k  k  k  k  k  k 
+ k  k  k  k  k  k  k  k  k 
+ k  k  k  k  k  k  k  k  k 
+ k  k  k  k  k  k  k  k  k 
+```
+**九九乘法表:**
+
+```java
+ //效果出来了
+       /* for (int i = 1; i <=9; i++) {
+            //内层循环控制列
+            for(int k = 1 ; k<=9;k++){
+                System.out.print(k + "*"+ i +"="+ k*i +  "\t");
+            }
+            //换行
+            System.out.println();
+        }*/
+        //我们看道的是一个直角三角形   在进行代码的优化
+        for (int i = 1; i <=9; i++) {
+            //内层循环控制列
+            for(int k = 1 ; k<= i;k++){
+                System.out.print(k + "*"+ i +"="+ k*i +  "\t");
+            }
+            //换行
+            System.out.println();
+        }
+//打印的效果
+1*1=1	
+1*2=2	2*2=4	
+1*3=3	2*3=6	3*3=9	
+1*4=4	2*4=8	3*4=12	4*4=16	
+1*5=5	2*5=10	3*5=15	4*5=20	5*5=25	
+1*6=6	2*6=12	3*6=18	4*6=24	5*6=30	6*6=36	
+1*7=7	2*7=14	3*7=21	4*7=28	5*7=35	6*7=42	7*7=49	
+1*8=8	2*8=16	3*8=24	4*8=32	5*8=40	6*8=48	7*8=56	8*8=64	
+1*9=9	2*9=18	3*9=27	4*9=36	5*9=45	6*9=54	7*9=63	8*9=72	9*9=81
+```
+
+**打印等腰三角形:**
+
+```java
+ public static void main(String[] args) {
+        //等腰三角形
+        //行数
+        int  num = 6;
+        for(int i = 1;i<=num;i++){
+            //打印空格占位
+            //前半边占位的空格和行数的关系 是总的行数 -1
+            for(int k = num -i; k >= 0 ;k--){
+                System.out.print(" ");
+            }
+            //打印行后半边的*
+            for(int j = 1;j<=2*i -1;j++){
+                System.out.print("*");
+            }
+        //换行
+            System.out.println();
+        }
+     //打印结果
+      *
+     ***
+    *****
+   *******
+  *********
+ ***********
+```
 
 
 
