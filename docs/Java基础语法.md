@@ -1310,8 +1310,6 @@ Process finished with exit code 0
 
 ```
 
-
-
 **DEBUG调试工具:**
 
 ![image-20201021160809470](_media/image-20201021160809470.png)
@@ -1320,11 +1318,21 @@ Process finished with exit code 0
 
 #### 9.4.5  指定跳转的位置(java的标签):
 
+> 结合循环的break使用，指定程序中断跳出到循环外 的位置.
 
-
-
-
-
+```java
+public static void main(String[] args) {
+        System.out.println("代码开始执行");
+        //java的标签
+        outer:
+        for (int i = 0; i <=10; i++) {
+            if(i==5){
+                break outer;
+            }
+            System.out.println("i="+i);
+        }
+    }
+```
 
 ## 10. 数组
 
