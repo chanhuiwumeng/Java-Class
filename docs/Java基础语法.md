@@ -1336,7 +1336,151 @@ public static void main(String[] args) {
 
 ## 10. 数组
 
+> 前面学习过变量:
+>
+> int name = "admin";
+>
+> 将班级学生的成绩拿给我。
+>
+> 学生有多个人  ，成绩  score  
+>
+> 使用同一个变量去保存多个值。就需要数组
+>
+> **java中数组**:
+>
+> 1. 数组只能保存同一种数据类型的值
+> 2. 数组只要被声明了那么数组的长度就是固定的不可以变化的，即使将数组中的值移除了。
+> 3. 数组的声明:
+>    + 静态声明  在声明数组的时候 给数组将值添加进去然后由系统计算数组的长度
+>    + 动态声明  声明数组的时候  固定数组的长度，由系统添加数组中的初始的值
+> 4. 数组的取值和赋值时使用下标，下标从0开始。
+> 5. 数组是引用数据类型
+
 ### 10.1 一维数组
+
+> 数组的声明(初始化):
+>
+> 1. 静态声明:       数据类型 [] 变量的名称  = new 数据类型 [] {值1,值2,值3}
+>
+>    +  数据类型   变量的名称  []    = new 数据类型 [] {值1,值2,值3}  (这是c的写法  不推荐使用)
+>
+> 2. 动态声明:  数据类型  [] 变量名称  = new  数据类型 [数组的长度值];
+>
+> 3. 数组的简写形式:
+>
+>    + 数据类型  []  变量名称 = {值1,  值2 , 值3};
+>
+> 4. 使用length 属性 表示数组的长度
+>
+>    
+
+```java
+public static void main(String[] args) {
+        int num = 10;
+        //数组的静态声明 根据初始化的值计算数组的长度
+        int [] arr = new int[]{10,12,13,14,15,16};
+        System.out.println(arr);//[I@1b6d3586  数组的对象在内存中的地址值
+        System.out.println(arr.length);//6
+        //动态声明
+        int [] arr1 = new int [5];
+        System.out.println(arr1);//[I@4554617c
+        System.out.println(arr1.length);//5
+
+        System.out.println(arr1[0]);//0
+        //需要给数组的元素进行赋值  根据下标进行赋值  下标从0开始
+            arr1[0] = 10;
+            arr1[1] = 11;
+            arr1[2] = 12;
+            arr1[3] = 13;
+            arr1[4] = 14;
+        System.out.println(arr1);
+        //获取数组中元素的值
+        System.out.println(arr[0]);
+        System.out.println(arr[1]);
+        System.out.println(arr[2]);
+        System.out.println(arr[3]);
+
+        System.out.println(arr1[0]);
+        System.out.println(arr1[1]);
+        System.out.println(arr1[2]);
+        System.out.println(arr1[3]);
+        System.out.println(arr1[4]);
+        //java.lang.ArrayIndexOutOfBoundsException: 5  数组下标越界异常
+        //System.out.println(arr1[5]);
+    }
+```
+
+![image-20201022100628439](_media/image-20201022100628439.png)
+
+![image-20201022095904048](_media/image-20201022095904048.png)
+
+**各种数据类型的数组的默认值:**
+
+> int  ----------> 0
+>
+> long  ----------->0
+>
+> short ----------------> 0
+>
+> byte ----------------->0
+>
+> char ------------>\u0000
+>
+> float -------> 0.0
+>
+> double ------>0.0
+>
+> String --------> null   
+
+```java
+ System.out.println("----------各种数据类型数组的默认值----------");
+        byte [] by = new byte [3] ;
+        char [] ch = new char[3];
+        float [] fl = new float[3];
+        long [] lo = new long[3];
+        String []  str  = new String [3];
+
+        System.out.println(by[0]);//0
+        System.out.println(ch[0]);//\u0000
+        System.out.println(fl[0]);//0.0
+        System.out.println(lo[0]);//0
+        System.out.println(str[0]);//null
+```
+
+#### 10.1.2 **数组的遍历:**
+
+```java
+public static void main(String[] args) {
+        //数组的静态声明 根据初始化的值计算数组的长度
+        int [] arr = new int[]{10,12,13,14,15,16};
+            System.out.println(arr[0]);//10
+        //数组的遍历
+        for (int i = 0; i < arr.length; i++) {
+            System.out.println(i+"="+arr[i]);
+        }
+        //jdk7提供了增强for循环
+        //for(数组中元素的数据类型  i 代表的是下标位的元素的值 : 数组或者集合)
+        for(int i : arr){
+            //直接输出数组中 下标位的值
+            System.out.println(i);
+        }
+    }
+//输出结果
+0=10
+1=12
+2=13
+3=14
+4=15
+5=16
+10
+12
+13
+14
+15
+16
+```
+
+
 
 ### 10.2 二维数组
 
