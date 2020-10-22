@@ -1480,29 +1480,99 @@ public static void main(String[] args) {
 16
 ```
 
+**求数组的最值:**
 
+```java
+ public static void main(String[] args) {
+        // int [] arr = new int [] {21,3,41,45,67,2,78,6};
+        //求最大值  最小值
+        int [] arr = new int [] {21,3,41,45,67,2,78,6};
+        //从数组拿一个任意的数
+        //进行和数组中其他元素比较 按照比较 的规则  进行换位
+        int num = arr[4];
+        for (int i = 0; i < arr.length; i++) {
+            if(num < arr[i]){
+                num = arr[i];
+            }
+        }
+        System.out.println("arr的最大值就是="+num);
+    }
+```
 
 ### 10.2 二维数组
 
+> 以为数组的下标位仍然是一个一位数组，这种数组就是二维数组。
+>
+> 二维数组声明
+>
+> 数据类型 \[]\[] 变量名称 = new int \[]\[]{{},{},{}} 
+>
+> 数据类型 \[]\[] 变量名称 = new int \[二维数组的长度][二维数组中下标一位数组的长度];
+>
+> 数据类型 \[]\[] 变量名称 = {{},{},{}} 
+
+```java
+public class SecondArrayDemo {
+    public static void main(String[] args) {
+        int [][] arr = new int[][]{{2,3,4,5},{6,7,8},{9,10,11,12}};
+        int [][] arr1 = new int[3][4];
+        //获取值
+        System.out.println(arr[0][0]);
+        System.out.println(arr[0][1]);
+        System.out.println(arr[0][2]);
+        System.out.println(arr[0][3]);
+        System.out.println(arr[1][0]);
+        System.out.println(arr[1][1]);
+        System.out.println(arr[1][2]);
+        //赋值
+        arr1[0][0] = 11;
+        arr1[0][1] = 12;
+        arr1[0][2] = 13;
+        arr1[0][3] = 14;
+        arr1[1][0] = 24;
+        arr1[1][1] = 23;
+        arr1[1][2] = 22;
+        arr1[1][3] = 21;
+        System.out.println(arr1[0][0]);
+        System.out.println(arr1[0][1]);
+        System.out.println(arr1[0][2]);
+        System.out.println(arr1[0][3]);
+        System.out.println(arr1[1][0]);
+        System.out.println(arr1[1][1]);
+        System.out.println(arr1[1][2]);
+        System.out.println(arr1[1][3]);
+        System.out.println("-----------for遍历二维数组-----------");
+        //遍历 嵌套for循环
+        for (int i = 0; i < arr.length; i++) {
+            for(int k =0;k<arr[i].length ;k++){
+                System.out.println(arr[i][k]);
+            }
+        }
+        //思考题: 求二维数组 最值
+    }
+}
+
+```
+
 ## 11. 函数方法
 
-> Java方法是语句的集合，它们在一起执行一个功能。
->
+## 11.方法(函数)
+
 > - 方法是解决一类问题的步骤的有序组合
-> - 方法包含于类或对象中
+>- 方法包含于类或对象中
 > - 方法在程序中被创建，在其他地方被引用
->
+> 
 > **方法的优点**
 >
 > -  使程序变得更简短而清晰。
-> -  有利于程序维护。
+>-  有利于程序维护。
 > -  可以提高程序开发的效率。
 > - 提高了代码的重用性。
->
+> 
 > **方法的命名规则**
 >
 > - 方法的名字的第一个单词应以小写字母作为开头，后面的单词则用大写字母开头写，不使用连接符。例如：**addPerson**。
-> - 下划线可能出现在 JUnit 测试方法名称中用以分隔名称的逻辑组件。一个典型的模式是：**test<MethodUnderTest>_<state>**，例如 **testPop_emptyStack**。
+>- 下划线可能出现在 JUnit 测试方法名称中用以分隔名称的逻辑组件。一个典型的模式是：**test<MethodUnderTest>_<state>**，例如 **testPop_emptyStack**。
 
 ### 11.1 方法的定义
 
@@ -1606,15 +1676,37 @@ public static void main(String[] args) {
 ![img](_media/2463290-73ce127832eee7d8.gif)
 
 ```java
- public  static  void selectorSort(int [] array){
-        for (int i = 0; i < array.length; i++) {
-            for (int j = i+1; j < array.length; j++) {
-                if(array[i]>array[j]){
-                    int temp = array[i];
-                    array[i] = array[j];
-                    array[j] = temp;
+ public static void main(String[] args) {
+        int [] arr = new int [] {21,3,41,45,67,2,78,6};
+        //进行排序  由小到大
+       /* for(int i = 0;i<arr.length;i++){
+            for(int k = 0;k<arr.length ;k++){
+                if(arr[i] > arr[k]){
+                    int temp = arr[k];
+                    arr[k] = arr[i];
+                    arr[i] = temp;
                 }
             }
+        }*/
+        //上边的代码排序完成后发现是倒序的  所以排序有问题 ?
+        /* 什么问题?  怎么解决?
+        很多的时候在使用循环的时候，考虑:
+        1. 循环过程中有没有比必要的重复的操作  耗时间 耗性能
+        2. 代码的优化就是去重复操作，这个是开发中必须考虑的
+        */
+        for(int i = 0;i<arr.length-1;i++){
+            for(int k = i+1 ; k<arr.length ;k++){
+                if(arr[i] > arr[k]){
+                    int temp = arr[k];
+                    arr[k] = arr[i];
+                    arr[i] = temp;
+                }
+            }
+        }
+
+        //遍历一次
+        for (int i : arr) {
+            System.out.println(i);
         }
     }
 ```
