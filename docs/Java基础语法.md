@@ -1675,6 +1675,8 @@ public class SecondArrayDemo {
 
 ![img](_media/2463290-73ce127832eee7d8.gif)
 
+![image-20201022113534736](_media/image-20201022113534736.png)
+
 ```java
  public static void main(String[] args) {
         int [] arr = new int [] {21,3,41,45,67,2,78,6};
