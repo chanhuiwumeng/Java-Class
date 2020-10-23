@@ -1554,25 +1554,69 @@ public class SecondArrayDemo {
 
 ```
 
-## 11. 函数方法
+## 11. 方法(函数)
 
-## 11.方法(函数)
+> java中的方法就是对一段功能代码的封装，从而提高代码的复用性
+>
+> 方法的声明:
+>
+> 访问修饰符   修饰符  返回值类型  方法名称(形式参数列表){
+>
+> ​	方法执行的语句;
+>
+> }
+>
+> 形式参数就是一个有数据类型的变量，进行运算中的占位。
+>
+> public static void main(String [] args){}
+>
+> void  没有返回值 
+>
+> 访问修饰符:(面向对象中将)
+>
+> public  
+>
+> protected
+>
+> dedault
+>
+> private
+>
+> 修饰符:(面向对象中将)
+>
+> static  
+>
+> final
+>
+> abstract
+>
+> sychnized
+>
+> + 方法只有被调用才能使用，可以重复调用。
+>
+> + 方法的分类
+>   + 返回值
+>     + 普通方法(没有返回指的方法)
+>     + 有返回值的方法   return  返回方法的返回值
+>   + 参数
+>     + 没有参数的方法
+>     + 带有参数的方法
+> + 在main方法中调用的方法必须被static修饰。 不然会出现在静态的上下文中调用非静态的方法异常
 
-> - 方法是解决一类问题的步骤的有序组合
->- 方法包含于类或对象中
+> - 方法包含于类或对象中
 > - 方法在程序中被创建，在其他地方被引用
-> 
+>
 > **方法的优点**
 >
 > -  使程序变得更简短而清晰。
->-  有利于程序维护。
+> -  有利于程序维护。
 > -  可以提高程序开发的效率。
 > - 提高了代码的重用性。
-> 
+>
 > **方法的命名规则**
 >
 > - 方法的名字的第一个单词应以小写字母作为开头，后面的单词则用大写字母开头写，不使用连接符。例如：**addPerson**。
->- 下划线可能出现在 JUnit 测试方法名称中用以分隔名称的逻辑组件。一个典型的模式是：**test<MethodUnderTest>_<state>**，例如 **testPop_emptyStack**。
+> - 下划线可能出现在 JUnit 测试方法名称中用以分隔名称的逻辑组件。一个典型的模式是：**test<MethodUnderTest>_<state>**，例如 **testPop_emptyStack**。
 
 ### 11.1 方法的定义
 
@@ -1584,7 +1628,44 @@ public class SecondArrayDemo {
 
 ### 11.2 方法的调用
 
+```java
+ public static void main(String[] args) {
+        //数组的遍历
+        say();
+        say();
+        say();
+        say();
+        say();
+        //接受返回值方法的返回值
+        int num =  sum();
+        System.out.println(num);
+        //输出返回值方法的返回值
+        System.out.println(sum());
+        //World是方法中实际使用到的参数的值  实参
+        hello("World");
 
+        System.out.println(run(40));
+    }
+    //没有返回值 没有参数的普通方法
+    public static  void say(){
+        System.out.println("Hello World");
+    }
+    //带有返回值的方法
+    public static  int  sum(){
+        //返回出一个值
+        return  100 + 200;
+    }
+    //带参数的方法
+    //String str 形参
+    public  static  void hello(String str){
+        System.out.println(str);
+    }
+
+    //带返回值的带参数的方法
+    public  static  String  run(int speed){
+        return "小明可以跑"+speed + "km/h";
+    }
+```
 
 ### 11.3 变量的作用域
 
@@ -1645,16 +1726,34 @@ public class SecondArrayDemo {
 
 ![img](_media/2463290-759e8a17f2f8fe49.gif)
 
+![image-20201023094724718](../../新版web前端课程资料/html5-web/docs/_media/image-20201023094724718.png)
+
 ```java
- public static void bubble(int [] array){
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array.length-i-1; j++) {
-                if(array[j]>array[j+1]){
-                    int temp = array[j+1];
-                    array[j+1] = array[j];
-                    array[j] = temp;
+ public static void main(String[] args) {
+        //冒泡排序
+        int [] arr = new int [] {21,3,41,45,67,2,78,6};
+        /*for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < arr.length-1; j++) {
+                if(arr[j] > arr[j+1]){
+                   int temp =  arr[j];
+                   arr[j] = arr[j+1];
+                   arr[j+1] = temp;
                 }
             }
+        }*/
+        //代码的优化
+        for (int i = 0; i < arr.length; i++) {
+
+            for (int j = 0; j < arr.length-1-i; j++) {
+                if(arr[j] > arr[j+1]){
+                    int temp =  arr[j];
+                    arr[j] = arr[j+1];
+                    arr[j+1] = temp;
+                }
+            }
+        }
+        for (int i : arr) {
+            System.out.println(i);
         }
     }
 ```
@@ -1734,21 +1833,25 @@ public class SecondArrayDemo {
 
 ![img](_media/2463290-8b5ba83541b4584c.gif)
 
+![image-20201023103545938](../../新版web前端课程资料/html5-web/docs/_media/image-20201023103545938.png)
+
 ```java
- public static  void insertSort(int[] array){
-        int current;
-        for (int i = 0; i < array.length - 1; i++) {
-            //当前比较的元素
-            current = array[i + 1];
+public static void main(String[] args) {
+        int [] arr = new int [] {21,3,41,45,67,2,78,6};
 
-            int preIndex = i;
-
-            while (preIndex >= 0 && current < array[preIndex]) {
-                array[preIndex + 1] = array[preIndex];
-                preIndex--;
-            }
-            System.out.println("preIndex="+preIndex);
-            array[preIndex + 1] = current;
+        for(int i = 0;i < arr.length-1;i++){
+            //当前准备比较的值
+            int temp  = arr[i+1];
+             int num = i;
+           //当前位置的值和前面所有的值比较进行换位
+           while(num >= 0 && temp < arr[num] ){
+               arr[num + 1] = arr[num ];
+                num --;
+           }
+           arr[num + 1] = temp;
+        }
+        for (int k : arr) {
+            System.out.println(k);
         }
     }
 ```
