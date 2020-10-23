@@ -1669,15 +1669,88 @@ public class SecondArrayDemo {
 
 ### 11.3 变量的作用域
 
+> 定义变量的位置不同:
+>
+> + 全局变量   就是类中的所有方法都可以使用 当前类不在使用的时候 由GC(垃圾回收器)回收
+>   + 全部变量一般定义在类 开始，属性定义的位置
+> + 局部变量 只能在当前的方法中使用  方法执行完毕  变量从内存中释放
+
+```java
+public class MethodDemo02 {
+    //全局变量
+    static  int  num = 100;
+
+    public static void main(String[] args) {
+        System.out.println(num);
+        sum();
+
+        //System.out.println(age);
+        MethodDemo02 m = new MethodDemo02();
+    }
+    public static  void sum(){
+        System.out.println("sum:"+num);
+        //局部变量
+        //当前方法的局部变量不能再其他方法被引用使用
+        int age = 99;
+        System.out.println("age="+age);
+        //System.out.println(price);
+    }
+    //代码块 是没有方法的声明  代码块不需要调用就可以执行
+    {
+        System.out.println("我是一个代码块");
+        double price = 999.99;
+    }
+
+}
+
+```
+
+### 11.4  方法的执行流程和内存分析
+
+![image-20201023145137894](_media/image-20201023145137894.png)
 
 
 
+### 11.5 方法的重载 :exclamation:  
 
-### 11.4 方法的重载
+> 方法的重载就是方法的名称相同。方法的参数列表不同(参数的个数不同，参数的顺序不同，参数的数据类型不同)，与方法的返回值无关。
+>
+> @OverLoad   早期方法重载声明加  jdk1.7以后更新不需要添加了。
 
+```java
+public class MethodOverLoadDemo {
+    public static void main(String[] args) {
+       sum();
+       sum(100);
+       sum(200,"Hello World");
+       sum("Hello Method",99999);
 
+        System.out.println(sum("param",88888));
+    }
 
-### 
+    public static  void sum(){
+        System.out.println("我是没有参数 没有返回值的 sum");
+    }
+
+    public static  void sum(int num ){
+        System.out.println("我是有int参数 没有返回值的 sum " + num);
+    }
+
+    public static  void sum(String str  ){
+        System.out.println("我是有String参数 没有返回值的 sum  "+str);
+    }
+    public static  void sum(int num,String str ){
+        System.out.println("我是有两个参数 没有返回值的 sum " + num + str);
+    }
+
+    /*public static  void sum(String str,int num){
+        System.out.println("我是有两个参数 没有返回值的 sum"+str + 9999);
+    }*/
+    public static  String  sum(String str,int num){
+        return  "我是有两个参数 没有返回值的 sum"+ str + num;
+    }
+}
+```
 
 ## 12. Java内存分配
 
