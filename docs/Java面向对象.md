@@ -221,15 +221,251 @@ public class Person2Demo {
 
 #### 3.1.1 构造器
 
+> 构造器就是我们常见类的实例化对象时候的模板(模具)。
+>
+> 在Java中每一个类都有一个默认的无参构造器，隐式的构造器。看不见，但是是默认提供的。
+>
+> 1. 构造器不是方法   没有返回值类型  和修饰符  
+> 2. 构造器的名称必须和类名一致 (都是大驼峰命名法)
+> 3. 构造器是可以重载的
+> 4. 如果使用了带参数的构造器 无参数的构造器必须手动写出来。不然带参数的构造器会覆盖无参数的构造器
+> 5. 虽然无参数的构造器是默认的并且是隐式的 ， 但是我们要去在编程中必须手动写出无参数的构造器
+> 6. 在使用带参数的构造器的时候，实际传入的参数的数据类型和构造器中属性顺序值必须一致。
+
+```java
+package com.xdkj.javase.oop01;
+
+public class Dog {
+	private String dogName;
+	private int dogAge;
+	private String dogColor;
+	
+	//默认的无参构造器
+	/*
+	 * public Dog() {
+	 * 
+	 * }
+	 */
+	//从超级类继承的构造器
+	public Dog() {
+	}
+	
+	//构造器的重载
+	public Dog(String dogName) {
+		this.dogName = dogName;
+	}
+	
+
+	public Dog(String dogName, String dogColor) {
+		this.dogName = dogName;
+		this.dogColor = dogColor;
+	}
+
+	public Dog(String dogName, int dogAge, String dogColor) {
+		this.dogName = dogName;
+		this.dogAge = dogAge;
+		this.dogColor = dogColor;
+	}
+
+
+	public String getDogName() {
+		return dogName;
+	}
+	public void setDogName(String dogName) {
+		this.dogName = dogName;
+	}
+	public int getDogAge() {
+		return dogAge;
+	}
+	public void setDogAge(int dogAge) {
+		this.dogAge = dogAge;
+	}
+	public String getDogColor() {
+		return dogColor;
+	}
+	public void setDogColor(String dogColor) {
+		this.dogColor = dogColor;
+	}
+	
+}
+
+```
+
+```java
+package com.xdkj.javase.oop01;
+
+public class DogDemo {
+
+	public static void main(String[] args) {
+		//我们使用的是无参数的构造器实例化对象
+		Dog dog = new Dog();
+			System.out.println(dog);
+			//null
+			System.out.println(dog.getDogName());
+			
+		Dog dog1 = new Dog("阿黄");
+		
+		System.out.println(dog1.getDogName());//阿黄
+		
+		Dog dog2 = new Dog("黄色","汤姆");
+		System.out.println(dog2);
+		System.out.println(dog2.getDogName() + "  "+ dog2.getDogAge()+ " " + dog2.getDogColor());
+	}
+
+}
+
+```
+
+**Eclipse自动生成get set方法和 构造器**
+
+> 快捷键: ctrl + alt + s
+
+<img src="_media/image-20201126102523586.png" width="300px">
+
+<img src ="./_media/image-20201126102651062.png" width="300px">
+
 #### 3.1.2 this关键字
 
-#### 3.1.3 static关键字
+> this关键字 叫做当前类的实例化对象引用   谁用就代表谁。
 
-#### 3.1.4 final关键字
+```java
+		//类类型的变量
+		Student stu = new Student();
+			System.out.println(stu);
+			stu.setStuAge(18);
+			stu.setStuName("小明");
+		System.out.println(stu.getStuName() + "今年"+ stu.getStuAge()+"岁");
+		
+		Student stu1 = new Student();
+			System.out.println(stu1);
+			stu1.setStuAge(16);
+			stu1.setStuName("小红");
+		System.out.println(stu1.getStuName()
+```
 
 
 
+![image-20201126094425542](_media/image-20201126094425542.png)
 
+#### 3.1.3 JavaBean
+
+> javaBean我们也叫作一个普通的java对象(Plain Old Java Object)。对对象所在的类有这么几个要求:
+>
+> 1. 必须有私有 的成员变量(成员属性)
+> 2. 必须给私有的成员变量提供公开的访问方式  get  set 方法
+> 3. 必须有无参数的构造器。带参数的构造器看实际的需要 ，需要的时候在添加。
+
+#### 3.1.4 static关键字
+
+> static  静态  
+>
+> 静态的东西属于当前的类(在谁里面声明就属于谁)。
+>
+> ​	可以修饰 属性: 
+>
+> ​	可以修饰方法:
+>
+> static修饰的属性或者方法:
+>
+> 1. 在类被编译的时候就放置到了内存的静态区中  只有一份
+> 2. 静态的内容可以直接使用类名进行访问(要求必须使用类名进行访问  )
+> 3. 静态的东西属于类 (类的二进制字节码文件对象)
+> 4. 静态的属性 代表对象共有的属性 并且 静态的属性在声明的时候要给初始值
+> 5. 静态的属性名要求所有字母大写多个单词使用下划线隔开。 
+
+![image-20201126105250393](_media/image-20201126105250393.png)
+
+```java
+package com.xdkj.javase.oop01;
+
+public class Cat {
+	
+	private String catName;
+	private int catAge;
+	private String catColor;
+	//静态的成员变量代表所有对象共有的属性
+	
+	static String  ADDRESS_EARTH = "中国";
+	
+	public Cat() {
+		super();
+	}
+	public Cat(String catName, int catAge, String catColor) {
+		super();
+		this.catName = catName;
+		this.catAge = catAge;
+		this.catColor = catColor;
+	}
+	public String getCatName() {
+		return catName;
+	}
+	public void setCatName(String catName) {
+		this.catName = catName;
+	}
+	public int getCatAge() {
+		return catAge;
+	}
+	public void setCatAge(int catAge) {
+		this.catAge = catAge;
+	}
+	public String getCatColor() {
+		return catColor;
+	}
+	public void setCatColor(String catColor) {
+		this.catColor = catColor;
+	}
+	
+	//声明 了一个静态的成员方法
+	public static void eatFish() {
+		System.out.println("cat eat fish!");
+	}
+	//普通的成员方法
+	public void miao() {
+		System.out.println("Miao  miao");
+	}
+	
+}
+
+```
+
+```java
+package com.xdkj.javase.oop01;
+
+import java.util.Calendar;
+
+public class CatDemo {
+	public static void main(String[] args) {
+		Cat  cat = new Cat();
+			cat.setCatName("汤姆");
+			cat.setCatAge(100);
+			cat.setCatColor("蓝色");
+			System.out.println(cat);
+			System.out.println(cat.getCatName() + " " + cat.getCatAge() + " " + cat.getCatColor());
+			//警告  静态的方法应该使用静态的访问方式
+			cat.eatFish();
+			cat.miao();
+			
+			Cat  cat1 = new Cat();
+			cat1.setCatName("柯基");
+			cat1.setCatAge(20);
+			cat1.setCatColor("白色");
+			System.out.println(cat1);
+			System.out.println(cat1.getCatName() + " " + cat1.getCatAge() + " " + cat1.getCatColor());
+			//警告  静态的方法应该使用静态的访问方式
+			cat1.eatFish();
+			cat1.miao();
+			//正确访问静态方法的方式
+			Cat.eatFish();
+			//class com.xdkj.javase.oop01.Cat
+			System.out.println(Cat.class);
+			//调用类的静态属性
+			System.out.println(Cat.ADDRESS_EARTH);
+	}
+}
+
+```
+
+#### 3.1.5 final关键字
 
 ### 3.2 继承
 
