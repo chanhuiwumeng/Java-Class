@@ -318,7 +318,7 @@ public class DogDemo {
 
 **Eclipse自动生成get set方法和 构造器**
 
-> 快捷键: ctrl + alt + s
+> 快捷键: shift + alt + s
 
 <img src="_media/image-20201126102523586.png" width="300px">
 
@@ -466,6 +466,188 @@ public class CatDemo {
 ```
 
 #### 3.1.5 final关键字
+
+> final 关键字 是最终的意思
+>
+> 1. final修饰变量 值不可以被改变  就是常量
+> 2. final修饰方法  方法不能被重写
+> 3. final修饰类 类不可以被继承
+
+#### 3.1.6 匿名对象
+
+> 没有名字的对象就是匿名对象，new Object() 匿名对象只能使用一次在使用完成以后就从内存中释放掉了
+
+```java
+public class Teacher {
+	private String teaName;
+	private int teaAge;
+	
+	public Teacher() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+	public Teacher(String teaName, int teaAge) {
+		super();
+		this.teaName = teaName;
+		this.teaAge = teaAge;
+	}
+    ...get set...
+}
+```
+
+
+
+```java'
+package com.xdkj.javase.opp02;
+
+public class TeacherDemo {
+
+	public static void main(String[] args) {
+		
+			Teacher  teacher = new Teacher();
+				System.out.println(teacher);
+				teacher.setTeaName("马丁路德金");
+				teacher.setTeaAge(88);
+			System.out.println(teacher.getTeaName() +  "  " +  teacher.getTeaAge());
+			//匿名对象  就是没有名字的对象  也就是不用变量去接收他
+			//com.xdkj.javase.opp02.Teacher@6d06d69c
+			System.out.println(new Teacher());
+			//是不是匿名对象的使用?
+			//匿名对象只在调用的当前行有效  匿名对象是一次性的
+			// 就是
+			String str = 	new Teacher("张无忌",888).getTeaName();
+			
+			int    age =    new Teacher("张无忌",888).getTeaAge();
+			System.out.println(str);
+			System.out.println(age);
+			//对象的生命周期
+			//匿名对更多是用在方法的参数
+			
+			method(teacher);
+			method(new Teacher());
+			method(new Teacher("张三丰",999));
+	}
+	//类类型的参数
+	public static void method(Teacher teacher) {
+		System.out.println(teacher.getTeaName());
+	}
+
+}
+
+```
+
+#### 3.1.7 变量的作用域
+
++ 全局变量
+
++ 局部变量
+
++ 成员变量和成员方法
+
++ 静态成员方法和静态成员属性
+
+  ```java
+  package com.xdkj.javase.opp02;
+  
+  import java.util.Calendar;
+  
+  /**
+   * 变量: 
+   * 	a. 全局变量
+   * 		声明在类的属性的位置  全局变量可以被类中的所有方法使用
+   * 		全局变量的生命周期是什么?
+   * 			当声明的全局变量的类不在被引用的时候我们就确定类不在被使用了，但是GC也不会立即回收
+   * 				
+   * 	b. 局部变量
+   * 		局部变量的生命周期就是方法执行完成以后从内存中释放。
+   * 	c. 局部变量和全局变量同名的时候  使用就近原则
+   * 
+   *  d.  .java文件中的静态内容在编译时候就放置到静态区内存中  .class文件中的静态的常量在类被调用或者
+   *  	导入的时候放置到静态的内存区中
+   * */
+  public class VariableDemo {
+  	//全局变量
+  	static int num = 100;
+  	public static void main(String[] args) {
+  		int num = 200;
+  		System.out.println(num);
+  		method();
+  		VariableDemo vd = new VariableDemo();
+  		System.out.println(vd);
+  		//空
+  		vd = null;
+  		//就近原则
+  		System.out.println(num);
+  		
+  		System.out.println(Calendar.DATE);
+  		
+  	}
+  	public static void method() {
+  		System.out.println(num);
+  	}
+  }
+  
+  ```
+
+#### 3.1.8 代码块
+
+```java
+package com.xdkj.javase.opp02;
+
+/**
+ * 代码块: {} 包裹起来的就是代码块 
+ * 		全局的代码块: 在类的对象被调用的时候被执行 全局的代码块是最先被执行的
+ * 		局部代码块: 就是写在方法内部的代码块 
+ * 			其实实际的作用就是代码的隔离。
+ * 		静态代码块: static 修饰的代码块。
+ * 				静态代码块优先执行  在类被编译的时候就执行了
+ * 				static修饰的东西只有一份 静态代码块中只能使用static修饰的内容。
+ * 				设计模式:
+ * 					单例设计模式 
+ */
+public class BlockDemo {
+
+	private String name;
+	
+	int age ;
+
+	public BlockDemo() {
+		super();
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	// 全局代码块
+	{
+		System.out.println("Hello World");
+		age = 100;
+		System.out.println(age);
+	}
+	static {
+		//System.out.println("Hello static block" + age);
+	}
+	public void hello() {
+		int num = 999;
+		System.out.println("Hello ---------------" );
+		//局部代码块
+		{
+			int m = 888;
+			System.out.println(num);
+			System.out.println("Hello ++++++++++++++" + age);
+		}
+		System.out.println("Hello ==================");
+	}
+
+}
+
+```
 
 ### 3.2 继承
 
