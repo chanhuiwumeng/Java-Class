@@ -651,11 +651,166 @@ public class BlockDemo {
 
 ### 3.2 继承
 
-### 3.3 多态
+> 继承：
+>
+> ​	在我们的生活中，见到的汽车，人，动物....都有继续的特性。
+>
+> ​	遗传的特性。 子承父业。
+>
+> ​	如果我们当前 的类定义了属性和行为， 动物Animal定义了动物的属性和行为。
+>
+> ​		属性:  重量   颜色   
+>
+> ​		行为:  吃 喝  睡 
+>
+> ​	那么对于动物的子类:  哺乳动物  脊椎动物 卵生动物 无脊椎动物....他们就默认从动物的类去继承这些特性和行为就可以了。
+>
+> 在java中我们，如果我们在一个类中定义了属性和行为  那么他的子类就直接继承就可以了，不要在自己去定义了。
+>
+> ​		extends 关键字就是继承的意思:
+>
+> 1. 子类继承自父类  那么子类就具有类父类的属性和行为
+> 2. 子类继承父类 那么子类也可以对自己的属性和行为进行扩增
+> 3. java中只能单继承 一个类只能继承一个类。
+> 4. Java我们可以实现多层继承  a> b  b > c
+> 5. super关键字 
 
-### 3.4 抽象类和抽象方法
+```java
+package com.xdkj.javase.oop3extends;
 
-### 3.5 接口
+public class Animals {
+	
+	private String name;
+	private double weight;
+	private String color;
+	.....get set ...
+	public void eat() {
+		System.out.println("eat foods!");
+	}
+	public void sleep() {
+		System.out.println("sleep letter!");
+	}
+}
+
+```
+
+```java
+package com.xdkj.javase.oop3extends;
+
+public class Dog extends Animals {
+	//我们虽然继承了一个类但是我们可以对当前类的属性进行扩增
+	private int footer;
+
+	public int getFooter() {
+		return footer;
+	}
+
+	public void setFooter(int footer) {
+		this.footer = footer;
+	}
+	
+	public void lookDoor() {
+		System.out.println("看门");
+	}
+}
+
+```
+
+```java
+package com.xdkj.javase.oop3extends;
+
+public class Fish  extends Animals{
+	private String fin;//鳍
+
+	public String getFin() {
+		return fin;
+	}
+
+	public void setFin(String fin) {
+		this.fin = fin;
+	}
+	
+	public void swimming() {
+		System.out.println("fish can swimming");
+	}
+}
+
+```
+
+```java
+package com.xdkj.javase.oop3extends;
+
+public class Keji  extends Dog{
+	
+}
+
+```
+
+```java
+package com.xdkj.javase.oop3extends;
+
+public class AnimalsDemo {
+	public static void main(String[] args) {
+		Animals animals = new Animals();
+		System.out.println(animals);
+			animals.setName("小狗");
+			animals.setWeight(15.00);
+			animals.setColor("黄色");
+		System.out.println(animals.getName() +" "+ animals.getWeight() + " "+ animals.getColor());	
+			animals.eat();
+			animals.sleep();
+		Dog  dog = new Dog();
+		
+		System.out.println(dog);
+			dog.setName("旺财");
+			dog.setWeight(35.00);
+			dog.setColor("黑白色");
+		System.out.println(dog.getName() + "--"+ dog.getWeight() + "---"+ dog.getColor());
+			dog.eat();
+			dog.sleep();
+			
+			dog.setFooter(4);
+			dog.lookDoor();
+			
+			Fish  fish = new Fish();
+				fish.setName("金龙鱼");
+				fish.setWeight(3.0);
+				fish.setColor("红加金色");
+				fish.setFin("三个");
+				fish.eat();
+				fish.sleep();
+				fish.swimming();
+		System.out.println(fish.getName() + "--"+ fish.getWeight()+"--"+fish.getColor()+"--"+fish.getFin());		
+				
+	}
+}
+
+```
+
+####  3.2.1 **Super关键字:**
+
+#####  3.2.1.1**Super关键字和this的区别**
+
+####  3.2.2 Object
+
++ toString() 的本质 
+
+#### 3.2.3 Equals和HashCoe
+
+#### 3.2.4 equals和 == 的区别
+
+### 3.3 内部类
+
++ 全局内部类
++ 局部内部类
++ 静态内部类
++ 匿名内部类(lambda表达式)
+
+### 3.4 多态
+
+### 3.5 抽象类和抽象方法
+
+### 3.6 接口
 
 
 
