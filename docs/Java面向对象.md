@@ -789,22 +789,230 @@ public class AnimalsDemo {
 
 ####  3.2.1 **Super关键字:**
 
+> super: 代表父类的引用
+>
+> super 关键字必须在构造器的第一行
+>
+> super是隐式的。默认就是在构造的一行样  隐藏的  手动写出会覆盖默认的
+>
+> super()代表父类的无参数的构造器调用
+
+![image-20201130100554578](_media/image-20201130100554578.png)
+
+```java
+package com.xdkj.javase.oop04;
+
+public class Person {
+	
+	private String name;
+	private int age;
+	private double height;
+	private String address;
+	
+	
+	  public Person() {
+		  //Object()
+		  super();
+	  }
+	 
+	public Person(String name, int age, double height, String address) {
+		super();
+		this.name = name;
+		this.age = age;
+		this.height = height;
+		this.address = address;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	public double getHeight() {
+		return height;
+	}
+	public void setHeight(double height) {
+		this.height = height;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	
+	public void eat() {
+		System.out.println("eat foods!!!");
+	}
+	
+}
+
+```
+
+```java
+package com.xdkj.javase.oop04;
+
+public class PersonDemo {
+	public static void main(String[] args) {
+		//可以使用父类的无参数的构造器
+		System.out.println(new Person());
+		//使用父类带参数的构造器
+		Person person = new Person("张三",25,150.0,"陕西省西安市");
+			System.out.println(person);
+			System.out.println(person.getName() + " " + person.getAge() + " " + person.getAddress() );
+			person.eat();
+			
+		//子类的无参数的构造器	
+		Man man = new Man();
+			man.setName("李四");
+			man.setAge(24);
+			man.setHeight(120.0);
+			man.setAddress("宝鸡市");
+		System.out.println(man);
+		System.out.println(man.getName() + " "+ man.getAge() + " "+ man.getAddress());
+			man.eat();	
+			
+			Man m = new Man("赵六",88,150.0,"咸阳市");
+				System.out.println(m);
+				System.out.println(m.getName() + "  " + m.getAge() + " " + m.getHeight() + " "+ m.getAddress());
+				
+			Man m1 = new Man("小六子",18,120.0,"咸阳市");
+				System.out.println(m1);
+				System.out.println(m1.getName() + "  " + m1.getAge() + " " + m1.getHeight() + " "+ m1.getAddress());
+				
+	}
+}
+
+```
+
+### 3.2.3 方法的重写
+
+> 方法的重写: 
+>
+> 1. 必须要有继承关系
+> 2. 子类对父类的方法进行重写  方法的声明一样  但是方法的实现不一样
+
+**方法的重载和方法的重写的区别(overload  @Override):**
+
+1. 方法的重载必须是在同一个类中 方法名称相同 参数列表不同(类型，个数,顺序) 与返回值无关
+2. 方法的重写 必须有继承关系  子类对对类的方法进行重写  重写的方法声明一致 方法的实现不同。
+
 #####  3.2.1.1**Super关键字和this的区别**
 
-####  3.2.2 Object
+> 1. this代表当前类的实例化对象  谁用就代表谁
+>
+> 2. super代表父类的引用  
+>
+>    a. 在没有继承关系的无参数的构造器的第一行  super()代表  Object超类的无参数的构造器
+>
+>    b. 在继承关系的无参数或者带参数的构造器的第一行 super()代表父类的无参数的构造器 
+>
+>    c. super永远都在第一行  一般super是隐式的，可以手动写出。
 
-+ toString() 的本质 
+### 3.2.3 Object
 
-#### 3.2.3 Equals和HashCoe
+> 类 `Object` 是类层次结构的根类。每个类都使用 `Object`  作为超类。所有对象（包括数组）都实现这个类的方法。
+>
+> Object只有一个无参数的构造器 ，默认被所有的类继承。
+
++ toString()  输出对象本质就是在使用对象调用toString() 
+
+  + getClass().getName() + '@' + Integer.toHexString(hashCode())
+
+  + Object中建议所有子类重写toString()方法是为了方便查看对象的属性值。
+
+```java
+@Override
+	public String toString() {
+		return "Person [name=" + name + ", age=" + age + ", height=" + height + ", address=" + address + "]";
+	}
+```
 
 #### 3.2.4 equals和 == 的区别
 
-### 3.3 内部类
+1. equals 比较的对象必须是同一种类 类型的对象
+2. 类的equals方法必须进行重写 比较对象之间的属性值是否相等
+3. Object 类中的equals的本质是==比较对象的堆内存的地址值
+4. instanceof 关键字    obj  instanceOf  类类型  判断obj是否是 类类型的实例化对象或者类类型的子类的实例化对象
+5. 当此方法被重写时，通常有必要重写 hashCode 方法，以维护 hashCode 方法的常规协定，该协定声明相等对象必须具有相等的哈希码
+6.  hashCode 方法的常规协定: 如果根据 equals(Object) 方法，两个对象是相等的，那么对这两个对象中的每个对象调用 hashCode 方法都必须生成相同的整数结果。
 
-+ 全局内部类
-+ 局部内部类
-+ 静态内部类
-+ 匿名内部类(lambda表达式)
+![image-20201130114413552](_media/image-20201130114413552.png)
+
+![image-20201130114553223](_media/image-20201130114553223.png)
+
+```java
+@Override
+	public boolean equals(Object  obj) {
+		// 传入的是Student  方法原生的参数类型是Object
+		// 先去判断类型是否一致 再比较
+        if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if(! (obj instanceof Student) ) {
+			return false;
+		}
+		//类型相同在比较其他的
+		Student  stu =(Student) obj;
+		//这里的equals是被String类重写过的equals方法
+		return this.getName().equals(stu.getName()) && 
+				this.getAge() == stu.getAge() &&
+				this.getAddress().equals(stu.getAddress());
+	}
+	
+	
+	@Override
+	public int hashCode() {
+		//String 类中重写了hashCode方法
+		//按道理来说这样写是没有问题的
+		return this.name.hashCode()*12+188 + this.age + this.address.hashCode()*31+99;
+	}
+```
+
+**自动生成equals和hashcode方法:**
+
+```java
+@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((address == null) ? 0 : address.hashCode());
+		result = prime * result + age;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Student other = (Student) obj;
+		if (address == null) {
+			if (other.address != null)
+				return false;
+		} else if (!address.equals(other.address))
+			return false;
+		if (age != other.age)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
+```
 
 ### 3.4 多态
 
@@ -812,7 +1020,12 @@ public class AnimalsDemo {
 
 ### 3.6 接口
 
+## 3.7 内部类
 
++ 全局内部类
++ 局部内部类
++ 静态内部类
++ 匿名内部类(lambda表达式)
 
 
 
