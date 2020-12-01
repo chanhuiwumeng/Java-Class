@@ -1014,6 +1014,25 @@ public class PersonDemo {
 	}
 ```
 
+### 3.3 访问修饰符
+
+> 在一个源码文件中只能有一个public class 类
+
+```java
+public class Student extends Person {
+	
+}
+class Person{
+	
+}
+
+class Teacher {
+	
+}
+```
+
+![image-20201201105611622](_media/image-20201201105611622.png)
+
 ### 3.4 多态
 
 ### 3.5 抽象类和抽象方法
