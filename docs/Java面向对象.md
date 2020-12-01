@@ -891,7 +891,7 @@ public class PersonDemo {
 
 ```
 
-### 3.2.3 方法的重写
+#### 3.2.3 方法的重写
 
 > 方法的重写: 
 >
@@ -915,7 +915,7 @@ public class PersonDemo {
 >
 >    c. super永远都在第一行  一般super是隐式的，可以手动写出。
 
-### 3.2.3 Object
+#### 3.2.3 Object
 
 > 类 `Object` 是类层次结构的根类。每个类都使用 `Object`  作为超类。所有对象（包括数组）都实现这个类的方法。
 >
