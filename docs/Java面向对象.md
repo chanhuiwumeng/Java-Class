@@ -1031,9 +1031,153 @@ class Teacher {
 }
 ```
 
-![image-20201201105611622](_media/image-20201201105611622.png)
+![image-20201201114803822](_media/image-20201201114803822.png)
 
 ### 3.4 多态
+
+> 多态: 同一种事务在不同形态的状态:
+>
+> 水 :  固态  冰
+>
+> ​		液态  水
+>
+> ​		气态  水蒸气
+>
+> java中如何描述多态呢?
+>
+> ​	父类的引用指向子类的实例化对象。
+
+```java
+package com.xdkj.javase.oop05;
+
+public class Animals {
+	private String name;
+	private int age;
+	private String color;
+	//静态的成员属性
+	static int COUNT = 1000;
+	
+	public Animals() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+	public Animals(String name, int age, String color) {
+		super();
+		this.name = name;
+		this.age = age;
+		this.color = color;
+	}
+
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	public String getColor() {
+		return color;
+	}
+	public void setColor(String color) {
+		this.color = color;
+	}
+
+	@Override
+	public String toString() {
+		return "Animals [name=" + name + ", age=" + age + ", color=" + color + "]";
+	}
+	
+}
+
+```
+
+```java
+package com.xdkj.javase.oop05;
+
+public class Cat extends Animals {
+	
+	private String eyes;
+
+	public String getEyes() {
+		return eyes;
+	}
+
+	public void setEyes(String eyes) {
+		this.eyes = eyes;
+	}
+	
+}
+
+```
+
+```java
+package com.xdkj.javase.oop05;
+
+public class Dog extends Animals {
+
+}
+
+```
+
+```java
+package com.xdkj.javase.oop05;
+
+public class AnimalsDemo {
+
+	public static void main(String[] args) {
+		Cat cat = new Cat();
+			cat.setName("小黑");
+			cat.setEyes("黑色");
+			//不建议这样用
+			System.out.println(cat.COUNT);
+		System.out.println(cat);
+		//多态
+		//向上转型  
+		//向下转型
+			//Object obj = new Animals();
+			
+			Animals animals = new Cat();
+				animals.setName("杰瑞");
+				animals.setAge(88);
+			
+			System.out.println(animals);
+			
+			Animals dog = new Dog();
+				dog.setName("小黄");
+				dog.setAge(88);
+				dog.setColor("黄色");
+				//多态调用父类的静态属性
+				System.out.println(dog.COUNT);
+				System.out.println(Animals.COUNT);			
+				System.out.println(dog);
+				
+				
+		/**
+		 * 	java是要先编译在运行 多态存在
+		 * 		编译看右边  运行看左边
+		 * 	多态使用的时候是右边的属性和方法 
+		 * 		也就是子类的对象只能使用父类的属性和行为
+		 * 那如果要使用自己的属性和行为就不能使用多态了
+		 * 
+		 * 	接口
+		 * 	
+		 * 
+		 * 
+		 * */
+		
+	}
+
+}
+
+```
+
+
 
 ### 3.5 抽象类和抽象方法
 
