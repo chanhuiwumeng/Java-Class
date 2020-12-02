@@ -1406,6 +1406,166 @@ public class Bwm extends Car {
 
 ### 3.6 接口
 
+> 接口是一个很特殊的存在:
+>
+> 1. 接口不是一个类  interface 修饰
+> 2. 接口只能被类实现  implements 关机字  实现接口的类称之为接口的实现类
+> 3. 一个类实现一个接口  必须重写接口中的抽象方法
+> 4. 接口中只能有抽象方法 抽象方法默认就是abstract 修饰的
+> 5. 接口中只使用抽象方法声明功能 
+> 6. Java中一个类可以实现多个接口 必须对实现的所有的接口的方法进行重写
+> 7. 接口就是一个对功能的扩增 谁想对自己的业务功能进行扩增谁就实现这个接口
+> 8. 一个类可以继承一个类的也同时也可以实现多个接口
+> 9. 接口可以继承接口，并且可以继承多个接口  接口不能继承类
+> 10. 接口中的变量只能是静态常量  默认被static  final 修饰
+
+```java
+public interface Play {
+	 void  palyGame();
+	 public void eat() ;
+}
+```
+
+```java
+package com.xdkj.javase.oop06;
+
+public interface Swimming {
+	void swimming();
+}
+
+```
+
+```java
+package com.xdkj.javase.oop06;
+
+public class PlayImpl implements Play,Swimming {
+
+	@Override
+	public void palyGame() {
+			System.out.println("play LOL");
+	}
+	
+	@Override
+	public void eat() {
+		System.out.println("Eat foods");
+	}
+
+	@Override
+	public void swimming() {
+		System.out.println("swimming 100 km /h");
+	}
+}
+
+```
+
+```java
+package com.xdkj.javase.oop06;
+
+public class DogPlay implements Play {
+
+	@Override
+	public void palyGame() {
+		System.out.println("dog play goone!!!!");
+	}
+
+	@Override
+	public void eat() {
+			System.out.println("dog eat goone!!!");
+	}
+	
+	public void lookDoor() {
+		System.out.println("dog look door!!!");
+	}
+
+}
+
+```
+
+```java
+package com.xdkj.javase.oop06;
+
+public class PlayDemo {
+	public static void main(String[] args) {
+		//错误的接口没有构造器  不能初始化
+		//Play play = new Play();
+		PlayImpl playimpl = new PlayImpl();
+		playimpl.eat();
+		playimpl.palyGame();
+		
+		
+		DogPlay dogplay = new DogPlay();
+			dogplay.eat();
+			dogplay.palyGame();
+			dogplay.lookDoor();
+			/** 多态: 
+			 * 1. 必须有继承关系/接口的实现关系
+			 * 2. 继承父类/实现接口 必须对父类/接口的方法进行重写
+			 * 3. 多态调用的时候调用的是子类/接口实现类中重写后的方法
+			 * 4. 接口多态在调用的时候只能调用接口实现类重写当前接口的方法
+			 * 
+			 * */
+			Play  play = new PlayImpl();
+				play.eat();
+				play.palyGame();
+			Swimming  sm = new PlayImpl();
+				sm.swimming();	
+	}
+}
+
+```
+
+**接口可以继承接口**
+
+```java
+public interface Join extends Play,Swimming {
+    // 静态常量
+	public static final int age = 10;
+	void say();
+}
+```
+
+```java
+class  JoinImpl implements Join{
+
+	@Override
+	public void palyGame() {
+		System.out.println("玩游戏");
+	}
+
+	@Override
+	public void eat() {
+		System.out.println("吃蛋挞");
+	}
+
+	@Override
+	public void swimming() {
+		System.out.println("泡温泉");
+	}
+
+	@Override
+	public void say() {
+		System.out.println("say very good!!!");
+	}
+}
+```
+
+```java
+public class JoinDemo {
+	public static void main(String[] args) {
+		Join join = new JoinImpl();
+		join.eat();
+		join.say();
+		join.swimming();
+		join.palyGame();
+		// System.out.println(join.age);
+		System.out.println(Join.age);
+		
+		/* Join.age= 200; System.out.println(Join.age); */
+		 
+	}
+}
+```
+
 ## 3.7 内部类
 
 + 全局内部类
