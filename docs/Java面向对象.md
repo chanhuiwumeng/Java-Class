@@ -1046,6 +1046,12 @@ class Teacher {
 > java中如何描述多态呢?
 >
 > ​	父类的引用指向子类的实例化对象。
+>
+> 多态的使用:
+>
+> 1. 必须有继承关系
+> 2. 父类引用指向子类的实例化对象
+> 3. 必须有方法的重写
 
 ```java
 package com.xdkj.javase.oop05;
@@ -1177,9 +1183,226 @@ public class AnimalsDemo {
 
 ```
 
+**多态的使用:**
 
+```java
+package com.xdkj.javase.oop06;
+
+public class Animals {
+	private String name;
+	private int age;
+	private String color;
+	
+	public Animals() {
+		super();
+	}
+	public Animals(String name, int age, String color) {
+		super();
+		this.name = name;
+		this.age = age;
+		this.color = color;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	public String getColor() {
+		return color;
+	}
+	public void setColor(String color) {
+		this.color = color;
+	}
+
+	@Override
+	public String toString() {
+		return "Ani	mals [name=" + name + ", age=" + age + ", color=" + color + "]";
+	}
+
+	
+	public void eat() {
+		System.out.println("eat foods");
+	}
+
+}
+
+```
+
+```java
+package com.xdkj.javase.oop06;
+
+public class Cat  extends Animals{
+
+	@Override
+	public String toString() {
+		return "Cat [哈哈哈哈哈哈哈啊哈]";
+	}
+
+	@Override
+	public void eat() {
+		System.out.println("eat mouse!!!!");
+	}
+	
+	
+	public void sleep() {
+		System.out.println("白天睡觉");
+	}
+	
+}
+
+```
+
+```java
+package com.xdkj.javase.oop06;
+
+public class Dog extends Animals {
+
+	@Override
+	public void eat() {
+		System.out.println("eat gone!!!!!");
+	}
+	
+}
+
+```
+
+```java
+package com.xdkj.javase.oop06;
+
+public class AnimalsDemo {
+		public static void main(String[] args) {
+			Animals  animals = new Animals();
+				System.out.println(animals);
+			Dog dog = new Dog();
+				System.out.println(dog);
+			Cat cat = new Cat();
+				System.out.println(cat);
+				cat.sleep();
+			/*在java 中 必须要有继承关系
+			 * 编译时期的错误了
+			 * 父类的引用指向子类的实例化对象
+			 * 继承关系中我们一般类要对父类的方法进行重写，以便自己实现自己的功能
+			 * (****)如果我们重写了父类的方法我们发现  在实际调用的时候，多态调用的是子类重写以后的方法
+			 * 只能调用重写父类以后的方法。
+			 * 
+			 * 	主要是为了实现代码的之间的解耦 
+			 * 	提高代码的使用效率
+			 * 
+			 * */
+			Animals cat1 = new Cat();
+				cat1.setName("小猫");
+				cat1.setAge(18);
+				cat1.setColor("黑色");
+			System.out.println(cat1);
+				cat1.eat();
+				//cat1.sleep();
+				
+				
+			Animals  dog1 = new Dog();
+				dog1.setName("小黄");
+				dog1.setColor("土黄色");
+				dog1.setAge(18);
+				dog1.eat();
+				
+			//类型的强制转换
+			//ClassCatException 类转换异常
+				if(!(dog1 instanceof Cat)) {
+					System.out.println("dog 不是  Cat");
+				}else {
+					Cat  cat2 = (Cat)dog1;	
+					System.out.println(cat2);
+				}
+			System.out.println("--------多态的使用-----------");
+			Person person = new Person();
+				person.feed(cat1);
+				person.feed(dog1);
+		}
+}
+
+```
 
 ### 3.5 抽象类和抽象方法
+
+```java
+package com.xdkj.javase.oop06;
+
+
+/**1. abstract 抽象 
+ * 2. 抽象的方法就是只有方法的声明  没有方法体(方法的实现)
+ * 3. 有抽象方法的类必须是抽象类
+ * 4. 抽象类中不一定有抽象方法 也可以有普通的方法
+ * 5. 抽象类中的抽象方法在子类中必须进行重写 普通也可以进行重写
+ * 6. 抽象类不能实例化对象
+ * 7. 抽象类有构造器 并且是为了子类实例化对象来使用的，自己不能实例化对象
+ * 8. 抽象类有属性可以是变量 也可以是常量 
+ * 9. 抽象类可以有静态的 成员属性和行为  通过类名调用(通过静态的访问方式访问)
+ * */
+public abstract class Car {
+	//私有的成员属性 变量
+	private int age;
+	//成员属性 常量
+	final int  count = 2000;
+	//静态常量
+	static final String FACTORY = "华晨";
+	
+	
+	public Car() {
+		super();
+	}
+	
+	
+	public Car(int age) {
+		super();
+		this.age = age;
+	}
+
+
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	public abstract void run() ;
+	
+	public void eat() {}
+	
+}
+
+```
+
+```java
+package com.xdkj.javase.oop06;
+
+public class Bwm extends Car {
+
+	
+	public Bwm() {
+		super();
+	}
+	
+	public Bwm(int age) {
+		super(age);
+	}
+	
+	@Override
+	public void run() {
+			System.out.println("宝马车行驶!!!");
+	}
+	@Override
+	public void eat() {
+		System.out.println("bwm eat oil!!!");
+	}
+}
+
+```
 
 ### 3.6 接口
 
