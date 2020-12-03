@@ -1929,3 +1929,110 @@ public class PeopleDemo {
 
 ```
 
+#### 3.7.7 匿名内部类分析
+
+> 1. 匿名内部类没有构造器 但是可以实例化对象。
+> 2. 匿名内部类不能定义静态的属性
+> 3. 匿名内部类可以定义常量
+> 4. 匿名内部类可以扩增方法  但是调用的时候 直接调用会失去接口重写方法  多态调用就会失去扩增方法
+> 5. 所以一般在匿名内部类中不要去扩增方法 不然就失去了匿名内部类原生的作用了
+> 6. 匿名内部类不能定义静态的成员方法
+> 7. 外部类的方法中的局部匿名内部类可以访问外部类的成员属性和方法··
+
+```java
+package com.xdkj.javase.oop08;
+
+public class InnerAnalyze {
+	
+	public static void main(String[] args) {
+		//匿名内部类
+		
+		new Play() {
+			int age = 88;
+			//static int PRICE = 100;
+			final int cou = 9999;
+			@Override
+			public void playGame() {
+				System.out.println("play LOL!!!  "+ age + "  "+ cou);
+			}
+			/*
+			 * public void say() { System.out.println("Say inner clsss"); } public static
+			 * void hh() {}
+			 */
+			
+		}.playGame();;;
+		
+		/*
+		 * Play pl = new Play() { int age = 88; //static int PRICE = 100; final int cou
+		 * = 9999;
+		 * 
+		 * @Override public void playGame() { System.out.println("play LOL!!!  "+ age +
+		 * "  "+ cou); } public void say() { System.out.println("Say inner clsss"); }
+		 * 
+		 * }; pl.playGame();
+		 */
+		//pl.say();
+		
+	}
+}
+
+```
+
+```java
+package com.xdkj.javase.oop08;
+
+public class InnerAnalyze2 {
+	public void say(Play play) {
+		play.playGame();
+	}
+	
+	public static void main(String[] args) {
+		int age = 100;
+		 final String CITY = "西安市";
+		 
+		InnerAnalyze2  innerAnalyze2 = new InnerAnalyze2();
+		
+		innerAnalyze2.say(new Play() {
+			@Override
+			public void playGame() {
+				System.out.println(age + "---"+ CITY);
+				method();
+			}
+		});
+	}
+	
+	public static void method() {
+		System.out.println("method");
+	}
+}
+
+```
+
+```java
+package com.xdkj.javase.oop08;
+
+public class InnerAnalyze3 {
+	int age = 99;
+	static String CITY= "西安市";
+	final int count = 999;
+	
+	public void say() {
+		new Play() {
+			public void playGame() {
+				System.out.println(age + CITY + "---" + count);
+				hello();
+			};
+			
+		}.playGame();
+	}
+	
+	public void hello() {
+		System.out.println("Hello");
+	}
+	public static void main(String[] args) {
+		new InnerAnalyze3().say();
+	}
+}
+
+```
+
