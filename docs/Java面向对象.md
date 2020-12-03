@@ -1772,5 +1772,160 @@ public class Outer5 {
 
 #### 3.7.6 匿名内部类
 
+> 匿名内部类: 没有名字的内部类 
+>
+>  1.  接口中只有一个方法我们在使用的时候还要去构建接口的是实现类
+>
+>  2.  实现接口对接口的方法进行重写
+>
+>  3.  构建接口的实现类对象在多态调用接口重写以后的方法
+>
+>  4.  很麻烦  所以提出了匿名内部类来解决这个问题
+>
+>  5.  ```java
+>      new 接口(){
+>          接口中的方法进行重写;
+>      }.接口方法();
+>      接口类型  变量 = new 接口(){
+>          接口中的方法进行重写;
+>      };
+>      变量.接口方法();
+>      ```
+>
+>  6.  new的是内部类，内部类又实现了接口，并重写了接口的方法
+>
+>  7.  末尾的分号不能省略
+>
+>  8.  匿名内部类让接口作为参数在使用和调用的时候更简便和快速。
 
+```java
+public interface Play {
+	void playGame();
+}
+```
+
+```java
+public class PlayImpl implements Play {
+
+	@Override
+	public void playGame() {
+		System.out.println("Hello World");
+	}
+
+}
+```
+
+```java
+package com.xdkj.javase.oop08;
+
+/**
+ * 使用接口的时候 先去写实现类重写接口的方法 在使用多态进行接口的调用 调用的是接口实现类重写接口方法后的方法实现。
+ * 
+ * 接口中只有一个方法， 我们只想在程序中使用一次。 匿名内部类: 没有名字的内部类 最终的目的就是为了实现对接口的方法进行重写和调用
+ */
+public class PlayDemo {
+
+	public static void main(String[] args) {
+
+		Play play = new PlayImpl();
+		play.playGame();
+
+		PlayDemo.Inner9 inner9 = new PlayDemo().new Inner9();
+		inner9.playGame();
+
+		// 匿名内部类
+		/*
+		 * Play paly = new Play() { public void playGame() {
+		 * System.out.println("Paly 王者农药"); } }; paly.playGame();
+		 */
+		Play play1 = new Play() {
+			@Override
+			public void playGame() {
+				System.out.println("play  Cs");
+			}
+		};
+		play1.playGame();
+	}
+
+	/**
+	 * 我们实现这个接口的目的就是为了重写接口的方法
+	 */
+
+	class Inner9 implements Play {
+		@Override
+		public void playGame() {
+			System.out.println("play lol");
+		}
+	}
+
+}
+
+```
+
+**匿名内部类的使用:**
+
+```java
+public interface Song {
+	void songEnglish();
+}
+```
+
+```java
+public class People {
+	public void song(Song  song) {
+		song.songEnglish();
+	}
+}
+```
+
+```java
+package com.xdkj.javase.oop08;
+
+import java.util.Comparator;
+import java.util.TreeSet;
+
+public class PeopleDemo {
+	public static void main(String[] args) {
+		People people = new People();
+		//传入接口的实现类
+		/*
+		 * people.song(new Song() {
+		 * 
+		 * @Override public void songEnglish() { System.out.println("唱的是嘻哈英文歌曲!"); } });
+		 */
+		Song song = new Song() {
+
+			@Override
+			public void songEnglish() {
+				 System.out.println("唱的是嘻哈英文歌曲!");
+			}
+		};
+		
+		people.song(song);
+		people.song(song);
+		people.song(song);
+		//TreeSet构造器 匿名内部类的使用
+		new TreeSet(new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.compareTo(o2);
+			}
+		});
+		
+		Runnable  rable = new Runnable() {
+			@Override
+			public void run() {
+				System.out.println("Hello ------");
+			}
+		};
+		//lambda表达式  函数是编程
+		Runnable  runnable = ()->{
+			System.out.println("run method");
+		};
+		runnable.run();
+		
+	}
+}
+
+```
 
