@@ -1573,5 +1573,204 @@ public class JoinDemo {
 + 静态内部类
 + 匿名内部类(lambda表达式)
 
+#### 3.4.1 全局内部类
+
+```java
+package com.xdkj.javase.oop07;
+
+/**
+ * 内部类: 定义在一个类内部的类称之为内部类
+ * 	1. 成员内部类 写在成员属性位置的内部类
+ * 		public protected default private static final
+ * 	2. 局部内部类
+ * 	3. 匿名内部类
+ * 
+ * */
+public class Outer {
+	private  String name ;
+	int count = 20;
+	
+	//内部类
+	class Inner{
+		private int age;
+
+		public int getAge() {
+			return age;
+		}
+
+		public void setAge(int age) {
+			this.age = age;
+		}
+	}
+	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	
+	
+}
+
+```
+
+#### 3.7.2 局部内部类
+
+```java
+package com.xdkj.javase.oop07;
+
+public class Outer4 {
+	int   num = 100;
+	
+	
+	public void method() {
+		System.out.println(num);
+		//局部内部类  几乎不用
+		class Inner5{
+			public void hello() {
+				num = 200;
+				System.out.println("Hello World "+ num);
+			}
+		}
+		new Inner5().hello();
+	}
+	
+	public static void main(String[] args) {
+		Outer4 outer4 = new Outer4();
+		outer4.method();
+	}
+}
+
+```
+
+#### 3.7.3 静态内部类
+
+```java
+package com.xdkj.javase.oop07;
+
+public class Outer2 {
+	//静态内部类
+	static class Inner2{
+		public void hello() {
+			System.out.println("Hello World");
+		}
+	}
+	
+	public static void main(String[] args) {
+		//静态内部类的访问方式
+		Outer2.Inner2  inner2 = new Outer2.Inner2();
+		System.out.println(inner2);
+		inner2.hello();
+	}
+}
+
+```
+
+#### 3.7.4  final修饰的内部类
+
+```java
+package com.xdkj.javase.oop07;
+
+public class Outer3 {
+	//final 修饰内部类
+	final class Inner3{
+		public void hello() {
+			System.out.println("Hello Inner3");
+		}
+	}
+	//final修饰的内部类不能被继承
+	/* 
+	 * class Inner4 extends Inner3{
+	 * 
+	 * }
+	 */
+	
+	public static void main(String[] args) {
+		Outer3.Inner3  inner3 =  new Outer3().new  Inner3();
+	}
+}
+
+```
+
+#### 3.7.5 内部类访问外部的类的成员
+
+**静态内部类访问外部类的成员:**
+
+```java
+package com.xdkj.javase.oop07;
+/**
+ * 静态内部类只能访问外部类的静态成员属性和静态的成员方法
+ * 静态的东西属于类 不属于类的对象
+ * 
+ * */
+public class Outer6 {
+	static int age = 100;
+	static class Inner7{
+		int count = 200;
+		public void method() {
+			//谁在调用age
+			System.out.println("Inner7 "+ Outer6.age);
+			System.out.println("Inner7 "+ age);
+			//谁在调用hello
+			hello();
+		}
+		
+		public int count() {
+			return count;
+		}
+	}
+	
+	public static  void hello() {
+		System.out.println(Outer6.class);
+		System.out.println("Hello Outer5");
+		System.out.println(new Inner7().count());
+	}
+	
+	public static void main(String[] args) {
+		//静态内部类实例化对象
+		Outer6.Inner7  inner7 = new Outer6.Inner7();
+		inner7.method();
+	}
+}
+
+```
+
+**全局内部类访问外部类的成员:**
+
+```java
+package com.xdkj.javase.oop07;
+
+/**
+ * 成员内部类可以访问外部类的成员属性
+ * 
+ * */
+public class Outer5 {
+	int count = 100;
+	public class Inner6{
+		public void method() {
+			//外部类的对象
+			Outer5.this.count = 400;
+			System.out.println(count);
+			//方法只有被调用才能被执行 
+			//Outer5.this.hello();
+			hello();
+		}
+	}
+	
+	public void hello() {
+		System.out.println("Hello Outer5");
+	}
+	public static void main(String[] args) {
+		Outer5.Inner6  inner6 = new Outer5().new Inner6();
+		inner6.method();
+	}
+}
+
+```
+
+#### 3.7.6 匿名内部类
+
 
 
