@@ -280,27 +280,424 @@ public class StringDemo03 {
 
 ```
 
-### 4. StringBuffer
+### 4. StringBuffer 和 StringBuilder
 
-### 5. StringBuilder
+```java
+/**StringBuffer: 
+ *  在String类的API中说明在使用+ 进行字符串拼接的时候，其实底层是进行使用StringBuffer或者
+ * StringBuilder类的append方法进行字符串的拼接。
+ * 
+ * 	字符串缓冲区, 就是在内存中开辟一个初始容量为16个字符的空间，在使用append和insert
+ * 方法向这个字符串缓冲区中的末尾或者指定的地方添加字符串(拼接字符串)，缓冲区会根据实际内容的
+ * 大小进行扩增 超过初始的容量值会多一倍+2.  capacity() 进行容量的查看。
+ * 
+ * 主要使用的是的重载的方法: append  insert  delete ;
+ * 
+ * 特点: 线程安全的  同步的  效率低
+ * 	让我们优先使用StringBuffer的替代类 StringBuilder 兼容的只是特性不一样
+ * 	StringBuilder是线程不安全的  不同步的 效率高  单线程中使用。
+ * 
+ * 在使用方面。我们在大量的数据汇总，字符串拼接的时候使用StringBuffer和StringBuilder
+ * */
+```
 
-##  6.Math
+```java
 
-## 7. Scanner
+```
 
-## 8. Date 和日期的转换
+##  6.Scanner
 
-## 9. Calendar新的日期类
+```java
+package com.xdkj.javase.core.classes.utils;
 
-## 10.System
+import java.util.Scanner;
 
-## 11. 包装类
+/**Scanner: 文本扫描器
+ * 	System.in 系统标准的输入流  控制台输入
+ * 	next方法去转换 不同数据类型 的值
+ * 	next() 获取控制台连续的字符串  
+ * 	nextLine() 获取一行的数据
+ *  nextInt()
+ *  nextFloat()
+ *  nextDouble()
+ *  nextLong()
+ * */
+public class ScannerDemo {
 
-## 12. 自动装箱和拆箱
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		//String str = scanner.next();
+		//获取一行输入的内容  \r\n 知道到达行末尾输入结束 
+		String str = scanner.nextLine();
+		System.out.println(str);
+		int num =  scanner.nextInt();
+		System.out.println(num);
+		
+		//关闭扫描器
+		scanner.close();
+		//java.lang.IllegalStateException 非法的状态异常
+		float f = 	scanner.nextFloat();
+		System.out.println(f);
+	}
+}
 
-## 13. Arrays
+```
 
-## 14. Random
+## 7.Math
+
+```java
+package com.xdkj.javase.core.classes.utils;
+
+/**Math:
+ * 	数学函数的工具类  Math 类包含用于执行基本数学运算的方法，如初等指数、对数、平方根和三角函数。
+ * 	PI 圆周率	
+ * 	E 自然数的底数
+ * 	Math中的属性和方法都是静态的  直接通过类名调用就可以了
+ * 		abs  absulote  绝对值
+ * 		max
+ * 		min
+ * 		pow 幂次方
+ * 		sqrt 开平方
+ * 		random 随机数 0-1之间 取不到1
+ * 		sin
+ * 		cos
+ * 		tan 正切
+ * 		
+ * 	
+ * */
+public class MathDemo {
+
+	public static void main(String[] args) {
+		//圆周率
+		System.out.println(Math.PI);
+		//半径为4的圆面积
+		System.out.println(Math.PI*4*4);
+		System.out.println(Math.E);
+		
+		System.out.println(Math.abs(-123));//123
+		System.out.println(Math.max(123, 99));
+		System.out.println(Math.min(123.99, 123.88));
+		
+		System.out.println(Math.sqrt(16));
+		
+		System.out.println(Math.pow(3, 4));
+		//随机数  0-1之间  取不到1
+		System.out.println(Math.random());
+		//天花板 向上取整
+		System.out.println(Math.ceil(12.01));//13.0
+		//地板 向下取整
+		System.out.println(Math.floor(12.99));//12.0
+		//求和
+		System.out.println(Math.addExact(88, 99));
+		//求 1-10之间的随机数
+		System.out.println(Math.random()*10);
+	}
+}
+
+```
+
+## 8. Random
+
+> 随机数的类
+
+```java
+package com.xdkj.javase.core.classes.utils;
+
+import java.util.Random;
+
+public class RandomDemo {
+
+	public static void main(String[] args) {
+		Random random = new Random();
+		//获取整数的随机数
+		//int 的范围内生成整数的随机数
+		//int num = random.nextInt();
+		//0-100之间的整数值 0-100取不到100
+		int num = random.nextInt(100)+1;
+		System.out.println(num);
+		System.out.println(random.nextDouble());
+		System.out.println(random.nextLong());
+	}
+
+}
+
+```
+
+## 9.基本数据类型和包装类
+
+> 基本数据类型 是以变量的形式直接赋值
+>
+> 包装类和基本数据类型之间的区别:
+>
+> 1. 基本数据类型只能声明变量并赋值  直接进行运算
+> 2. 包装类是一个类 可以调用方法。
+
+```java
+package com.xdkj.javase.core.classes.utils;
+
+public class PackageClassDemo {
+	public static void main(String[] args) {
+		int num = 999;
+		System.out.println(num);
+		
+		Integer age = 999;
+		System.out.println(age);
+		System.out.println(age.toString());
+		//int 2^31-1
+		System.out.println(Integer.MAX_VALUE);
+		long mx = Integer.MAX_VALUE*Integer.MAX_VALUE;
+		System.out.println((long)(Integer.MAX_VALUE + Integer.MAX_VALUE));
+		System.out.println(mx);
+		//字符串和int类型的转换
+		String str = "123456";
+		//数组类型的字符串转为  整数类型
+		System.out.println(Integer.parseInt(str));
+		System.out.println(123+"");
+		
+		Integer in = new Integer(999);
+		System.out.println(in);
+		//布尔类型的包装类
+		Boolean.compare(true, false);
+		System.out.println("------------------------");
+		System.out.println(Character.charCount(9798));
+		System.out.println(Character.MAX_VALUE + "lllll");
+		System.out.println(Character.MIN_VALUE + "llll");
+		System.out.println("++++++++++++++");
+		
+		Byte  by = 123;
+		System.out.println(by);
+		//数字类的字符串转  字节类型
+		System.out.println(Byte.parseByte("122"));
+		
+		System.out.println(Double.parseDouble("99.88"));
+	}
+}
+
+```
+
+## 10. 自动装箱和拆箱
+
+> 自动装箱 就是将基本数据类型的值 赋给 包装类声明的变量
+>
+> 自动拆箱  就是将包装类类型的 变量赋值给基本数据类型
+>
+> JDK1.5加的特性
+
+```java
+public class AutoPackageDemo {
+	public static void main(String[] args) {
+		//自动装箱
+		Integer num = 999;
+		//自动拆箱
+		int age = num ;
+		System.out.println(age);
+	}
+}
+```
+
+## 11.System
+
+```java
+package com.xdkj.javase.core.classes.utils;
+
+public class SystemDemo {
+
+	public static void main(String[] args) {
+	long startTime = 	System.currentTimeMillis();	
+	
+		for(int i = 0;i<=10000;i++) {
+			System.out.println(i);
+		}
+		long endTime = 	System.currentTimeMillis();
+	System.out.println(endTime - startTime);//103毫秒
+	//强制调用gc不一定会立马进行垃圾回收，等待空闲的时间进行回收。
+		System.gc();
+		//程序终止  java虚拟机终止运行
+		System.exit(1);
+		System.out.println("Hello");
+	}
+
+}
+
+```
+
+## 12.Date和日期转换
+
+### 12.1 Date
+
+```java
+package com.xdkj.javase.core.classes.utils;
+
+import java.util.Date;
+
+/**
+ * Date: 日期类 util包中的日期
+ * 	时间的偏移量 1970 1.1 
+ * */
+public class DateDemo {
+
+	public static void main(String[] args) {
+		//系统当前的时间对象
+		Date date = new Date();
+		//Tue Dec 08 12:00:20 CST 2020
+		System.out.println(date);
+		//year + 1900
+		Date date1 = new Date(2020,12,8);
+		System.out.println(date1);
+		
+		System.out.println(new Date(2020,10,8,12,16,30));
+		//
+		System.out.println(new Date(5645892534545454545L));
+		
+		System.out.println(date.getDate());
+		System.out.println(date.getDay());
+		System.out.println(date.getHours());
+		System.out.println(date.getMonth());
+		//毫秒值
+		System.out.println(date.getTime());
+		System.out.println(date.toString());
+		//2020-12-8 12:19:24
+		System.out.println(date.toLocaleString());
+		
+		//System.out.println(Date.parse("1995 13:30:00"));
+	}
+
+}
+
+```
+
+### 12.2 日期格式化
+
+```java
+package com.xdkj.javase.core.classes.utils;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**日期格式化 :
+ * 	在实际的应用中我们需要 将日期转为 字符串或者 字符串转日期
+ * SimpleDateFormat 日期格式化和解析
+ * 	new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+ * 	format 格式化
+ *  parse  解析
+ * 
+ * 
+ * */
+public class DateFormatDemo {
+
+	public static void main(String[] args) throws ParseException {
+		//日期转字符串
+		//SimpleDateFormat simple = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		//SimpleDateFormat simple = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat simple = new SimpleDateFormat("yyyy/MM/dd z HH:mm:ss");
+		String str = simple.format(new Date());
+		System.out.println(str);
+		//字符串转日期
+		//Sun Dec 06 14:20:30 CST 2020
+		Date  date = simple.parse("2020/12/06 GMT 14:20:30");
+		//2020-12-6 14:20:30
+		//Sun Dec 06 22:20:30 CST 2020 加时区了东八时区加8小时
+		System.out.println(date);
+		System.out.println(date.toLocaleString());
+		//必须熟练使用
+		
+		SimpleDateFormat simple1 = new SimpleDateFormat();
+			String d1 = simple1.format(new Date());
+			//20-12-8 下午2:33
+			System.out.println(d1);
+	}
+
+}
+
+```
+
+## 13. Calendar新的日期类
+
+> 因为Date类当初定义的没有没有定义好，所以在JDK1.1以后里面的方法基本都废弃了。
+>
+> 推荐使用Calendar新的的日期API.
+>
+> `Calendar` 类是一个抽象类,有构造器不能实例化对象。
+>
+> `Calendar` 提供了一个类方法 `getInstance`，以获得此类型的一个通用的对象
+
+```java
+package com.xdkj.javase.core.classes.calendar;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
+public class CalendarDemo {
+	public static void main(String[] args) {
+		//method2();
+		method3();
+	}
+	
+	public static void method() {
+
+		Calendar  calendar = Calendar.getInstance();
+		System.out.println(calendar);
+		//字段锁封装的数字值
+		System.out.println(calendar.DATE);//5
+		//日期
+		System.out.println(calendar.get(5));
+		//年
+		System.out.println(calendar.get(1));
+		//月
+		System.out.println(calendar.get(2));
+		//50 一年中的第几周
+		System.out.println(calendar.get(3)); //50
+		//2
+		System.out.println(calendar.get(4));
+		//通过静态字端获取日期的信息值
+		System.out.println(calendar.get(Calendar.DATE));
+		System.out.println(calendar.get(Calendar.YEAR));
+		System.out.println(calendar.get(Calendar.DAY_OF_MONTH));
+		System.out.println(calendar.get(Calendar.MONTH));
+		System.out.println(calendar.get(Calendar.HOUR));
+	}
+	
+	public static void method2() {
+		Calendar calendar = Calendar.getInstance();
+		//date对象作为参数传入
+		calendar.setTime(new Date());
+		System.out.println(calendar);
+		
+		calendar.set(Calendar.YEAR, 1990);
+		System.out.println(calendar);
+		
+		calendar.set(1990, 10, 12, 14, 20, 35);
+		System.out.println(calendar);
+		
+	}
+	//计算一周后是星期几  一个月的第几天  一年的第几天  一年的第几周
+	public static void method3() {
+		Calendar calendar = Calendar.getInstance();
+		//添加  给字段增加 或者减少  到达最小值  相关数值会自定变化
+		//calendar.add(Calendar.DATE, 30);
+		//不更改更大的字段
+		calendar.roll(Calendar.DATE, 30);
+		System.out.println(calendar);
+		//Tue Dec 08 10:40:41 CST 2020
+		System.out.println(calendar.getTime());
+		//2020-12-8 10:41:29
+		System.out.println(calendar.getTime().toLocaleString());
+		//1607395241108
+		System.out.println(calendar.getTimeInMillis());
+		
+		//设置时区
+		calendar.setTimeZone(TimeZone.getDefault());
+		System.out.println(calendar);
+	}
+}
+
+```
+
+## 14. Arrays
+
+## 15. BigDecimal BigInt
 
 
 
