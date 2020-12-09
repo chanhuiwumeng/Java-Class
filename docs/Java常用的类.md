@@ -697,7 +697,72 @@ public class CalendarDemo {
 
 ## 14. Arrays
 
+> 此类包含用来操作数组（比如排序和搜索）的各种方法。此类还包含一个允许将数组作为列表来查看的静态工厂
+
+```java
+package com.xdkj.javase.core.classes.arrays;
+
+import java.util.Arrays;
+import java.util.List;
+
+public class ArraysDemo {
+	public static void main(String[] args) {
+		int [] arr = {12,34,56,67,89};
+		//底层使用的快速排序
+		Arrays.sort(arr);
+		System.out.println(arr);
+		for(int i : arr) {
+			System.out.println(i);
+		}
+		//获取数组中元素的下标
+		//使用二分法去查找数据  先排序在去重 在调用该此方法
+		System.out.println(Arrays.binarySearch(arr, 67));
+		//如果Key的值大于数组中的元素值 返回的是 -a.length-1
+		System.out.println(Arrays.binarySearch(arr, 90));
+		
+		List<String> list = Arrays.asList("Helo","world");
+		System.out.println(list);
+	}
+}
+
+```
+
 ## 15. BigDecimal BigInt
+
+> 高精度和位数的数学运算以及大数据的操作。
+
+```java
+package com.xdkj.javase.core.classes.arrays;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.MathContext;
+
+public class BigDecimalDemo {
+	public static void main(String[] args) {
+		double result = 1/3;
+		System.out.println(result);
+		
+		BigDecimal  bigDecimal = new BigDecimal(99.9999999999999999999999999999999999999);
+		System.out.println(0.9888888888888888);
+		System.out.println(bigDecimal);
+		
+		//我们可以使用Bigdecimal进行数学运算
+		BigDecimal  b1 = new BigDecimal("5454545648223644454589521245454");
+		BigDecimal  b2 = new BigDecimal(777777777777777L);
+		System.out.println(b1.add(b2));
+		System.out.println(b1.subtract(b2));
+		System.out.println(b1.multiply(b2));
+		//0.5以下舍去
+		//System.out.println(b1.divide(b2));
+		System.out.println(b1.divide(b2,BigDecimal.ROUND_HALF_DOWN));
+		System.out.println(b1.divide(b2,5,BigDecimal.ROUND_HALF_UP));
+		BigInteger  in = new BigInteger("45645489554545645");
+		BigDecimal  b4 = new BigDecimal(in);
+	}
+}
+
+```
 
 
 
