@@ -184,16 +184,233 @@ public class Son extends Father {
 
 ```
 
-### 1.4 异常链 1.7的处理方式
+### 1.4 Finally的面试题
 
-+ 使用| 处理异常链
+```java
+package com.xdkj.javase.core.exception;
+/**
+ * 程序运行的机制:
+ * 1. 从上到下 从左到右
+ * 2. 有return  执行完成  方法终止  后边的代码不会执行
+ * 3. try  和 finally 中都有return。  那么优先执行 finally中的
+ * 		return;
+ * 4. try中有return  finally中没有return 执行的是try中的return执行方法结束
+ * 
+ * */
+
+public class ExceptionDemo4 {
+
+	public static void main(String[] args) {
+		System.out.println(method1());//100
+	}
+	@SuppressWarnings("finally")
+	public static int method1() {
+		int num = 100;
+		try {
+			System.out.println(num);
+			return num;
+		}finally {
+			num ++;
+		}
+	}
+	public static int method2() {
+		int num = 100;
+		try {
+			System.out.println(num);
+		}finally {
+			num ++;
+			return num ;
+		}
+	}
+	public static int method3() {
+		int num = 100;
+		try {
+			System.out.println(num);
+			return num;
+		}finally {
+			num ++;
+			return num ;
+		}
+	}
+}
+
+```
+
+**描述final  finally finalize的区别:**
+
+1. final修饰类不能被继承 修饰的方法不能被重写 修饰的变量是常量值不能被更改
+
+2. finally是异常机制中的，在finally中的代码无论异常是否会发生都会执行。
+
+3. finally中和try中如果都有return 语句那么优先执行finally中的return语句
+
+4. finalize是Object类中定义的方法，强制GC进行垃圾回收，但是一个程序只能调用一次，即使强制调用,gc也不能
+
+   立刻进行垃圾回收。
+
+5. finalize() 方法是在垃圾收集器删除对象之前对这个对象调用的。 
+
+### 1.5 异常链 1.8的处理方式
+
++ 使用 | 处理异常链
 + 使用同一个对象接受所有的异常信息
 
-### 1.5 异常的自动关闭资源的处理方式
+### 1.6 异常的自动关闭资源的处理方式
+
+```java
+package com.xdkj.javase.core.exception;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
+public class ExceptionDemo05 {
+	public static void main(String[] args) {
+		
+	}
+	
+	public static void method() {
+		try {
+			System.out.println(1/0);
+			InputStream  in = new FileInputStream("D://");
+		}catch(ArithmeticException | FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void method1() {
+		InputStream  in = null;
+		try {
+			System.out.println(1/0);
+		in = new FileInputStream("D://");
+		}catch(ArithmeticException | FileNotFoundException e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	//jdk1.7
+	public static void method2() {
+		//jdk1.7新加的  实现了AutoCloseable的类 资源类就可以自动关闭了
+		try( InputStream  in  = new FileInputStream("D://");) {
+			System.out.println(1/0);
+		}catch(ArithmeticException | IOException e) {
+			e.printStackTrace();
+			} 
+	}
+}
+
+```
+
+### 1.7 有的异常不能抛只能处理
+
+> 你的程序没有检查时异常 都是运行时异常我们可以将所有的异常全部抛出。最终交给最后的调用者去处理(一定要去处理)
+>
+> 还可以向外在继续的抛出，抛给JVM.   JVM在将错误的信息输出。
+>
+> 在实际开发的时候，要么自己手动处理异常，要么在最后一次调用的时候处理方法的异常，始终是要处理的，不要向虚拟机抛出。
+
+```java
+package com.xdkj.javase.core.exception;
+
+public class ExceptionDemo06 {
+	public static void main(String[] args) throws InterruptedException {
+		method();
+	}
+	
+	public static void method()   {
+		new Runnable() {
+			@Override
+			public void run() {
+					for(int i =0;i<=100;i++) {
+						try {
+                            //这里的异常只能处理不能抛出
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						System.out.println(Thread.currentThread().getName()+"---"+ i);
+					}
+			}
+		};
+	}
+}
+
+```
+
+### 1.8 自定义异常(***)
+
+> 我们在程序的开发中 如果们有自己遇到的问题那么我们可以进行自定义异常，在程序中抛出自定义的异常。
+
+```java
+package com.xdkj.javase.core.exception;
+
+public class MyExceptionOne extends Exception {
+
+	public MyExceptionOne() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public MyExceptionOne(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+		// TODO Auto-generated constructor stub
+	}
+
+	public MyExceptionOne(String message, Throwable cause) {
+		super(message, cause);
+		// TODO Auto-generated constructor stub
+	}
+
+	public MyExceptionOne(String message) {
+		super(message);
+		// TODO Auto-generated constructor stub
+	}
+
+	public MyExceptionOne(Throwable cause) {
+		super(cause);
+		// TODO Auto-generated constructor stub
+	}
+	
+}
+
+```
+
+```java
+package com.xdkj.javase.core.exception;
+
+import java.util.Scanner;
+
+public class MyExceptionOneDemo {
+
+	public static void main(String[] args) {
+		Scanner s = new Scanner(System.in);
+		String name = s.next();
+			try {
+				method(name);
+			} catch (MyExceptionOne e) {
+				e.printStackTrace();
+			}
+	}
+	public static void  method(String name) throws MyExceptionOne  {
+		
+		if(!name.equals("admin")) {
+			throw new MyExceptionOne("用户名不正确!");
+		}else{
+			System.out.println("--------------");
+		}
+	}
+}
+
+```
 
 
-
-### 1.6 自定义异常(***)
 
 
 
