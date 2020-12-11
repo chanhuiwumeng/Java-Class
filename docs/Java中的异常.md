@@ -410,6 +410,23 @@ public class MyExceptionOneDemo {
 
 ```
 
+### 1.9 常见的运行时异常:
+
+```java
+    ArithmeticException 算数运算异常
+    NullPointerException  空指针异常
+    ArraysIndexOutOfBoundsException  数组下标越界异常
+    IndexOutOfBoudsException  下标越界异常
+    ClassCastException类转换异常
+    IlleagalArgumentsException
+    ConurrentModificationException 并发修改异常
+    ClassNotFoundException  类找不到异常
+    NoSuchElementException 没有元素的异常
+    IllegalStateException 不合法的状态异常
+    SystemException  系统异常
+    NumberFormatException 数字转换异常
+```
+
 
 
 
