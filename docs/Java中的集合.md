@@ -271,6 +271,10 @@ public static void method5() {
 	}
 ```
 
+### 2.3 Iterator 和 Enumeration的区别
+
+
+
 ## 3. List
 
 > List: 列表集合
@@ -430,6 +434,8 @@ public class VectorDemo {
 > removeFirst()
 >
 > removeLast();
+>
+> linkedlist是双向链表加列表的实现. 因为LinkedList实现了List和Quene接口。
 
 ![image-20201214122133249](_media/image-20201214122133249.png)
 
@@ -526,6 +532,8 @@ public class LinkedListDemo {
     }
 ```
 
+![image-20201214153317420](_media/image-20201214153317420.png)
+
 ## 4. 数据结构
 
 ### 4.1 数组
@@ -571,3 +579,164 @@ public class LinkedListDemo {
   + 二叉树
 
 ![image-20201214114132594](_media/image-20201214114132594.png)
+
+## 5. 泛型
+
+> 为什么要有泛型机制?
+>
+> 就是在编程中很多时候需要数据类型的转换 ，很麻烦。所以在JDK1.5提出了泛型的机制。
+>
+> 泛型的分类?
+>
+> 1. 集合中的泛型  
+> 2. 接口的泛型
+>
+> 泛型的好处:
+>
+> 1. 解决的java的类类型转换的安全的机制问题
+> 2. 程序变的简单起来
+> 3. 如果集合规定了泛型 泛型意外的数据就不会加进去 在编译就会出错。
+> 4. 提高代码的可读性
+
+```java
+package com.xdkj.javase.list;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+public class ElementDemo {
+
+	public static void main(String[] args) {
+		//集合使用的时候 一般集合中存储的是对象  购物车的商品
+		// 类的实例化  也就是说集合中存储的对象是用一个类类型的数据
+		//如果我们在使用集合的时候里面存储的是相同的类类型的数据 ，我们在遍历的时候还需要强制转换
+		//很麻烦
+		ArrayList list = new ArrayList();
+			list.add(new Student("小明",23));
+			list.add(new Student("小红",89));
+			list.add(new Student("小花",36));
+			list.add(new Student("小李",18));
+			list.add(new Student("小王",16));
+			list.add(null);
+			list.add(new Student("小王",16));
+			list.add(null);
+		
+		System.out.println(list);
+		//遍历
+		Iterator iterator = list.iterator();
+		while(iterator.hasNext()) {
+			Student student = (Student)	iterator.next();
+			System.out.println(student);
+		}
+		// 泛型的使用
+		//泛型指的是 集合存储数据的类类型  如果是基本数据类型的数据  泛型使用包装类
+		//jdk1.5的使用方式
+		//ArrayList<Student> list1 = new ArrayList<Student>();
+		//jdk1.8的使用方式
+		ArrayList<Student> list1 = new ArrayList<>();
+			list1.add(new Student("小明",23));
+			list1.add(new Student("小红",89));
+			list1.add(new Student("小花",36));
+			list1.add(new Student("小李",18));
+			list1.add(new Student("小王",16));
+			list1.add(null);
+			list1.add(new Student("小王",16));
+			list1.add(null);
+		for(Student stu : list1) {
+			System.out.println(stu);
+		}
+        //集合元素是基本数据类型  泛型是基本数据类型的包装类
+        ArrayList<Integer> list2 = new ArrayList<>();
+			list2.add(23);
+			list2.add(88);
+			System.out.println(list2);
+	}
+
+}
+
+```
+
+### 5.2 泛型在接口中的使用
+
+```java
+//泛型
+public interface BaseDao<T> {
+	void add(T t);
+}
+```
+
+```java
+public interface StudentDao extends BaseDao<Student> {
+	
+}
+```
+
+```java
+public interface GoodsDao  extends BaseDao<Goods>{
+	
+}
+```
+
+```java
+package com.xdkj.javase.list;
+
+public class BaseDaoDemo {
+
+	public static void main(String[] args) {
+		//匿名内部类
+		StudentDao stuDao = new StudentDao() {
+			@Override
+			public void add(Student t) {
+				
+			}};
+			//add 方法在进行重写的时候会自动进行参数类型的填充
+			GoodsDao goodsDao = new GoodsDao() {
+
+				@Override
+				public void add(Goods t) {
+					
+				}};
+	}
+
+}
+
+```
+
+### 5.3  在方法参数 中使用
+
+```java
+//方法的参数类不确定就可以使用泛型的形式
+	public static <T> void method(T t ) {
+		System.out.println("Hello"+t );
+	}
+```
+
+### 5.4 方法的参数是接口类型带泛型
+
+> TreeSet(Comparator(? super E) comparator)  参数是接口的实现类类型  实现类又需要泛型。
+
+## 6. Set 集合
+
+### 6.1 HashSet
+
+### 6.2 TreeSet
+
++ 自然排序  
++ 比较器排序  Comparable 
+
+### 6.3 LinkedHashSet
+
+## 7. Map
+
+### 7.1 Hashtable
+
+### 7.2 HashMap
+
+#### Hashtable和HashMap的区别
+
+### 7.3 TreeMap
+
+### 7.4 LinkedHashMap
+
+### 7.5 Properties
+
