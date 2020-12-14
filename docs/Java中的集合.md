@@ -1,6 +1,6 @@
 # Java中的集合 :imp:
 
-## 1. 集合的简介
+## 1. 集合的简介 :airplane:
 
 > 我们前面学习过数组， 数组是用一个变量来存多个元素的容器，存储基本数据类型的数据。数组的长度是不可变的。
 > 在实际的开发中我们需要这样去做: 
@@ -64,7 +64,7 @@ public class GoodsDemo {
 
 ![image-20201211100133097](_media/image-20201211100133097.png)
 
-## 2. Collection
+## 2. Collection :rainbow_flag:
 
 > *Collection 层次结构* 中的根接口。Collection 表示一组对象，这些对象也称为 collection 的*元素*。一些  collection 允许有重复的元素，而另一些则不允许。一些 collection 是有序的，而另一些则是无序的。JDK 不提供此接口的任何*直接*  实现：它提供更具体的子接口（如 `Set` 和 `List`）实现。此接口通常用来传递  collection，并在需要最大普遍性的地方操作这些 collection。 
 
@@ -188,7 +188,7 @@ public static void method1() {
 	}
 ```
 
-### 2.2 Iterator 迭代器
+### 2.2 Iterator 迭代器   :point_right:
 
 > 提供集合的通用的遍历方式:
 >
@@ -271,3 +271,303 @@ public static void method5() {
 	}
 ```
 
+## 3. List
+
+> List: 列表集合
+> 	1. list接口  序列集合  列表集合
+> 	2. list集合允许元素重复  相同的元素重复 可以有多个null元素 
+> 	3. list集合元素可以通过下标进行访问
+> 	4. list集合使用特有的迭代器ListIterator在Iterator的基础上 有元素的插入和替换的方法 
+> 		指定开始位置的迭代器
+> 	list集合特有的方法:
+> 		get()  获取list集合中的元素
+> 		indexOf()  
+> 		lasIndexOf()  
+> 		listIterator()  list集合的特有迭代器
+> 		subList()  获取集合片段
+> 		size()	   获取list集合的元素的个数
+> 	a. ArrayList
+> 		底层是数组的数据结构  是长度可变的数组
+> 		存储元素是要有序的，运行元素重复 和 允许多个null值
+> 		是线程不安全的  是不同步的  效率高
+> 		读取的效率高 因为是数据我们直接通过下标就可以操作  
+> 		删除/添加   的操作效率低了
+
+### 3.1 ArrayList
+
+```java
+package com.xdkj.javase.list;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
+public class ListDemo {
+
+	public static void main(String[] args) {
+		List list  = new ArrayList();
+				list.add("Hello");
+				list.add(123);
+				list.add('d');
+				list.add(new Object());
+				list.add(99.99);
+				//[Hello, 123, d, java.lang.Object@15db9742, 99.99]
+			System.out.println(list);
+			//通过下标获取集合中的元素
+			System.out.println(list.get(0));
+			//获取集合的元素个数
+			System.out.println(list.size());
+			//元素在集合中第一次出现的下标值
+			System.out.println(list.indexOf('d'));
+			//最后一次出现的下标值
+			System.out.println(list.lastIndexOf(99.99));
+			//截取集合片段  不包含结尾下标的集合元素
+			System.out.println(list.subList(0, 3));
+			System.out.println("------------集合的遍历-----------");
+			//遍历
+			/*
+			 * for(int i=0;i<list.size();i++) { System.out.println(list.get(i)); }
+			 */
+			
+			/*
+			 * for(Object i:list) { System.out.println(i); }
+			 */
+			//通用迭代器
+			/*
+			 * Iterator it = list.iterator(); while(it.hasNext()) { Object obj = it.next();
+			 * System.out.println(obj); }
+			 */
+			
+			//特有的listIterator
+			ListIterator iterator = list.listIterator();
+			//java.util.NoSuchElementException
+			//返回集合中上一个元素
+				//System.out.println(iterator.previous());
+				iterator.add("88888");
+				while(iterator.hasNext()) {
+					//iterator.add("88888");
+					System.out.println(iterator.next());
+					//iterator.set("Java");
+				}
+				System.out.println(list);
+	}
+
+}
+
+```
+
+### 3.2 Vector
+
+> `Vector`  类可以实现可增长的对象数组。与数组一样，它包含可以使用整数索引进行访问的组件。但是，`Vector`  的大小可以根据需要增大或缩小，以适应创建 `Vector` 后进行添加或移除项的操作。
+>
+> Vector是线程安全的，线程同步的。
+>
+> Vector读取快 增删慢
+>
+> 从JDK1.2开始使用ArrayList替换了Vector
+
+```java
+package com.xdkj.javase.list;
+
+import java.util.Iterator;
+import java.util.Vector;
+
+public class VectorDemo {
+	public static void main(String[] args) {
+		Vector   vector = new Vector();
+			vector.add("123");
+			vector.add(123);
+			vector.add('d');
+		System.out.println(vector);
+		for(int i =0;i<vector.size();i++) {
+			System.out.println(vector.get(i));
+		}
+		
+		Iterator iterator = vector.iterator();
+		while(iterator.hasNext()) {
+			System.out.println(iterator.next());
+		}
+		//使用增强for循环迭代
+		//使用listIterator迭代
+	}
+}
+
+```
+
+### 3.3 LinkedList
+
+> `List` 接口的链接列表实现。实现所有可选的列表操作，并且允许所有元素（包括 `null`）。除了实现  `List` 接口外，`LinkedList` 类还为在列表的开头及结尾 `get`、`remove`  和 `insert` 元素提供了统一的命名方法。这些操作允许将链接列表用作堆栈、[队列](../../java/util/Queue.html)或[双端队列](../../java/util/Deque.html)。
+>
+> LinkedList是线程不安全的，线程不同步的。
+>
+> 链表结构:
+>
+> 读取慢，增删快
+>
+> 常用的方法:
+>
+> addFirst()
+>
+> addLast()
+>
+> getFirst()
+>
+> getLast()
+>
+> element()
+>
+> pop()
+>
+> push()
+>
+> peek()
+>
+> offer()
+>
+> offerFirst()
+>
+> removeFirst()
+>
+> removeLast();
+
+![image-20201214122133249](_media/image-20201214122133249.png)
+
+```java
+package com.xdkj.javase.list;
+
+import java.util.LinkedList;
+import java.util.Scanner;
+
+public class LinkedListDemo {
+
+	public static void main(String[] args) {
+		//链表的结构
+		LinkedList list = new LinkedList();
+			list.add("Hello");
+			list.add(99);
+			list.add('c');
+			list.add(99.99);
+			list.add(new Object());
+		System.out.println(list);
+		System.out.println(list.size());
+		
+		System.out.println(list.pop());
+		//获取第一个节点元素
+		System.out.println(list.getFirst());
+		//获取最后一个节点的值
+		System.out.println(list.getLast());
+		//第一个节点的值
+		System.out.println(list.element());
+		System.out.println(list);
+		//添加到列表的末尾
+		System.out.println(list.offer("00000"));
+		System.out.println(list);
+		System.out.println("---------------------");
+		//获取列表的头
+		System.out.println(list.peek());
+		
+		//压栈  元素插入列表的开头
+		list.push(new Scanner(System.in));
+		System.out.println(list);
+		//弹栈 取出元素  集合中就没有了
+		System.out.println(list.pop());
+		
+		//遍历
+		System.out.println("-------------遍历-----------");
+		for(Object i : list) {
+			System.out.println(i);
+		}
+		//下标
+		for(int i =0;i<list.size();i++) {
+			System.out.println(list.get(i));
+		}
+	}
+
+}
+
+```
+
+**LinkedList  add方法的源码:**
+
+```java
+ public boolean add(E e) {
+        linkLast(e);
+        return true;
+    }
+
+```
+
+```java
+ private static class Node<E> {
+        E item;
+        Node<E> next;
+        Node<E> prev;
+
+        Node(Node<E> prev, E element, Node<E> next) {
+            this.item = element;
+            this.next = next;
+            this.prev = prev;
+        }
+    }
+```
+
+```java
+ void linkLast(E e) {
+        final Node<E> l = last;
+        final Node<E> newNode = new Node<>(l, e, null);
+        last = newNode;
+        if (l == null)
+            first = newNode;
+        else
+            l.next = newNode;
+        size++;
+        modCount++;
+    }
+```
+
+## 4. 数据结构
+
+### 4.1 数组
+
+> 存储相同数据类型的数据。 数组的长度是不可以变化的，在集合的数据结构中，底层是数据数据结构的集合长度四可以变化的。
+>
+> 数组的数据结构通过数组 的下标进行元素的获取和赋值。
+
+### 4.2 栈
+
+> 栈一般保存的是我们的变量，在方法的栈内存中声明变量和赋值  如果是对象在栈中保存的是对象的声明的变量  引用 的堆内存中的地址值
+>
+> Stack是Vector的子类 :
+>
+> + push  压栈
+>
+> + pop 弹栈
+
+![image-20201214112352123](_media/image-20201214112352123.png)
+
+### 4.3 队列
+
+> 队列和我们站队一样 : 先进先出
+
+![image-20201214112747311](_media/image-20201214112747311.png)
+
+### 4.4 链表
+
+> 链表的特性:
+>
+> 1. 存储的元素值
+> 2. 存储元素值的地址值
+> 3. 链表在内存中是无序存储的
+
++ 单向链表
++ 双向链表(循环链表)
+
+![image-20201214113844383](_media/image-20201214113844383.png)
+
+### 4.5 数
+
++ 红黑树
+  + 二叉树
+
+![image-20201214114132594](_media/image-20201214114132594.png)
