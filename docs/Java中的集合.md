@@ -273,7 +273,12 @@ public static void method5() {
 
 ### 2.3 Iterator 和 Enumeration的区别
 
-
+> 功能是重复的。
+>
+> Iterator 替换了Enumeration：
+>
+> 1. 添加了remove方法
+> 2. 方法名称简写 得到改进
 
 ## 3. List
 
@@ -582,6 +587,36 @@ public class LinkedListDemo {
 
 ## 5. 泛型
 
+1、概述：
+		泛型，在C++中被称为模板，就是一种抽象的编程方式。当我们定义类和方法的时候，
+		可以用一种通用的方式进行定义，而不必写出具体的类，这些未知的东西会在真正使
+        	用的时候在确定。
+		对于集合类来说，它们可以存放各种类型的元素。如果在存放之前，就能确定元素的
+		类型，那么就可以更加直观，也让代码更加简洁。
+	2、好处：
+		a、类型安全。 泛型的主要目标是提高 Java 程序的类型安全。通过知道使用
+		   泛型定义的变量的类型限制，编译器可以在一个高得多的程度上验证类型
+		   假设。没有泛型，这些假设就只存在于程序员的头脑中（或者如果幸运的
+                   话，还存在于代码注释中）。
+		b、消除强制类型转换。 泛型的一个附带好处是，消除源代码中的许多强制
+		   类型转换。这使得代码更加可读，并且减少了出错机会。
+		c、潜在的性能收益。 泛型为较大的优化带来可能。在泛型的初始实现中，
+		   编译器将强制类型转换（没有泛型的话，程序员会指定这些强制类型转换）
+		   插入生成的字节码中。但是更多类型信息可用于编译器这一事实，为未来
+                   版本的 JVM 的优化带来可能。由于泛型的实现方式，支持泛型（几乎）
+                   不需要 JVM 或类文件更改。所有工作都在编译器中完成，编译器生成类
+           	   似于没有泛型（和强制类型转换）时所写的代码，只是更能确保类型安全
+		   而已。
+	3、泛型在使用中还有一些规则和限制：
+    		a、泛型的类型参数只能是类类型（包括自定义类），不能是简单类型。
+    		b、同一种泛型可以对应多个版本（因为参数类型是不确定的），不同版本的
+		   泛型类实例是不兼容的。
+    		c、泛型的类型参数可以有多个。
+    		d、泛型的参数类型可以使用extends语句，例如<T extends superclass>。
+		  习惯上成为“有界类型”。
+    		e、泛型的参数类型还可以是通配符类型。
+			例如Class<?> classType = Class.forName(Java.lang.String);
+
 > 为什么要有泛型机制?
 >
 > 就是在编程中很多时候需要数据类型的转换 ，很麻烦。所以在JDK1.5提出了泛型的机制。
@@ -717,12 +752,204 @@ public class BaseDaoDemo {
 
 ## 6. Set 集合
 
+> 一个不包含重复元素的 collection。更确切地讲，set 不包含满足 `e1.equals(e2)` 的元素对  `e1` 和 `e2`，并且最多包含一个 null 元素,可以有序也可以无序。
+
 ### 6.1 HashSet
+
+> 此类实现 `Set` 接口，由哈希表（实际上是一个 `HashMap` 实例）支持。它不保证 set  的迭代顺序；特别是它不保证该顺序恒久不变。此类允许使用 `null` 元素
+>
+> + 数据结构是哈希表
+> + 是无序的
+> + 允许null元素
+> + 不是线程同步   效率高
+
+```java
+package com.xdkj.javase.set;
+
+import java.util.HashSet;
+import java.util.Iterator;
+/**HashSet: 
+ * 底层是哈希表的结构:
+ * 	
+ * 
+ * 
+ * */
+public class HashSetDemo {
+
+	public static void main(String[] args) {
+		// 所谓的无序是指  添加和获取的顺序不一致
+		HashSet<String> set = new HashSet<>();
+			set.add("Hello");
+			set.add("Java");
+			set.add("Java");
+			set.add("123");
+			set.add("World");
+			set.add("World");
+			set.add("Python");
+			//[Java, Hello, World, Python]
+		System.out.println(set);
+			//5
+		System.out.println(set.size());
+			//怎么保证元素的唯一性?
+			//底层使用hashMap  
+			// HashMap的putVal()方法使用到了三种数据结构数组  链表 红黑树
+			//遍历
+		Iterator<String> iterator = set.iterator();
+			while(iterator.hasNext()) {
+				System.out.println(iterator.next());
+			}
+			
+			
+	}
+
+}
+
+```
+
+**保证元素的唯一性:**
+
+> 底层使用的是hashMap的put方法 ， add()方法说明，如果set集合中没有包含添加的元素 ， 添加进去返回true,如果 通过hashCode,equals方法比较已经包含了要添加的元素，那么集合不会改变，并且返回false.
+
+```java
+  /**
+     * Adds the specified element to this set if it is not already present.
+     * More formally, adds the specified element <tt>e</tt> to this set if
+     * this set contains no element <tt>e2</tt> such that
+     * <tt>(e==null&nbsp;?&nbsp;e2==null&nbsp;:&nbsp;e.equals(e2))</tt>.
+     * If this set already contains the element, the call leaves the set
+     * unchanged and returns <tt>false</tt>.
+     *
+     * @param e element to be added to this set
+     * @return <tt>true</tt> if this set did not already contain the specified
+     * element
+     */
+    public boolean add(E e) {
+        return map.put(e, PRESENT)==null;
+    }
+
+```
+
+**加载因子是0.75:**
+
+> 初始的容量是16如果说是超过初始容量以后呢。他会生成新的哈希表，将原来的哈希表覆盖。
+>
+> 新的 哈希表的大小是多少?
+
+```java
+/**
+     * Constructs a new set containing the elements in the specified
+     * collection.  The <tt>HashMap</tt> is created with default load factor
+     * (0.75) and an initial capacity sufficient to contain the elements in
+     * the specified collection.
+     *
+     * @param c the collection whose elements are to be placed into this set
+     * @throws NullPointerException if the specified collection is null
+     */
+    public HashSet(Collection<? extends E> c) {
+        map = new HashMap<>(Math.max((int) (c.size()/.75f) + 1, 16));
+        addAll(c);
+    }
+```
 
 ### 6.2 TreeSet
 
-+ 自然排序  
-+ 比较器排序  Comparable 
+> 基于 [`TreeMap`](../../java/util/TreeMap.html) 的 [`NavigableSet`](../../java/util/NavigableSet.html)  实现。使用元素的[自然顺序](../../java/lang/Comparable.html)对元素进行排序，或者根据创建 set 时提供的 [`Comparator`](../../java/util/Comparator.html)  进行排序，具体取决于使用的构造方法
+>
+> + 不是同步的  效率高
+> +  自然排序
+> + 比较器排序  Comparable 
+
+**自然排序:**
+
+```java
+package com.xdkj.javase.test;
+
+import java.util.TreeSet;
+
+public class TreeSetDemo {
+
+	public static void main(String[] args) {
+		//自然排序  
+		//String类型 实现了Comparable接口就实现了自然排序
+		TreeSet <String> set = new TreeSet<>();
+			set.add("Hello");
+			set.add("Java");
+			set.add("Java");
+			set.add("123");
+			set.add("World");
+			set.add("World");
+			set.add("Python");
+		System.out.println(set);
+		//java.lang.ClassCastException: 
+		//com.xdkj.javase.test.Teacher cannot be cast to java.lang.Comparable
+		//Teacher没有实现Comparable接口 不能自然排序
+		TreeSet <Teacher> tSet = new TreeSet<>();
+			tSet.add(new Teacher("张三",33,"西安市"));
+			tSet.add(new Teacher("王五",13,"汉中市"));
+			tSet.add(new Teacher("翟柳",23,"宝鸡市"));
+			tSet.add(new Teacher("张麻子",33,"西安市"));
+			tSet.add(new Teacher("张麻子",33,"西安市"));
+			System.out.println(tSet);
+			
+			//System.out.println("Hello".compareTo(null));
+	}
+
+}
+
+```
+
+```java
+package com.xdkj.javase.test;
+
+public class Teacher implements Comparable<Teacher> {
+	private String teaName;
+	private int teaAge;
+	private String teaAddress;
+	public Teacher() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public Teacher(String teaName, int teaAge, String teaAddress) {
+		super();
+		this.teaName = teaName;
+		this.teaAge = teaAge;
+		this.teaAddress = teaAddress;
+	}
+	......get  set ......
+        
+	@Override
+	public String toString() {
+		return "Teatcher [teaName=" + teaName + ", teaAge=" + teaAge + ", teaAddress=" + teaAddress + "]";
+	}
+	/*我们让 自定义类对象进行自然排序。
+	 * 怎么排序?
+	 * 1. 首先实现Comparable接口  重写CompareTo方法
+	 * 2. 我们根据对象的哪一个属性进行比较?
+	 * 3. 我们要定义排序主规则: 按年龄 ----> 名字 ----> 地址
+	 * 
+	 */
+	
+	@Override
+	public int compareTo(Teacher teacher) {
+		if(teacher == null) {
+			throw new NullPointerException("输入的参数对象不能是null!!!");
+		}
+		if(this==teacher) {
+			return 0;
+		}
+		
+		int  ageResult = this.getTeaAge() - teacher.getTeaAge();
+		int nameResult = this.getTeaName().compareTo(teacher.getTeaName()); 
+		int addressResult = this.getTeaAddress().compareTo(teacher.getTeaAddress());
+		int result  = ageResult == 0 ? (nameResult == 0?addressResult : nameResult):ageResult;
+		return result;
+	}
+	
+}
+
+```
+
+
 
 ### 6.3 LinkedHashSet
 
