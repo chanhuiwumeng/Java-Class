@@ -883,6 +883,7 @@ public class TreeSetDemo {
 		//java.lang.ClassCastException: 
 		//com.xdkj.javase.test.Teacher cannot be cast to java.lang.Comparable
 		//Teacher没有实现Comparable接口 不能自然排序
+        //汉字的顺序根据Unicode 码表排序
 		TreeSet <Teacher> tSet = new TreeSet<>();
 			tSet.add(new Teacher("张三",33,"西安市"));
 			tSet.add(new Teacher("王五",13,"汉中市"));
@@ -890,13 +891,13 @@ public class TreeSetDemo {
 			tSet.add(new Teacher("张麻子",33,"西安市"));
 			tSet.add(new Teacher("张麻子",33,"西安市"));
 			System.out.println(tSet);
-			
 			//System.out.println("Hello".compareTo(null));
 	}
 
 }
 
 ```
+**自然排序要实现Comparable接口   和重写 CompareTo()方法:**
 
 ```java
 package com.xdkj.javase.test;
