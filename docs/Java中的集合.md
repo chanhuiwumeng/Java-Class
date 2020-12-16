@@ -859,7 +859,7 @@ public class HashSetDemo {
 > +  自然排序
 > + 比较器排序  Comparable 
 
-**自然排序:**
+##### 6.2.1 **自然排序:**
 
 ```java
 package com.xdkj.javase.test;
@@ -950,7 +950,152 @@ public class Teacher implements Comparable<Teacher> {
 
 ```
 
+#### 6.2.2 比较器排序
 
+**Comparator接口实现类的比较器排序**
+
+```java
+package com.xdkj.javase.set;
+
+import java.util.Comparator;
+
+public class StringComparator implements Comparator<String> {
+
+	@Override
+	public int compare(String o1, String o2) {
+		//字符串  使用自然排序的比较
+		return o1.compareTo(o2);
+	}
+	
+}
+
+```
+
+```java
+public static void method2() {
+		//comparator ordering 比较器排序
+		TreeSet<String> treeSet = new TreeSet(new StringComparator());
+			treeSet.add("Hello");
+			treeSet.add("小明");
+			treeSet.add("张三");
+			treeSet.add("World");
+			//[Hello, World, 小明, 张三]
+		System.out.println(treeSet);
+	}
+```
+
+```java
+package com.xdkj.javase.test;
+
+public class Student {
+	private String stuName;
+	private int stuAge;
+	private String stuNumber;
+	private String stuAddress;
+	public Student() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public Student(String stuName, int stuAge, String stuNumber, String stuAddress) {
+		super();
+		this.stuName = stuName;
+		this.stuAge = stuAge;
+		this.stuNumber = stuNumber;
+		this.stuAddress = stuAddress;
+	}
+	.....get  set .....
+        
+	@Override
+	public String toString() {
+		return "Student [stuName=" + stuName + ", stuAge=" + stuAge + ", stuNumber=" + stuNumber + ", stuAddress="
+				+ stuAddress + "]";
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((stuAddress == null) ? 0 : stuAddress.hashCode());
+		result = prime * result + stuAge;
+		result = prime * result + ((stuName == null) ? 0 : stuName.hashCode());
+		result = prime * result + ((stuNumber == null) ? 0 : stuNumber.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Student other = (Student) obj;
+		if (stuAddress == null) {
+			if (other.stuAddress != null)
+				return false;
+		} else if (!stuAddress.equals(other.stuAddress))
+			return false;
+		if (stuAge != other.stuAge)
+			return false;
+		if (stuName == null) {
+			if (other.stuName != null)
+				return false;
+		} else if (!stuName.equals(other.stuName))
+			return false;
+		if (stuNumber == null) {
+			if (other.stuNumber != null)
+				return false;
+		} else if (!stuNumber.equals(other.stuNumber))
+			return false;
+		return true;
+	}
+	
+}
+
+```
+
+**匿名内部类实现比较器排序**
+
+```java
+//匿名内部类实现 比较器排序
+	public static void method3() {
+		//comparator ordering 比较器排序
+		
+		TreeSet<String> treeSet = new TreeSet(new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.compareTo(o2);
+			}
+		});
+			treeSet.add("Hello");
+			treeSet.add("小明");
+			treeSet.add("张三");
+			treeSet.add("World");
+			//[Hello, World, 小明, 张三]
+		System.out.println(treeSet);
+	}
+```
+
+**自定义类的匿名内部类实现比较器排序:**
+
+```java
+//自定义类的比较器排序
+	public static void method4() {
+		//comparator ordering 比较器排序
+		TreeSet<Student> treeSet = new TreeSet(new Comparator<Student>() {
+			//定义主规则和次要的规则
+			@Override
+			public int compare(Student stu1, Student stu2) {
+				int nameResult = stu1.getStuName().compareTo(stu2.getStuName());
+				return  nameResult == 0 ? (stu1.getStuAge() - stu2.getStuAge() == 0 ? (stu1.getStuNumber().compareTo(stu2.getStuNumber())):stu1.getStuAge() - stu2.getStuAge()):nameResult;
+			}
+		});
+			treeSet.add(new Student("小明",23,"java010","西安市"));
+			treeSet.add(new Student("瓯网",66,"java011","西安市"));
+			treeSet.add(new Student("小明",23,"java010","西安市"));
+			
+		System.out.println(treeSet);
+	}
+```
 
 ### 6.3 LinkedHashSet
 
