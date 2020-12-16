@@ -952,6 +952,8 @@ public class Teacher implements Comparable<Teacher> {
 
 #### 6.2.2 比较器排序
 
+> TreeSet(Comparator comparator)  比较器排序  如果comparator是null  那依然使用的是自然排序。
+>
 > Comparator 接口是比较器  :
 >
 > compare()方法实现两个参数的比较
@@ -1103,13 +1105,408 @@ public class Student {
 
 ### 6.3 LinkedHashSet
 
+> 底层是链表 + 哈希表的数据结构
+>
+> 具有可预知迭代顺序的 `Set` 接口的哈希表和链接列表实现。此实现与 `HashSet`  的不同之外在于，后者维护着一个运行于所有条目的双重链接列表。此链接列表定义了迭代顺序，即按照将元素插入到 set 中的顺序（*插入顺序*）进行迭代.
+>
+> + 线程不同步的:
+>
+> 为什么两种数据结构?
+>
+> 1. 使用链表保证元素有序
+> 2. hashSet确定元素的唯一性
+
+![image-20201216110447115](_media/image-20201216110447115.png)
+
+```java
+package com.xdkj.javase.set;
+
+import java.util.LinkedHashSet;
+
+public class LinkedHashSetDemo {
+
+	public static void main(String[] args) {
+		LinkedHashSet <String> set = new LinkedHashSet<>();
+			set.add("Hello");
+			set.add("Hello");
+			set.add("小明");
+			set.add("张三");
+			set.add("张三");
+			set.add("world");
+			//[Hello, 小明, 张三, world]
+		System.out.println(set);
+	}
+
+}
+
+```
+
 ## 7. Map
+
+>  前边在做练习题的时候  计算"hddshfhjdsfjsdfhkdsjf" 字符串中每一个字符出现的次数 的是时候我们想用一个集合去保存字符对应的次数，发现使用数组不合适 list，不合适 set  不合适。map集合。
+>
+> map 是一个键值对映射关系的集合:
+>
+> 将键映射到值的对象。一个映射不能包含重复的键；每个键最多只能映射到一个值。
+>
+> map集合的遍历的两种方式: 
+>
+> 1. 获取key的set视图在通过遍历key的set集合  get()方法通过键获取值
+> 2. 获取键值映射的Entry 视图 在通过遍历 Entry视图获取到 键值映射  在通过  getKey() getValue()分别获取键和值
+
+![image-20201216112905147](_media/image-20201216112905147.png)
+
+![image-20201216113308868](_media/image-20201216113308868.png)
+
+### 7.1 Hashtable
+
+> 1. 底层使用的是哈希表数据结构  还有数组的数据结构 
+>
+> + 数组保证迭代顺序一致
+> + 哈希保证唯一性
+>
+> 2. 在jdk1.定义的时候 线程安全的。同步的  效率低
+>
+> 3. 不允许null值和null键
+>
+> 4. 命名错误 在JDK1.2以后使用HashMap替换了Hashtable.
+
+```java
+package com.xdkj.javase.map;
+
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+/**Hashtable:
+ * 	键值映射关系
+ * 	键不能重复 值可以重复
+ * 	键是唯一的 所以在键相同值不同的情况下  新的值会替换旧的值 
+ * 	
+ * + put()  
+ * + keySet() 键的集合
+ * + values() 所有的值
+ * 
+ * */
+public class HashtableDemo {
+
+	public static void main(String[] args) {
+		Map<String,Integer> map = new Hashtable<>();
+				//存储值  put
+				map.put("one", 1);
+				map.put("one", 2);
+				map.put("two", 2);
+				map.put("three", 3);
+				map.put("four", 4);
+			System.out.println(map);
+			//获取所有的键
+			Set<String> set =	map.keySet();
+			//不能for循环遍历set集合
+			Iterator<String> iterator = set.iterator();
+			while(iterator.hasNext()) {
+				System.out.println(iterator.next());
+			}
+			//获取所有的值
+			Collection<Integer> list = map.values();
+			for(Integer i :list) {
+				System.out.println(i);
+			}
+			System.out.println("-----------first-----------");
+			//keySetMethod(map);
+			entryMapMethod(map);
+	}
+	//遍历
+	public static void keySetMethod(Map<String,Integer> map) {
+		//遍历 第一种方式就是先获取keySet 在通过key获取值
+		Set<String> set = map.keySet();
+		Iterator<String> it = set.iterator(); 
+		while(it.hasNext()) {
+			String key = it.next();
+			//通过键获取值
+			int value = map.get(key);
+			System.out.println(value);
+		}
+	}
+	//第二种 遍历方式
+	public static void entryMapMethod(Map<String,Integer> map) {
+		//键值映射关系的集合
+		Set<Map.Entry<String, Integer>> set = map.entrySet();
+		
+		Iterator<Entry<String, Integer>> iterator = set.iterator();
+		
+		while(iterator.hasNext()) {
+			//获取键值映射
+			Map.Entry<String, Integer> entry = iterator.next();
+			//获取键
+			String key = entry.getKey();
+			//获取值
+			int value = entry.getValue();
+			System.out.println(key + "----"+ value);
+		}
+	}
+}
+
+```
+
+**Hashtable保证键的唯一性和迭代顺序是有序的:**
+
+```java
+public synchronized V put(K key, V value) {
+        // Make sure the value is not null
+        if (value == null) {
+            throw new NullPointerException();
+        }
+
+        // Makes sure the key is not already in the hashtable.
+        Entry<?,?> tab[] = table;
+   	 	//计算键的哈希值
+        int hash = key.hashCode();
+    	//根据键的哈希值计算出一个数组的下标值
+        int index = (hash & 0x7FFFFFFF) % tab.length;
+        @SuppressWarnings("unchecked")
+        Entry<K,V> entry = (Entry<K,V>)tab[index];
+        for(; entry != null ; entry = entry.next) {
+            //如果键的值相同使用新的值覆盖原来的值 键只有一个
+            if ((entry.hash == hash) && entry.key.equals(key)) {
+                
+                V old = entry.value;
+                entry.value = value;
+                return old;
+            }
+        }
+
+        addEntry(hash, key, value, index);
+        return null;
+    }
+```
+
+```java
+ private void addEntry(int hash, K key, V value, int index) {
+        modCount++;
+
+        Entry<?,?> tab[] = table;
+     //如果集合的键的数量大于 容量值
+        if (count >= threshold) {
+            // Rehash the table if the threshold is exceeded
+            //重新刷新一个哈希表
+            rehash();
+            tab = table;
+            //在生成新的键的哈希值
+            hash = key.hashCode();
+            //新的数组的下标值
+            index = (hash & 0x7FFFFFFF) % tab.length;
+        }
+
+        // Creates the new entry.
+        @SuppressWarnings("unchecked")
+        Entry<K,V> e = (Entry<K,V>) tab[index];
+     	//创建键值映射关系 存储键和值  放入数组保证迭代顺序一致
+        tab[index] = new Entry<>(hash, key, value, e);
+        count++;
+    }
+```
 
 ### 7.1 Hashtable
 
 ### 7.2 HashMap
 
+> 1. 基于哈希表的 `Map` 接口的实现。此实现提供所有可选的映射操作，
+>
+> 2. 并允许使用 `null` 值和 `null`  键。
+>
+> 3. 此类不保证映射的顺序，特别是它不保证该顺序恒久不变
+> 4. 不是同步的  线程不安全的  效率高
+
+```java
+package com.xdkj.javase.map;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class HashMapDemo {
+
+	public static void main(String[] args) {
+		Map<String,Integer> map = new HashMap<>();
+			map.put("Hello", 99);
+			map.put("World", 88);
+			map.put("lucy", 5666);
+			map.put("lilei", 123);
+			map.put("hanmeiemi", 456);
+			map.put("hanmeiemi", 66666);
+			map.put(null, 66666);
+			map.put(null, null);
+			
+			//{lilei=123, Hello=99, hanmeiemi=456, World=88, lucy=5666}
+			//添加的顺序和迭代的顺序不一致
+			//允许null值和null键
+			System.out.println(map);
+			//第一个 如何保证键的唯一
+			//值新的覆盖旧的
+			//自定义对象作为键 如何保证唯一
+	}
+
+}
+
+```
+
+**自定义类作为键:**
+
+> 自定义类作为键 ，因为HashMap底层使用的是equals判断键是否相等，所以我们要进行equals和hashCode方法的重写.
+
+```java
+package com.xdkj.javase.map;
+
+public class Person {
+	private String pName;
+	private int pAge;
+	private String pEmail;
+	public Person() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public Person(String pName, int pAge, String pEmail) {
+		super();
+		this.pName = pName;
+		this.pAge = pAge;
+		this.pEmail = pEmail;
+	}
+	...get set ....
+	@Override
+	public String toString() {
+		return "Person [pName=" + pName + ", pAge=" + pAge + ", pEmail=" + pEmail + "]";
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + pAge;
+		result = prime * result + ((pEmail == null) ? 0 : pEmail.hashCode());
+		result = prime * result + ((pName == null) ? 0 : pName.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Person other = (Person) obj;
+		if (pAge != other.pAge)
+			return false;
+		if (pEmail == null) {
+			if (other.pEmail != null)
+				return false;
+		} else if (!pEmail.equals(other.pEmail))
+			return false;
+		if (pName == null) {
+			if (other.pName != null)
+				return false;
+		} else if (!pName.equals(other.pName))
+			return false;
+		return true;
+	}
+	
+}
+
+```
+
+```java
+public static void method2() {
+		Map<Person,Integer> map = new HashMap<>();
+		map.put(new Person("张三",25,"123@qq.com"),99);
+		map.put(new Person("李四",25,"123@qq.com"),99);
+		map.put(new Person("张三",25,"123@qq.com"),99);
+		map.put(new Person("王麻子",26,"123@qq.com"),88);
+		
+		System.out.println(map);
+	}
+```
+
+```properties
+{Person [pName=张三, pAge=25, pEmail=123@qq.com]=99, Person [pName=王麻子, pAge=26, pEmail=123@qq.com]=88, Person [pName=李四, pAge=25, pEmail=123@qq.com]=99}
+
+```
+
+**HashMap源码解读:**
+
+```java
+ /**
+     * Implements Map.put and related methods.
+     *
+     * @param hash hash for key
+     * @param key the key
+     * @param value the value to put
+     * @param onlyIfAbsent if true, don't change existing value
+     * @param evict if false, the table is in creation mode.
+     * @return previous value, or null if none
+     */
+    final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
+                   boolean evict) {
+        //初始的哈希表底层是数组的结构 数据保证的是在查询的时候速度快 节省空间
+        Node<K,V>[] tab; Node<K,V> p; int n, i;
+        if ((tab = table) == null || (n = tab.length) == 0)
+            n = (tab = resize()).length;
+        if ((p = tab[i = (n - 1) & hash]) == null)
+            tab[i] = newNode(hash, key, value, null);
+        else {
+            Node<K,V> e; K k;
+            if (p.hash == hash &&
+                ((k = p.key) == key || (key != null && key.equals(k))))
+                e = p;
+            else if (p instanceof TreeNode)
+                e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
+            else {
+                for (int binCount = 0; ; ++binCount) {
+                    //加入键值映射的时候 在数量小于等于7的时候 使用的是链表的结构
+                    if ((e = p.next) == null) {
+                        p.next = newNode(hash, key, value, null);
+                        if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
+                            //在数量大于7的时候底层转换为了二叉树的结构 对键的进行排序  
+                            //HashMap迭代的书序不一致
+                            treeifyBin(tab, hash);
+                        break;
+                    }
+                    if (e.hash == hash &&
+                        ((k = e.key) == key || (key != null && key.equals(k))))
+                        break;
+                    p = e;
+                }
+            }
+            //保证同一个节点  新的值覆盖旧的值
+            if (e != null) { // existing mapping for key
+                V oldValue = e.value;
+                if (!onlyIfAbsent || oldValue == null)
+                    e.value = value;
+                afterNodeAccess(e);
+                return oldValue;
+            }
+        }
+        ++modCount;
+        //集合的数量超出 初始的容量 进行数据表的刷新 数据结构的重建
+        if (++size > threshold)
+            resize();
+        afterNodeInsertion(evict);
+        return null;
+    }
+```
+
+![image-20201216152254331](_media/image-20201216152254331.png)
+
 #### Hashtable和HashMap的区别
+
+> 1. Hashtbale 也是哈希表的数据结构  
+> 2. HashMap是 数据加链表加红黑树(二叉树)
+> 3. HashMap是线程不安全的，不同步的效率高
+> 4. Hashtable是线程安全的，同步的效率低
+> 5. Hashtable命名错误 被HashMap替换
+> 6. HashMap运行null键和Null值
+> 7. Hashtable不允许null键和Null值
+> 8. HashMap 和Hashtable都允许值重复 键唯一
 
 ### 7.3 TreeMap
 
