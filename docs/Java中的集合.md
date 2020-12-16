@@ -952,6 +952,10 @@ public class Teacher implements Comparable<Teacher> {
 
 #### 6.2.2 比较器排序
 
+> Comparator 接口是比较器  :
+>
+> compare()方法实现两个参数的比较
+
 **Comparator接口实现类的比较器排序**
 
 ```java
