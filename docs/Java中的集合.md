@@ -1510,7 +1510,411 @@ public static void method2() {
 
 ### 7.3 TreeMap
 
+> 基于红黑树（Red-Black tree）的 [`NavigableMap`](../../java/util/NavigableMap.html)  实现。该映射根据其键的[自然顺序](../../java/lang/Comparable.html)进行排序，或者根据创建映射时提供的 [`Comparator`](../../java/util/Comparator.html)  进行排序，具体取决于使用的构造方法。 
+
+```java
+package com.xdkj.javase.map;
+
+import java.util.Comparator;
+import java.util.TreeMap;
+
+public class TreeMapDemo {
+
+	public static void main(String[] args) {
+		//会自然排序和比较器排序
+		TreeMap<Integer,String> map = new TreeMap<>();
+			map.put(1,"one");
+			map.put(3,"three");
+			map.put(4,"four");
+			map.put(2,"two");
+		System.out.println(map);
+		//比较器排序
+		TreeMap<Person,String> map1 = new TreeMap<>(new Comparator<Person>() {
+			@Override
+			public int compare(Person o1, Person o2) {
+				return o1.getpName().compareTo(o2.getpName())==0?o1.getpAge()-o2.getpAge():o1.getpName().compareTo(o2.getpName());
+			}
+		});
+			map1.put(new Person("小明",25,"123@qq.com"),"Hello");
+			map1.put(new Person("小红",22,"123@qq.com"),"Hello");
+			map1.put(new Person("小刚",18,"123@qq.com"),"Hello");
+		System.out.println(map1);
+	}
+
+}
+
+```
+
+**TreeMap源码分析:**
+
+```java
+ public V put(K key, V value) {
+     //创建根节点
+        Entry<K,V> t = root;
+        if (t == null) {
+            //检查根节点的键是否为null
+            compare(key, key); // type (and possibly null) check
+			//挂载根节点
+            root = new Entry<>(key, value, null);
+            size = 1;
+            modCount++;
+            return null;
+        }
+        int cmp;
+        Entry<K,V> parent;
+        // split comparator and comparable paths
+        Comparator<? super K> cpr = comparator;
+    //比较器排序
+        if (cpr != null) {
+            do {
+                parent = t;
+                //传入的key和根节点的key比较
+                cmp = cpr.compare(key, t.key);
+                if (cmp < 0)
+                    //将当前节点的左边变为比较的根节点
+                    t = t.left;
+                else if (cmp > 0)
+                    //将当前节点的右边变为比较的根节点
+                    t = t.right;
+                else
+                    //键相同 新的值覆盖旧的值
+                    return t.setValue(value);
+            } while (t != null);
+        }
+        else {
+            //自然排序
+            if (key == null)
+                throw new NullPointerException();
+            @SuppressWarnings("unchecked")
+                Comparable<? super K> k = (Comparable<? super K>) key;
+            do {
+                parent = t;
+                //自然排序比较
+                cmp = k.compareTo(t.key);
+                if (cmp < 0)
+                    t = t.left;
+                else if (cmp > 0)
+                    t = t.right;
+                else
+                    return t.setValue(value);
+            } while (t != null);
+        }
+     //不是自然排序也不是比较器排序 和父节点进行比较  按照大小进行左右挂载
+        Entry<K,V> e = new Entry<>(key, value, parent);
+        if (cmp < 0)
+            parent.left = e;
+        else
+            parent.right = e;
+        fixAfterInsertion(e);
+        size++;
+        modCount++;
+        return null;
+    }
+```
+
 ### 7.4 LinkedHashMap
 
+> `Map` 接口的哈希表和链接列表实现，具有可预知的迭代顺序。此实现与 `HashMap`  的不同之处在于，后者维护着一个运行于所有条目的双重链接列表。此链接列表定义了迭代顺序，该迭代顺序通常就是将键插入到映射中的顺序（*插入顺序*）。
+>
+> 数据结构是: 双向链表+ 列表+ 哈希表
+>
+> 插入顺序和迭代顺序是一致的。
+>
+> 不同步  线程不安全
+>
+> 允许null值和Null键
+
+```java
+package com.xdkj.javase.map;
+
+import java.util.LinkedHashMap;
+
+public class LinkedHashMapDemo {
+
+	public static void main(String[] args) {
+		LinkedHashMap<String,Integer> map = new LinkedHashMap<>();
+				map.put("Hello",123);
+				map.put("World",123);
+				map.put("Java",123);
+				map.put("c++",123);
+			//插入顺序和迭代顺序是一致的
+			System.out.println(map);
+		
+	}
+
+}
+
+```
+
 ### 7.5 Properties
+
+> `Properties` 类表示了一个持久的属性集。`Properties`  可保存在流中或从流中加载。属性列表中每个键及其对应值都是一个字符串。
+
+```properties
+userName=admin
+password=123
+```
+
+```java
+package com.xdkj.javase.map;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+public class PropertiesDemo {
+
+	public static void main(String[] args) throws IOException {
+		//获取一个资源作为流
+		InputStream resourceAsStream = PropertiesDemo.class.getClassLoader().getResourceAsStream("db.properties");
+		
+		Properties properties = new Properties();
+		//从流中加载数据
+		properties.load(resourceAsStream);
+		//从properties中 通过键获取值
+		System.out.println(properties.getProperty("userName"));
+		System.out.println(properties.getProperty("password"));
+		
+	}
+
+}
+
+```
+
+## 8. OOP加集合的阶段小项目
+
+![image-20201217114557888](_media/image-20201217114557888.png)
+
+```java
+package com.xdkj.javase.market;
+
+public class Custormer {
+	private String customerNo;//编号
+	private String customerName;//会员名字
+	private String customerPassword;//密码
+	private int customerScore;//积分
+	public Custormer() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public Custormer(String customerNo, String customerName, String customerPassword, int customerScore) {
+		super();
+		this.customerNo = customerNo;
+		this.customerName = customerName;
+		this.customerPassword = customerPassword;
+		this.customerScore = customerScore;
+	}
+	public String getCustomerNo() {
+		return customerNo;
+	}
+	public void setCustomerNo(String customerNo) {
+		this.customerNo = customerNo;
+	}
+	public String getCustomerName() {
+		return customerName;
+	}
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+	public String getCustomerPassword() {
+		return customerPassword;
+	}
+	public void setCustomerPassword(String customerPassword) {
+		this.customerPassword = customerPassword;
+	}
+	public int getCustomerScore() {
+		return customerScore;
+	}
+	public void setCustomerScore(int customerScore) {
+		this.customerScore = customerScore;
+	}
+	@Override
+	public String toString() {
+		return "Custormer [customerNo=" + customerNo + ", customerName=" + customerName + ", customerPassword="
+				+ customerPassword + ", customerScore=" + customerScore + "]";
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((customerName == null) ? 0 : customerName.hashCode());
+		result = prime * result + ((customerPassword == null) ? 0 : customerPassword.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Custormer other = (Custormer) obj;
+		if (customerName == null) {
+			if (other.customerName != null)
+				return false;
+		} else if (!customerName.equals(other.customerName))
+			return false;
+		if (customerPassword == null) {
+			if (other.customerPassword != null)
+				return false;
+		} else if (!customerPassword.equals(other.customerPassword))
+			return false;
+		return true;
+	}
+	
+}
+
+```
+
+```java
+package com.xdkj.javase.market;
+
+public class Goods {
+	private String goodsName;//名称
+	private String goodsType;//类型
+	private double goodsPrice;//单价
+	private int  goodsCount;//库存
+	private int goodsScore;//商品积分
+	public Goods() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public Goods(String goodsName, String goodsType, double goodsPrice, int goodsCount, int goodsScore) {
+		super();
+		this.goodsName = goodsName;
+		this.goodsType = goodsType;
+		this.goodsPrice = goodsPrice;
+		this.goodsCount = goodsCount;
+		this.goodsScore = goodsScore;
+	}
+	public String getGoodsName() {
+		return goodsName;
+	}
+	public void setGoodsName(String goodsName) {
+		this.goodsName = goodsName;
+	}
+	public String getGoodsType() {
+		return goodsType;
+	}
+	public void setGoodsType(String goodsType) {
+		this.goodsType = goodsType;
+	}
+	public double getGoodsPrice() {
+		return goodsPrice;
+	}
+	public void setGoodsPrice(double goodsPrice) {
+		this.goodsPrice = goodsPrice;
+	}
+	public int getGoodsCount() {
+		return goodsCount;
+	}
+	public void setGoodsCount(int goodsCount) {
+		this.goodsCount = goodsCount;
+	}
+	public int getGoodsScore() {
+		return goodsScore;
+	}
+	public void setGoodsScore(int goodsScore) {
+		this.goodsScore = goodsScore;
+	}
+	@Override
+	public String toString() {
+		return "Goods [goodsName=" + goodsName + ", goodsType=" + goodsType + ", goodsPrice=" + goodsPrice
+				+ ", goodsCount=" + goodsCount + ", goodsScore=" + goodsScore + "]";
+	}
+	
+}
+
+```
+
+```java
+package com.xdkj.javase.market;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class SuperMarket {
+	//准备数据库
+	private static List<Custormer> clist = new ArrayList<>();
+	private static List<Goods> glist = new ArrayList<>();
+	//购物车
+	private static List<Goods> carList = new ArrayList<>();
+	private static Scanner s = new Scanner(System.in);
+	public static void main(String[] args) {
+		//数据加入数据
+		initDatabase();
+		//登录
+		login();
+		//商品展示
+		
+	}
+	//初始化数据库
+	public static void initDatabase() {
+		//用户的数据库
+		Custormer c1 = new Custormer("xd001","admin","123456",0);
+		Custormer c2 = new Custormer("xd002","lucy","123456",0);
+		Custormer c3= new Custormer("xd003","刘德华","123456",0);
+		Custormer c4 = new Custormer("xd004","马德华","123456",0);
+		Custormer c5 = new Custormer("xd005","爱德华","123456",0);
+		Custormer c6 = new Custormer("xd006","刘能","123456",0);
+		
+		clist.add(c1);
+		clist.add(c2);
+		clist.add(c3);
+		clist.add(c4);
+		clist.add(c5);
+		clist.add(c6);
+		
+		Goods  g1 = new Goods("瓜子","食品",6.0,200,6);
+		Goods  g2 = new Goods("花生","食品",7.0,500,7);
+		Goods  g3 = new Goods("啤酒","4",10,500,10);
+		Goods  g4 = new Goods("凤爪","食品",5.0,300,5);
+		Goods  g5 = new Goods("牙膏","生活用品",12,200,12);
+		Goods  g6 = new Goods("香皂","生活用品",3.0,300,3);
+		Goods  g7= new Goods("铅笔","学习用品",1.5,200,1);
+		Goods  g8 = new Goods("篮球","体育用品",120.0,100,120);
+		Goods  g9 = new Goods("水杯","生活用品",45.0,50,45);
+		glist.add(g1);
+		glist.add(g2);
+		glist.add(g3);
+		glist.add(g4);
+		glist.add(g5);
+		glist.add(g6);
+		glist.add(g7);
+		glist.add(g8);
+		glist.add(g9);
+		
+	}
+	//登录
+	public static void login() {
+		System.out.println("-----欢迎登陆西点超市------");
+		System.out.println("-------请输入用户名------");
+			String name = s.next();
+		System.out.println("-------请输入用密码------");
+			String password = s.next();
+		Custormer c = new Custormer();
+			c.setCustomerName(name);
+			c.setCustomerPassword(password);
+		//进行登录操作	
+		//获取用户数据的数据
+		if(clist.contains(c)) {
+			System.out.println("--------登录成功---------");
+		}else {
+			System.out.println("--------登录失败重新登录-------");
+			//重新登录
+			login();
+		}
+		//对比
+	}
+	//商品展示
+	//购物
+	//支付
+	//打印小票
+	//抽奖
+
+}
+
+```
 
