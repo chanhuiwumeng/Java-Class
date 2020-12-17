@@ -1832,16 +1832,21 @@ public class Goods {
 package com.xdkj.javase.market;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.Set;
 
 public class SuperMarket {
 	//准备数据库
 	private static List<Custormer> clist = new ArrayList<>();
 	private static List<Goods> glist = new ArrayList<>();
 	//购物车
-	private static List<Goods> carList = new ArrayList<>();
+	private static HashMap<Goods,Integer> map = new HashMap<>();
 	private static Scanner s = new Scanner(System.in);
+	
 	public static void main(String[] args) {
 		//数据加入数据
 		initDatabase();
@@ -1869,7 +1874,7 @@ public class SuperMarket {
 		
 		Goods  g1 = new Goods("瓜子","食品",6.0,200,6);
 		Goods  g2 = new Goods("花生","食品",7.0,500,7);
-		Goods  g3 = new Goods("啤酒","4",10,500,10);
+		Goods  g3 = new Goods("啤酒","饮料",10,500,10);
 		Goods  g4 = new Goods("凤爪","食品",5.0,300,5);
 		Goods  g5 = new Goods("牙膏","生活用品",12,200,12);
 		Goods  g6 = new Goods("香皂","生活用品",3.0,300,3);
@@ -1890,6 +1895,8 @@ public class SuperMarket {
 	//登录
 	public static void login() {
 		System.out.println("-----欢迎登陆西点超市------");
+		//进行登录操作	
+		//获取用户数据的数据
 		System.out.println("-------请输入用户名------");
 			String name = s.next();
 		System.out.println("-------请输入用密码------");
@@ -1897,19 +1904,97 @@ public class SuperMarket {
 		Custormer c = new Custormer();
 			c.setCustomerName(name);
 			c.setCustomerPassword(password);
-		//进行登录操作	
-		//获取用户数据的数据
+		//对比
 		if(clist.contains(c)) {
 			System.out.println("--------登录成功---------");
+			//商品展示
+			showGoods();
+			
 		}else {
 			System.out.println("--------登录失败重新登录-------");
 			//重新登录
 			login();
 		}
-		//对比
 	}
 	//商品展示
+	public static void showGoods() {
+		System.out.println("-------商品列表-------");
+		System.out.println("商品名称\t商品类型\t商品单价\t商品库存\t商品积分");
+		for(Goods goods : glist) {
+			System.out.println(goods.getGoodsName() + "\t"+ goods.getGoodsType() + "\t"+ goods.getGoodsPrice()+"\t"+goods.getGoodsCount()+"\t"+goods.getGoodsScore());
+		}
+		//购买
+		shopping();
+	}
 	//购物
+	public static void shopping() {
+		System.out.println("------请输入您要购买的商品名称--------");
+		String goodsName = s.next();
+		Goods g = new Goods();
+			g.setGoodsName(goodsName);
+		//判断是否有这个商品
+		if(glist.contains(g)) {
+			Goods  gg = glist.get(glist.indexOf(g)) ;
+			System.out.println(gg);
+				//输入商品的数量
+				System.out.println("-----输入您要购买的数量-----");
+				System.out.println(map);
+				int count = s.nextInt();
+				int total = 0;
+				if(map.containsKey(gg)) {
+					total =  map.get(gg)+count;
+				}else {
+						total = count;
+						map.put(gg, total);
+					}
+				while(gg.getGoodsCount()  < total) {
+					System.out.println("该商品的库存是:"+gg.getGoodsCount() +"你的购买的数量是:"+ total);
+					System.out.println("------库存不足请重新输入-------");
+					System.out.println("============="+ map + "total"+ total);
+					count = s.nextInt();
+					total = count;
+				}
+					//购买的商品添加到购物车
+					if(map.containsKey(gg)) {
+						map.put(gg, total);
+					}else {
+						map.put(gg,total);
+					}
+					System.out.println(map);
+					//是否还在继续购买
+					System.out.println("--------------是否要继续购买(yes/no)---------");
+					
+					String flag = s.next();
+					if(flag.equals("yes")) {
+						shopping();
+					}else {
+						//结账
+						System.out.println("----核算清单-------");
+						sumGoods();
+						System.out.println("----购买完成请支付----");
+					}
+		}else {
+			System.out.println("输入的商品不存在 重新输入");
+			shopping();
+			}
+		}
+	
+	//核算
+	public static void sumGoods() {
+		Set<Entry<Goods, Integer>> entrySet = map.entrySet();
+		Iterator<Entry<Goods, Integer>> iterator = entrySet.iterator();
+		System.out.println("----商品列表----");
+		System.out.println("商品名称\t商品单价\t商品数量\t合计");
+		double totalPrice = 0.0;
+		while(iterator.hasNext()) {
+			Entry<Goods, Integer> next = iterator.next();
+			Goods goods = next.getKey();
+			int count = next.getValue();
+			System.out.println(goods.getGoodsName() + "\t"+ goods.getGoodsPrice() +"\t"+count + "\t"+ count*goods.getGoodsPrice());
+			totalPrice += count*goods.getGoodsPrice();
+		}
+		System.out.println("总消费:"+ totalPrice);
+	}
 	//支付
 	//打印小票
 	//抽奖
