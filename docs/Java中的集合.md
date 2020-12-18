@@ -1687,7 +1687,7 @@ public class PropertiesDemo {
 
 ```java
 package com.xdkj.javase.market;
-
+ 
 public class Custormer {
 	private String customerNo;//编号
 	private String customerName;//会员名字
@@ -1832,10 +1832,12 @@ public class Goods {
 package com.xdkj.javase.market;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -1935,7 +1937,7 @@ public class SuperMarket {
 		//判断是否有这个商品
 		if(glist.contains(g)) {
 			Goods  gg = glist.get(glist.indexOf(g)) ;
-			System.out.println(gg);
+			//System.out.println(gg);
 				//输入商品的数量
 				System.out.println("-----输入您要购买的数量-----");
 				System.out.println(map);
@@ -1971,7 +1973,6 @@ public class SuperMarket {
 						//结账
 						System.out.println("----核算清单-------");
 						sumGoods();
-						System.out.println("----购买完成请支付----");
 					}
 		}else {
 			System.out.println("输入的商品不存在 重新输入");
@@ -1994,10 +1995,66 @@ public class SuperMarket {
 			totalPrice += count*goods.getGoodsPrice();
 		}
 		System.out.println("总消费:"+ totalPrice);
+		payGoods(totalPrice);
 	}
 	//支付
-	//打印小票
+	public static void  payGoods(double totalPrice) {
+		System.out.println("-----请支付-------");
+		double payPrice  = s.nextDouble();
+		if(totalPrice > payPrice) {
+			System.out.println("----付款失败 ，请再次付款----");
+			payPrice  += s.nextDouble();
+			printTicket(totalPrice,payPrice);
+		}else {
+			System.out.println("----支付成功--------");
+			//打印小票
+			printTicket(totalPrice,payPrice);
+			//找零
+		}
+	}
+	public static void printTicket(double totalPrice,double payPrice) {
+		System.out.println("-----------欢迎光临西点超市-------");
+		System.out.println("----------购物清单------");
+		Set<Entry<Goods, Integer>> entrySet = map.entrySet();
+		Iterator<Entry<Goods, Integer>> iterator = entrySet.iterator();
+		System.out.println("----商品列表----");
+		System.out.println("商品名称\t商品单价\t商品数量\t合计");
+		double totalGoodsPrice = 0.0;
+		while(iterator.hasNext()) {
+			Entry<Goods, Integer> next = iterator.next();
+			Goods goods = next.getKey();
+			int count = next.getValue();
+			System.out.println(goods.getGoodsName() + "\t"+ goods.getGoodsPrice() +"\t"+count + "\t"+ count*goods.getGoodsPrice());
+			totalGoodsPrice += count*goods.getGoodsPrice();
+		}
+		System.out.println(new Date().toLocaleString());
+		System.out.println("一共消费了:"+ totalGoodsPrice + "实际支付:"+ payPrice +"找零:" + (payPrice-totalGoodsPrice));
+		//积分累计
+		lucyDraw();
+	}
 	//抽奖
+	public static void lucyDraw() {
+		Random  num = new Random();
+		int numFlag = num.nextInt(10);
+		switch(numFlag){
+		case 1:
+			System.out.println("恭喜您 抽到一等奖  奖品是电动自行车一台");
+			break;
+		case 2:
+			System.out.println("恭喜您 抽到二等奖  奖品是菜籽油一桶");
+			break;
+		case 3:
+			System.out.println("恭喜您 抽到三等奖  奖品是抽纸一提");
+			break;
+		case 4:
+			System.out.println("恭喜您 抽到四等奖  奖品是抽纸一包");
+			break;
+		default:
+			System.out.println("谢谢参与！！！");
+			break;
+		}
+		
+	}
 
 }
 
