@@ -287,7 +287,7 @@ public class FileInputStreamDemo {
 						//数组中读到的内容的实际的长度
 						int len = 0;	
 						while((len = inputStream.read(by))!=-1) {
-							System.out.println(inputStream.read(by,0,len));
+							//System.out.println(inputStream.read(by,0,len));
 								System.out.println(len);
 								//写数组中的偏移量 数组中实际内容的长度
 								outStream.write(by,0,len);
