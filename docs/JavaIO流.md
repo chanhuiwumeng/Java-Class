@@ -319,3 +319,160 @@ public class FileInputStreamDemo {
 
 ## 3. OutputStream
 
+### 3.1 FileOutputStream
+
++ write()
++ write(by,0,len)
++ close()
++ flush();
+
+```java
+package com.xdkj.javase.io;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+public class FileOutputStreamDemo {
+
+	public static void main(String[] args) {
+		//fileOutputStreamMethod2();
+		//fileOutputStreamMethod3();
+		//fileOutputStreamMethod4();
+		fileOutputStreamMethod5();
+	}
+	//写入一个字节的内容
+	public static void fileOutputStreamMethod1() {
+		OutputStream outputStream  = null;
+		try {
+			//在写入内容的时候如果文件不存在会自动创建
+			outputStream = new FileOutputStream("E:\\3.txt");
+			outputStream.write(97);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				outputStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	//写入字符串文件
+	public static void fileOutputStreamMethod2() {
+		OutputStream outputStream  = null;
+		try {
+			//在写入内容的时候如果文件不存在会自动创建
+			outputStream = new FileOutputStream("E:\\3.txt");
+			outputStream.write(97);
+			outputStream.write(97);
+			outputStream.write(97);
+			outputStream.write(97);
+			//字符串写入的时候要转为字节数组
+			outputStream.write("Hello World".getBytes());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				outputStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	//复制 文件
+	public static void fileOutputStreamMethod3() {
+		InputStream  inputStream = null;
+		OutputStream outputStream  = null;
+		try {
+			//在写入内容的时候如果文件不存在会自动创建
+			inputStream = new FileInputStream("E:\\1.txt");
+			outputStream = new FileOutputStream("E:\\3.txt");
+			byte []  by = new byte[1024];
+			int len = 0;
+			while((len = inputStream.read(by))!=-1) {
+				// 会写入脏读的数据
+				//outputStream.write(by);
+				//数组中写入实际读取到的长度
+				outputStream.write(by,0,len);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				outputStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	//复制 图片
+		public static void fileOutputStreamMethod4() {
+			InputStream  inputStream = null;
+			OutputStream outputStream  = null;
+			try {
+				//在写入内容的时候如果文件不存在会自动创建
+				inputStream = new FileInputStream("E:\\MacBuntu-Wallpapers\\20180412031959734.jpg");
+				outputStream = new FileOutputStream("E:\\4.jpg");
+				byte []  by = new byte[1024];
+				int len = 0;
+				while((len = inputStream.read(by))!=-1) {
+					// 会写入脏读的数据
+					//outputStream.write(by);
+					//数组中写入实际读取到的长度
+					outputStream.write(by,0,len);
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}finally {
+				try {
+					outputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		public static void fileOutputStreamMethod5() {
+			InputStream  inputStream = null;
+			OutputStream outputStream  = null;
+			try {
+				//在写入内容的时候如果文件不存在会自动创建
+				inputStream = new FileInputStream("E:\\1.avi");
+				outputStream = new FileOutputStream("E:\\5.avi");
+				byte []  by = new byte[1024];
+				int len = 0;
+				while((len = inputStream.read(by))!=-1) {
+					// 会写入脏读的数据
+					//outputStream.write(by);
+					//数组中写入实际读取到的长度
+					outputStream.write(by,0,len);
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}finally {
+				try {
+					outputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+}
+
+```
+
