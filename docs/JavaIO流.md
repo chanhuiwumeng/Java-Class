@@ -16,7 +16,15 @@
 >
 > 任何的文件，byte 字节表示大小。
 >
-> 底层都是字节的数据。unicode 编码或者其他的编码的东西。
+> 底层都是字节的数据。unicode 编码或者其他的编码的东西。\
+>
+> IO流按照数据的流向:
+>
+> InputStream/OutputStream (字节流)
+>
+> Reader/Writer(字符流)
+>
+> Io流基本上我们学习的都是上边四个抽象类的子类
 
 ## 1. File 文件
 
@@ -173,3 +181,90 @@ public class FileDemo {
 
 ```
 
+## 2. InputStream
+
+> 字节输入流:  此抽象类是表示字节输入流的所有类的超类。
+>
+> 因为是抽象类，抽象类不能实例化。
+
+### 2.1 FileInputStream
+
+```java
+package com.xdkj.javase.io;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+public class FileInputStreamDemo {
+
+	public static void main(String[] args) {
+		//抽象路径
+		File file = new File("E:/1.txt");
+		//inputStreamMetod1(file);
+		inputStreamMetod2(file);
+	}
+	//一个字节一个字节的读取
+	private static void inputStreamMetod1(File file) {
+		InputStream  inputStream  = null;
+		//从哪个路径的文件中读文件的内容
+		try {
+			inputStream = new FileInputStream(file);
+			//读内容  
+			//第一个字符的utf-8的编码
+			System.out.println(inputStream.read());//49
+			System.out.println(inputStream.read());//50
+			System.out.println(inputStream.read());//51
+			System.out.println('1'+0);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	//一个字节一个字节的读取
+		private static void inputStreamMetod2(File file) {
+			InputStream  inputStream  = null;
+			OutputStream outStream = null;
+			//从哪个路径的文件中读文件的内容
+			try {
+				inputStream = new FileInputStream(file);
+				outStream = new FileOutputStream("E:\\2.txt");
+				//读内容  
+				//第一个字符的utf-8的编码
+				int len = 0;
+				while((len = inputStream.read())!=-1) {
+						System.out.println(len);
+						outStream.write(len);
+				}
+				//  11100110    10001000  10010001
+				//	1100010 00010001
+				System.out.println('我'+0);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}finally {
+				//资源关闭
+				//先用后关
+				try {
+					outStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+}
+
+```
+
+## 3. OutputStream
