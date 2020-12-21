@@ -189,6 +189,11 @@ public class FileDemo {
 
 ### 2.1 FileInputStream
 
++ read()
++ read(Byte[])
++ read(Byte[],offset,length)
++ close() 关闭流的资源
+
 ```java
 package com.xdkj.javase.io;
 
@@ -206,7 +211,10 @@ public class FileInputStreamDemo {
 		//抽象路径
 		File file = new File("E:/1.txt");
 		//inputStreamMetod1(file);
-		inputStreamMetod2(file);
+		
+		//inputStreamMetod2(file);
+		inputStreamMetod3(file);
+		
 	}
 	//一个字节一个字节的读取
 	private static void inputStreamMetod1(File file) {
@@ -226,7 +234,7 @@ public class FileInputStreamDemo {
 			e.printStackTrace();
 		}
 	}
-	//一个字节一个字节的读取
+		//一个字节一个字节的读取
 		private static void inputStreamMetod2(File file) {
 			InputStream  inputStream  = null;
 			OutputStream outStream = null;
@@ -236,14 +244,14 @@ public class FileInputStreamDemo {
 				outStream = new FileOutputStream("E:\\2.txt");
 				//读内容  
 				//第一个字符的utf-8的编码
-				int len = 0;
+				int len = 0;	
 				while((len = inputStream.read())!=-1) {
 						System.out.println(len);
 						outStream.write(len);
 				}
-				//  11100110    10001000  10010001
-				//	1100010 00010001
-				System.out.println('我'+0);
+				//  11100100 10111000 10000000
+				//	0110 0010 0001 0001
+				System.out.println('一'+0);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -263,8 +271,51 @@ public class FileInputStreamDemo {
 				}
 			}
 		}
+		
+		//使用数组来装读取到的字节内容  造成文件整体的长度错误!
+				private static void inputStreamMetod3(File file) {
+					InputStream  inputStream  = null;
+					OutputStream outStream = null;
+					//从哪个路径的文件中读文件的内容
+					try {
+						inputStream = new FileInputStream(file);
+						outStream = new FileOutputStream("E:\\2.txt");
+						//读内容  
+						//第一个字符的utf-8的编码
+						//默认给1024
+						byte[] by = new byte[1024];
+						//数组中读到的内容的实际的长度
+						int len = 0;	
+						while((len = inputStream.read(by))!=-1) {
+							System.out.println(inputStream.read(by,0,len));
+								System.out.println(len);
+								//写数组中的偏移量 数组中实际内容的长度
+								outStream.write(by,0,len);
+						}
+						//阻塞的io流
+						System.out.println('一'+0);
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}finally {
+						//资源关闭
+						//先用后关
+						try {
+							outStream.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						try {
+							inputStream.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
 }
 
 ```
 
 ## 3. OutputStream
+
