@@ -749,7 +749,132 @@ public class CoverStreamDemo {
 
 ##  5.Reader
 
+> 适合于读取字符流。一般使用与读取文本文件(windows的记事本可以打开的文件)。
+
+```java
+package com.xdkj.javase.io;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+
+public class ReaderDemo {
+
+	public static void main(String[] args) {
+		//method1();
+		method2();
+	}
+
+	private static void method1() {
+		try {
+			Reader  reader = new FileReader("E:/1.txt");
+			int  len = 0;
+			while((len = reader.read())!=-1) {
+				System.out.println(len);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private static void method2() {
+		try {
+			Reader  reader = new FileReader("E:/1.txt");
+			int  len = 0;
+			char [] ch = new char[1024];
+			while((len = reader.read(ch))!=-1) {
+				System.out.println(ch);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+}
+
+```
+
 ## 6.Writer
+
+```java
+package com.xdkj.javase.io;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+
+public class BufferedReaderWriterDemo {
+
+	public static void main(String[] args) {
+		//method1();
+		method2();
+	}
+
+	private static void method1() {
+		try (Reader  reader = new FileReader("E:/1.txt");
+				BufferedReader  bufferReader = new BufferedReader(reader);
+				
+				Writer writer = new FileWriter("e:/10.txt");
+				BufferedWriter bufferWriter = new BufferedWriter(writer);)
+		{
+			char [] ch = new char[1024];
+			int len = 0;
+			while((len = bufferReader.read(ch))!=-1) {
+				bufferWriter.write(ch, 0, len);
+			}
+			bufferWriter.flush();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static void method2() {
+		//流资源的自动关闭
+		try (Reader  reader = new FileReader("E:/1.txt");
+				BufferedReader  bufferReader = new BufferedReader(reader);
+				
+				Writer writer = new FileWriter("e:/11.txt");
+				BufferedWriter bufferWriter = new BufferedWriter(writer);)
+		{
+			String  str = null;
+			int len = 0;
+			//按行读取  根据\r\n判断行结束符号
+			while((str = bufferReader.readLine())!=null) {
+				bufferWriter.write(str);
+				//bufferWriter.write("\r\n");
+				//换行
+				bufferWriter.newLine();
+			}
+			//刷新缓冲区
+			bufferWriter.flush();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+
+```
+
+> 对于图片。视频。音频。。。除文本意外的资源复制有四种方式
+>
+> 文本资源复制有9种方式:
 
 ## 7. 对象流
 
