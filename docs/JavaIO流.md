@@ -317,6 +317,114 @@ public class FileInputStreamDemo {
 
 ```
 
+### 2.2 高效缓冲流  BufferedInputStream
+
+> 在创建 `BufferedInputStream` 时，会创建一个内部缓冲区数组.默认缓冲区的大小是8192.
+>
+> 缓冲区就像，勺子，用勺子(缓冲区数组)盛东西在装到袋子(数组)里面会比较的快。
+>
+> ```java
+> public
+>  class BufferedInputStream extends FilterInputStream {
+> 
+>     private static int DEFAULT_BUFFER_SIZE = 8192;
+> 
+> public BufferedInputStream(InputStream in) {
+>         this(in, DEFAULT_BUFFER_SIZE);
+>     }
+> }
+> ```
+>
+> 使用缓冲区数组结合 数组的方式去读取数据，速率明显提升很大。
+
+```java
+package com.xdkj.javase.io;
+
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
+public class BufferedInputStreamDemo {
+
+	public static void main(String[] args) {
+		
+		long start = System.currentTimeMillis();
+		//method1();
+			method3();
+		long end = System.currentTimeMillis();
+		System.out.println("method执行时间:"+ (end -start) );
+		
+		long start1 = System.currentTimeMillis();
+		method2();
+		long end1 = System.currentTimeMillis();
+		System.out.println("method1执行时间:"+(end1- start1));
+	}
+	
+	//带缓冲区的速度更快
+	private static void method1() {
+		InputStream in;
+		BufferedInputStream bufferIn;
+		try {
+		 in = new FileInputStream("E:\\1.avi");
+		 bufferIn = new BufferedInputStream(in);
+		 int len = 0;
+		 while((len = bufferIn.read())!=-1) {
+			 //System.out.println(len);
+		 }
+		 
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	//效率更高
+	/*
+	 * 缓冲区的数据相当于买米的勺子一样。原始的字节流是一粒一粒的向数组中装数据，
+	 * 现在改用勺子向数组中装
+	 * 数据了，效率肯定就高了。
+	 * 
+	 * */
+	private static void method3() {
+		InputStream in;
+		BufferedInputStream bufferIn;
+		try {
+		 in = new FileInputStream("E:\\1.avi");
+		 bufferIn = new BufferedInputStream(in,10240);
+		 int len = 0;
+		 byte [] by = new byte[1024];
+		 while((len = bufferIn.read(by))!=-1) {
+			 //System.out.println(new String(by,0,len));
+		 }
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	private static void method2() {
+		InputStream in;
+		try {
+		 in = new FileInputStream("E:\\1.avi");
+		 int len = 0;
+		 
+		 while((len= in.read())!=-1) {
+			// System.out.println(len);
+		 }
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+}
+
+```
+
 ## 3. OutputStream
 
 ### 3.1 FileOutputStream
@@ -476,3 +584,24 @@ public class FileOutputStreamDemo {
 
 ```
 
+###  3.2BufferedOutputStream
+
+
+
+## 4. Reader
+
+##  5. Writer
+
+## 6. 转换流(处理中文乱码)
+
+## 7. 对象流
+
+## 8. 内存流
+
+## 9. 随机流
+
+## 10.合并流
+
+## 11. 打印流
+
+ 
