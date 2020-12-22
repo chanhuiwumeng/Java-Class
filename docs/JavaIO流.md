@@ -586,13 +586,170 @@ public class FileOutputStreamDemo {
 
 ###  3.2BufferedOutputStream
 
+```java
+package com.xdkj.javase.io;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-## 4. Reader
+public class BufferedOutputStreamDemo {
+	public static void main(String[] args) {
+		//method1();
+		//method2();
+		method3();
+	}
 
-##  5. Writer
+	private static void method1() {
+		try {
+			OutputStream  out = new FileOutputStream(new File("E:\\6.txt"));
+			BufferedOutputStream bufferOut = new BufferedOutputStream(out);
+			bufferOut.write("HelloWorld".getBytes());
+			//刷新缓存流 写入数据
+			bufferOut.flush();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	//复制文件
+	private static void method2() {
+		//jdk1.7的io流自动关闭
+		try(InputStream in = new FileInputStream("E:\\1.txt");
+				BufferedInputStream  bufferIn = new BufferedInputStream(in);
+				OutputStream  out = new FileOutputStream(new File("E:\\7.txt"));
+				BufferedOutputStream bufferOut = new BufferedOutputStream(out);
+			)
+		{
+			int len = 0;
+			while((len = bufferIn.read())!=-1) {
+				bufferOut.write(len);
+			}
+			//刷新缓存流 写入数据
+			bufferOut.flush();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	//效率是最快的文件复制
+	private static void method3() {
+		//jdk1.7的io流自动关闭
+		try(InputStream in = new FileInputStream("E:\\5.avi");
+				BufferedInputStream  bufferIn = new BufferedInputStream(in);
+				OutputStream  out = new FileOutputStream(new File("E:\\7.avi"));
+				BufferedOutputStream bufferOut = new BufferedOutputStream(out);
+			)
+		{
+			int len = 0;
+			byte[] by = new byte[1024];
+			while((len = bufferIn.read(by))!=-1) {
+				bufferOut.write(by,0,len);
+			}
+			//刷新缓存流 写入数据
+			bufferOut.flush();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+}
 
-## 6. 转换流(处理中文乱码)
+```
+
+## 4. 转换流(处理中文乱码)
+
+> InputStreamReader(Inputsream in ,String charSetName)  在读取数据的时候指定编码
+>
+> OutputStreamWriter(OutputStream out,String chasrsetName); 写入内容的时候指定编码
+
+```java
+package com.xdkj.javase.io;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+
+public class CoverStreamDemo {
+	public static void main(String[] args) {
+		//method2();
+		methid3();
+	}
+	//复制文件
+		private static void method2() {
+			//jdk1.7的io流自动关闭
+			try(InputStream in = new FileInputStream("E:\\3.txt");
+					BufferedInputStream  bufferIn = new BufferedInputStream(in);
+					OutputStream  out = new FileOutputStream(new File("E:\\4.txt"));
+					BufferedOutputStream bufferOut = new BufferedOutputStream(out);
+				)
+			{
+				int len = 0;
+				byte [] by = new byte[1024];
+				while((len = bufferIn.read(by))!=-1) {
+					bufferOut.write(by,0,len);
+				}
+				//刷新缓存流 写入数据
+				bufferOut.flush();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		//转换流  转换流式解决文件乱码的
+		public static void methid3() {
+			//jdk1.7的io流自动关闭
+			try(InputStream in = new FileInputStream("E:\\7.txt");
+					BufferedInputStream  bufferIn = new BufferedInputStream(in);
+					OutputStream  out = new FileOutputStream(new File("E:\\8.txt"));
+					BufferedOutputStream bufferOut = new BufferedOutputStream(out);
+					//解码
+					InputStreamReader  inReader = new InputStreamReader(bufferIn,"gb2312");
+					//编码
+					OutputStreamWriter   ouWriter = new OutputStreamWriter(bufferOut,"utf-8");
+					/*我 ----> 25102   gb2312   utf-8 ----> 乱码的字
+					 * 
+					 * */
+				)
+			{
+				int len = 0;
+				char [] by = new char[1024];
+				while((len = inReader.read(by))!=-1) {
+					ouWriter.write(by,0,len);
+				}
+				//刷新缓存流 写入数据
+				ouWriter.flush();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+}
+
+```
+
+##  5.Reader
+
+## 6.Writer
 
 ## 7. 对象流
 
