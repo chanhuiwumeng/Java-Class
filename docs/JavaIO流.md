@@ -1174,8 +1174,101 @@ public class RandomAccsessFileDemo {
 
 ## 10.合并流
 
+> 合并流分为两种:
+>
+> 1. 将两个文件写入一个文件   **[SequenceInputStream](../../java/io/SequenceInputStream.html#SequenceInputStream(java.io.InputStream, java.io.InputStream))**(InputStream s1, InputStream s2)
+> 2. 将多个文件写入一个文件 **[SequenceInputStream](../../java/io/SequenceInputStream.html#SequenceInputStream(java.util.Enumeration))**(Enumeration<? extends InputStream> e)
 
+```java
+package com.xdkj.javase.io;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.SequenceInputStream;
+import java.util.Enumeration;
+import java.util.Vector;
+
+public class SequenceInputStreamDemo {
+
+	public static void main(String[] args) {
+		//copyTwoFiles();
+		copyMoreFiles();
+	}
+
+	private static void copyTwoFiles() {
+		try {
+			InputStream  in1 = new FileInputStream("e:/1.txt");
+			InputStream  in2 = new FileInputStream("e:/q.txt");
+			//合并流
+			SequenceInputStream  sequenceInputStream  = new SequenceInputStream(in1, in2);
+			
+			BufferedInputStream  bufferedInputStream = new BufferedInputStream(sequenceInputStream);
+			BufferedOutputStream bOutputStream = new BufferedOutputStream(new FileOutputStream("e:/h.txt"));
+			byte[] by = new byte[1024];
+			int len = 0;
+			while((len = bufferedInputStream.read(by))!=-1) {
+				bOutputStream.write(by, 0, len);
+			}
+			bOutputStream.flush();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	private static void copyMoreFiles() {
+		try {
+			InputStream  in1 = new FileInputStream("e:/1.txt");
+			InputStream  in2 = new FileInputStream("e:/q.txt");
+			InputStream  in3 = new FileInputStream("e:/2.txt");
+			InputStream  in4 = new FileInputStream("e:/qq.txt");
+			InputStream  in5 = new FileInputStream("e:/obj.txt");
+			
+			
+			Vector<InputStream> vector = new Vector<>();
+				vector.add(in1);
+				vector.add(in2);
+				vector.add(in3);
+				vector.add(in4);
+				vector.add(in5);
+				//枚举迭代器
+			Enumeration<InputStream> elements = vector.elements();
+			
+			SequenceInputStream  sequenceInputStream  = new SequenceInputStream(elements);
+			
+			BufferedInputStream  bufferedInputStream = new BufferedInputStream(sequenceInputStream);
+			BufferedOutputStream bOutputStream = new BufferedOutputStream(new FileOutputStream("e:/hh.txt"));
+			byte[] by = new byte[1024];
+			int len = 0;
+			while((len = bufferedInputStream.read(by))!=-1) {
+				bOutputStream.write(by, 0, len);
+			}
+			bOutputStream.flush();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+}
+
+```
 
 ## 11. 打印流
+
+> PrintStream:
+>
+> print
+>
+> println
+>
+> format
+>
+> 前期基本上是控制台打印。后期使用打印流向页面(网页)传输json数据。
 
  
