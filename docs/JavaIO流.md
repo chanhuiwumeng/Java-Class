@@ -886,6 +886,10 @@ public class BufferedReaderWriterDemo {
 >
 > 按照规则将对象写入文件称之为序列化   按照规则读出来成为反序列化。
 >
+> 对象的默认序列化机制写入的内容是：对象的类，类签名，以及非瞬态和非静态字段的值。其他对象的引用（瞬态和静态字段除外）也会导致写入那些对象。可使用引用共享机制对单个对象的多个引用进行编码，这样即可将对象的图形恢复为最初写入它们时的形状。 
+>
+> 
+>
 > **把对象转换为字节序列的过程称为对象的序列化**。
 > 　　**把字节序列恢复为对象的过程称为对象的反序列化**。
 > 　　对象的序列化主要有两种用途：
@@ -895,8 +899,6 @@ public class BufferedReaderWriterDemo {
 > 　　在很多应用中，需要对某些对象进行序列化，让它们离开内存空间，入住物理硬盘，以便长期保存。比如最常见的是Web服务器中的Session对象，当有 10万用户并发访问，就有可能出现10万个Session对象，内存可能吃不消，于是Web容器就会把一些seesion先序列化到硬盘中，等要用了，再把保存在硬盘中的对象还原到内存中。
 >
 > 　　当两个进程在进行远程通信时，彼此可以发送各种类型的数据。无论是何种类型的数据，都会以二进制序列的形式在网络上传送。发送方需要把这个Java对象转换为字节序列，才能在网络上传送；接收方则需要把字节序列再恢复为Java对象。
-
-
 
 ```java
 package com.xdkj.javase.io;
@@ -1084,13 +1086,95 @@ public class ObjectStreamDemo {
 
 ```
 
+## 8. 内存流(学了就忘了)
 
+```java
+package com.xdkj.javase.io;
 
-## 8. 内存流
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
+/**内存流就是从内存中加载数据
+ * 	ByteArrayInputStream
+ * 	ByteArrayOutputStream
+ * 
+ * */
+public class MemoryDemo {
+
+	public static void main(String[] args) throws FileNotFoundException {
+		ByteArrayInputStream byArrayInputStream = new ByteArrayInputStream("HelloWorld".getBytes());
+		ByteArrayOutputStream  byArrayOutputStream = new ByteArrayOutputStream();
+		OutputStream  fileOut =  new FileOutputStream("E:/member.txt");
+		
+		byte []  by = new byte[1024];
+		int len = 0;
+		try {
+			while((len = byArrayInputStream.read(by))!=-1) {
+				byArrayOutputStream.write(by, 0, len);
+				byArrayOutputStream.writeTo(fileOut);
+			}
+			fileOut.flush();
+			byArrayOutputStream.flush();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+	}
+
+}
+
+```
 
 ## 9. 随机流
 
+> 我们想在一段文章中加入广告?
+>
+> 随机流只有一个，具有读写功能。
+
+```java
+package com.xdkj.javase.io;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+
+public class RandomAccsessFileDemo {
+
+	public static void main(String[] args) {
+		//
+		try(RandomAccessFile   random = new RandomAccessFile(new File("E:/1.txt"), "r");
+			RandomAccessFile   random1 = new RandomAccessFile(new File("E:/2.txt"), "rw");) {
+			
+			String str = "";
+			int len = 0;
+			while((str = random.readLine())!=null) 
+			{//字符串写入writeUTF
+				random1.writeUTF("---------------Hello this is a seprator--------------------");
+				System.out.println(new String(str.getBytes("iso8859-1"),"utf8"));
+				
+				random1.writeUTF(new String(str.getBytes("iso8859-1"),"utf8"));
+				random1.writeUTF("\r\n");
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+
+```
+
 ## 10.合并流
+
+
 
 ## 11. 打印流
 
