@@ -878,6 +878,202 @@ public class BufferedReaderWriterDemo {
 
 ## 7. 对象流
 
+> 我们在程序开发中经常使用new关键字创建类的实例化对象，对象一般在方法找那个使用，方法执行完成对象就等待gc回收。
+>
+> 对象创建出来是在运行内存中保存的，我想把这个对象永久的保存下来怎么办?
+>
+> 把对象按照一定的规则写入文件中再使用的时候按照一定的规则读出来。
+>
+> 按照规则将对象写入文件称之为序列化   按照规则读出来成为反序列化。
+
+```java
+package com.xdkj.javase.io;
+
+import java.io.Serializable;
+
+public class Student implements Serializable{
+	/**
+	 *  动态id
+	 *  uuid
+	 */
+	private static final long serialVersionUID = 6174239004227470490L;
+	
+	
+	private int age;
+	private String name;
+	private String email;
+	//瞬时的
+	transient String address;
+	
+	public Student() {
+		super();
+	}
+	public Student(int age, String name, String email) {
+		super();
+		this.age = age;
+		this.name = name;
+		this.email = email;
+	}
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	
+	
+	/*
+	 * @Override public String toString() { return "Student [age=" + age + ", name="
+	 * + name + ", email=" + email + "]"; }
+	 */
+	
+}
+
+```
+
+```java
+package com.xdkj.javase.io;
+
+import java.io.Serializable;
+
+public class Person  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2303898885138016551L;
+	private int age;
+	private String name;
+	private String address;
+	public Person() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public Person(int age, String name, String address) {
+		super();
+		this.age = age;
+		this.name = name;
+		this.address = address;
+	}
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	@Override
+	public String toString() {
+		return "Person [age=" + age + ", name=" + name + ", address=" + address + "]";
+	}
+	
+}
+
+```
+
+```java
+package com.xdkj.javase.io;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import com.xdkj.javase.io.Student;
+
+public class ObjectStreamDemo {
+	
+	public static void main(String[] args) {
+		method1();
+		method2();
+		//System.out.println(UUID.randomUUID());
+	}
+
+	private static void method1() {
+		Student student = new Student(23,"joke","1888888@qq.com");
+		Student student1 = new Student(25,"lucy","99999@qq.com");
+		Person person = new Person(26,"admin","陕西省西安市");
+		System.out.println(student);
+		System.out.println(student1);
+		//使用对象流
+		try {
+			//序列化写入
+			ObjectOutputStream  objOut = new ObjectOutputStream(new FileOutputStream("E:/obj.txt"));
+			//将对象写入文件中
+			//java.io.NotSerializableException: com.xdkj.javase.io.Student
+				objOut.writeObject(student);
+				objOut.writeObject(student1);
+				objOut.writeObject(person);
+			//反序列化读取
+				
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	//反序列化
+	//怎么保证从文件中读取对象的时候是完整的?
+	//按照对象的序列化顺序去读取的，顺序不一致存在类转换异常
+	//
+	private static void method2() {
+		try {
+			ObjectInputStream  objIn=  new ObjectInputStream(new FileInputStream("E:/obj.txt"));
+				Student student = (Student)	objIn.readObject();
+				System.out.println(student);
+				
+				Student student1 = (Student)	objIn.readObject();
+				System.out.println(student1);
+				
+				Person person = (Person)objIn.readObject();
+				System.out.println(person);
+				
+				
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+
+```
+
+
+
 ## 8. 内存流
 
 ## 9. 随机流
