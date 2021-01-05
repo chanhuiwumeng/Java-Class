@@ -291,11 +291,114 @@ public class ConsumerDemo {
 
 ```
 
+### 2.3 Supplier
 
+```java
+package com.xdkj.jdk8;
 
-## 3. Stream集合流
+import java.util.function.Supplier;
 
-## 4. 新的日期API（JDK1.8的）
+public class SupplierDemo {
 
-## 5. 函数接口
+	public static void main(String[] args) {
+		//方法的引用 new String();
+		Supplier<Student> sup = Student::new ;
+		//get一次 new一次对象
+		Student stu = sup.get();
+		Student stu1 = sup.get();
+		System.out.println(stu == stu1);//false
+	}
+
+}
+
+```
+
+## 3. 方法的引用 ::
+
+```java
+package com.xdkj.jdk8;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+public class MethodReference {
+
+	public static void main(String[] args) {
+		method("Hello",(a)->{System.out.println(a.concat("World"));});
+		//方法引用
+		method("Hello",System.out::println);
+		
+		Student student = new Student();
+		
+		Supplier<Student> student1 = Student::new;
+		
+		//方法引用静态方法
+		method1("123",System.out::println);
+		
+	}
+	public static void  method(String str,Consumer<String > con) {
+			con.accept(str);
+	}
+	public static void  method1(String str,Consumer<String > con) {
+		con.accept(str);
+	}
+}
+
+```
+
+## 4. Stream集合流 :imp:
+
+```java
+package com.xdkj.jdk8;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+//静态导入
+import static java.util.stream.Collectors.toList;
+public class StreamDemo {
+
+	public static void main(String[] args) {
+		List<String> list = Arrays.asList("Hello", "World", "", "java", "Haha", "Jump", "Song", "");
+		List<Integer> list1 = Arrays.asList(88, 2, 45, 63, 56, 99, 41, 22, 13, 9, 100);
+		method(list);
+		method2(list1);
+		method3(list1);
+	}
+
+	public static void method(List<String> list) {
+		// 将集合转换为流
+		Stream stream = list.stream();
+		stream
+				// 获取流中不能为空的数据
+				.filter((a) -> {
+					return !a.equals("");
+				})
+				// 变量流中的数据并打印出来
+				// .forEach(System.out::println);
+				.forEach((a) -> System.out.println(a));
+	}
+
+	public static void method2(List<Integer> list) {
+
+		int max = list.stream()
+				.filter((a) -> {return a <= 100 && a >= 30;})
+				.max((a, b) -> {return a - b;})
+				.get();
+		System.out.println(max);
+	}
+	
+	public static void method3(List<Integer> list) {
+		 List<Integer> collect = list.stream()
+				.filter((a) -> {return a <= 100 && a >= 30;})
+				.collect(toList());
+		 System.out.println(collect);
+	}
+}
+
+```
+
+## 5. 新的日期API（JDK1.8的）
+
+## 6. 函数接口
 
