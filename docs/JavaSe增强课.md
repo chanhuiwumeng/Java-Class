@@ -137,7 +137,7 @@ java程序先要编译后运行，我们一般只要编译后的.class文件就�
 
 1. .class
 2. getClass()
-3. Class.from();
+3. Class.forName();
 
 ```java
 package com.xdkj.javase.strong;
