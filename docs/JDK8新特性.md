@@ -400,5 +400,81 @@ public class StreamDemo {
 
 ## 5. 新的日期API（JDK1.8的）
 
-## 6. 函数接口
+```java
+package com.xdkj.jdk8;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
+
+public class LocalDateDemo {
+
+	public static void main(String[] args) {
+		//获取系统的当前的日期
+		LocalDate  localdate = LocalDate.now();
+			System.out.println(localdate);
+		//过去日期的字段值
+			//获取年
+			System.out.println(localdate.getYear());
+			//获取月
+			System.out.println(localdate.getMonth());
+			//获取一月中的第一天
+			System.out.println(localdate.getDayOfMonth());
+			//获取一周的第几天
+			System.out.println(localdate.getDayOfWeek());
+			//获取一年中的第几天
+			System.out.println(localdate.getDayOfYear());
+			//通过传入的日期值设置日期
+			LocalDate  localDate2 = LocalDate.of(2019, 12, 15);
+			System.out.println(localDate2);
+			//字段集合的枚举
+		int year = 	localDate2.get(ChronoField.YEAR);
+			
+		System.out.println(year);	
+			//字符串和日期的转换
+			//字符串转日期
+			LocalDate  localDate3 = LocalDate.parse("2020-10-20");
+			System.out.println(localDate3);
+			//日期转字符串
+		//DateTimeFormatter formatter = 	DateTimeFormatter.ISO_TIME;
+		DateTimeFormatter formatter = 	DateTimeFormatter.ISO_DATE_TIME;
+		String str = formatter.format(LocalDateTime.now());
+		System.out.println(str);
+		
+		//LocalDateTime
+		LocalDate  localDate4 = LocalDate.now();
+		LocalTime  localTime  = LocalTime.now();
+		LocalTime of = LocalTime.of(18, 30);
+		LocalDateTime atTime = localDate4.atTime(of);
+		LocalDateTime  localDateTime = LocalDateTime.of(localDate4,localTime );
+		System.out.println(localDateTime);
+		System.out.println(localDateTime);
+		System.out.println(atTime);
+	}
+
+}
+
+```
+
+## 6. 静态导入
+
+```java
+package com.xdkj.jdk8;
+/**静态导入 只能调用类的静态方法或者属性
+ * 
+ * */
+import static java.lang.Math.*;
+public class StaticImport {
+
+	public static void main(String[] args) {
+		System.out.println(PI);
+		random();
+	}
+}
+
+```
+
+
 
