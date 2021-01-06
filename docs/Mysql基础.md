@@ -405,6 +405,8 @@ mysql> select database();
 
 ### 6.1 数据库的创建
 
+**直接创建数据库**
+
 ```sql
 mysql> create database hehe;
 Query OK, 1 row affected (0.00 sec)
@@ -422,6 +424,25 @@ mysql> show databases;
 | clouddb03          |
 | haha               |
 | hehe               |
+```
+
+**创建数据库如果数据库不存在**
+
+```sql
+mysql> create database  if not exists hehe;
+Query OK, 1 row affected (0.00 sec)
+```
+
+**查看当前的数据创建信息**
+
+```SQL
+mysql> show create database hehe;
++----------+---------------------------------------------------------------+
+| Database | Create Database                                               |
++----------+---------------------------------------------------------------+
+| hehe     | CREATE DATABASE `hehe` /*!40100 DEFAULT CHARACTER SET utf8 */ |
++----------+---------------------------------------------------------------+
+1 row in set (0.00 sec)
 ```
 
 ### 6.2 数据库的删除
@@ -469,9 +490,22 @@ Query OK, 0 rows affected, 1 warning (0.00 sec)
 ```sql
 mysql> alter database haha character set gbk;
 Query OK, 1 row affected (0.00 sec)
+
+mysql> SHOW VARIABLES LIKE 'character%';
++--------------------------+---------------------------------------------------------+
+| Variable_name            | Value                                                   |
++--------------------------+---------------------------------------------------------+
+| character_set_client     | utf8                                                    |
+| character_set_connection | utf8                                                    |
+| character_set_database   | gbk                                                     |
+| character_set_filesystem | binary                                                  |
+| character_set_results    | utf8                                                    |
+| character_set_server     | utf8                                                    |
+| character_set_system     | utf8                                                    |
+| character_sets_dir       | C:\Program Files\MySQL\MySQL Server 5.7\share\charsets\ |
++--------------------------+---------------------------------------------------------+
+8 rows in set, 1 warning (0.00 sec)
 ```
-
-
 
 **通过Mysql安装目录的my.ini文件进行修改**
 
@@ -495,7 +529,7 @@ ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: Y
 
 ### 7.0 数据库的数据类型
 
-## 数值类型
+==数值类型==
 
 MySQL支持所有标准SQL数值数据类型。
 
@@ -520,7 +554,7 @@ BIT数据类型保存位字段值，并且支持MyISAM、MEMORY、InnoDB和BDB�
 
 > 在实际开发的项目中如果牵扯到金额方面的时候不要使用flolat double , decimal数据类型进行存储。
 
-## 日期和时间类型
+**日期和时间类型****
 
 表示时间值的日期和时间类型为DATETIME、DATE、TIMESTAMP、TIME和YEAR。
 
@@ -536,7 +570,7 @@ TIMESTAMP类型有专有的自动更新特性，将在后面描述。
 | DATETIME  | 8             | 1000-01-01 00:00:00/9999-12-31 23:59:59                      | YYYY-MM-DD HH:MM:SS | 混合日期和时间值         |
 | TIMESTAMP | 4             | 1970-01-01 00:00:00/2038结束时间是第 **2147483647** 秒，北京时间 **2038-1-19 11:14:07**，格林尼治时间 2038年1月19日 凌晨 03:14:07 | YYYYMMDD HHMMSS     | 混合日期和时间值，时间戳 |
 
-## 字符串类型
+**字符串类型**
 
 字符串类型指CHAR、VARCHAR、BINARY、VARBINARY、BLOB、TEXT、ENUM和SET。该节描述了这些类型如何工作以及如何在查询中使用这些类型。
 
@@ -591,27 +625,333 @@ mysql> select * from student;
 1 row in set (0.00 sec)
 ```
 
-### 7.2 表名的修改
+### 7.2 表的字段的约束
 
-### 7.3 表的删除
+#### 7.2.1 主键 primary key
 
-### 7.4 表的字段添加
+> 为什么要有主键: 用来标记数据的唯一性 主键是不能重复的。
+>
+> 在数据设计的时候主键是int值，可以是uuid.现在数据库设计的时候很少uuid了。
+>
+> 主键使用id作为标记。stu_id   来作为逐渐的字段。
 
-### 7.5 字段的修改
+```sql
+mysql> create table student(
+    -> stu_id int (11) primary key,
+    -> name varchar(25)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
 
-### 7.6 字段的删除
+mysql> desc student;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| stu_id | int(11)     | NO   | PRI | NULL    |       |
+| name   | varchar(25) | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
 
-### 7.7 字段的排序
+mysql> insert into student values(1,"admin");
+Query OK, 1 row affected (0.00 sec)
 
-## 7. 表数据的操作
+mysql> insert into student values(1,"joke");
+ERROR 1062 (23000): Duplicate entry '1' for key 'PRIMARY'
+```
 
-### 7.1 数据的查询
+#### 7.2.2 主键自增
 
-### 7.2 数据的插入
+```sql
+mysql> create table student(
+    -> stu_id int primary key auto_increment,
+    -> name varchar(25)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
 
-### 7.3 数据的修改
+mysql> insert into student(name) values("admin");
+Query OK, 1 row affected (0.01 sec)
 
-### 7.4 数据的删除
+mysql> select * from student;
++--------+-------+
+| stu_id | name  |
++--------+-------+
+|      1 | admin |
++--------+-------+
+1 row in set (0.00 sec)
+```
+
+#### 7.2.3 不能为空  not null
+
+#### 7.2.4 默认值  defualt 
+
+#### 7.2.5 唯一  unique
+
+#### 7.2.6 注释  comment 
+
+```sql
+mysql> create table student(
+    -> stu_id int primary key auto_increment,
+    -> stu_name varchar(25) not null,
+    -> stu_num varchar(18) unique,
+    -> stu_address varchar(150) comment "地址"
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> inert into student values(null,"","610327199512130105","西安市");
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'inert into student values(null,"","610327199512130105","西安市")' at line 1
+mysql> insert into student values(null,"","610327199512130105","西安市");
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into student values(null,null,"610327199512130105","西安市");
+ERROR 1048 (23000): Column 'stu_name' cannot be null
+mysql> insert into student values(null,"admin","610327199512130105","西安市");
+ERROR 1062 (23000): Duplicate entry '610327199512130105' for key 'stu_num'
+
+mysql> desc student;
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| stu_id      | int(11)      | NO   | PRI | NULL    | auto_increment |
+| stu_name    | varchar(25)  | NO   |     | NULL    |                |
+| stu_num     | varchar(18)  | YES  | UNI | NULL    |                |
+| stu_address | varchar(150) | YES  |     | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
+4 rows in set (0.00 sec)
+
+mysql> show create table student;
++---------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table   | Create Table
+
+             |
++---------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| student | CREATE TABLE `student` (
+  `stu_id` int(11) NOT NULL AUTO_INCREMENT,
+  `stu_name` varchar(25) NOT NULL,
+  `stu_num` varchar(18) DEFAULT NULL,
+  `stu_address` varchar(150) DEFAULT NULL COMMENT '地址',
+  PRIMARY KEY (`stu_id`),
+  UNIQUE KEY `stu_num` (`stu_num`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8   |
++---------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+```
+
+
+
+![image-20210106162836795](_media/image-20210106162836795.png)
+
+### 7.3 表名的修改
+
+> alter table student rename stu;
+
+```sql
+mysql> alter table student rename stu;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> show tables;
++----------------+
+| Tables_in_haha |
++----------------+
+| stu            |
++----------------+
+1 row in set (0.00 sec)
+```
+
+### 7.4 表的删除
+
+```sql
+mysql> drop table student;
+Query OK, 0 rows affected (0.01 sec)
+```
+
+### 7.5 表的字段添加
+
+> 默认新加的字段会在表字段列表的末尾；
+
+```sql
+mysql> alter table stu add column  score float;
+Query OK, 0 rows affected (0.08 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+mysql> desc stu;
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| stu_id      | int(11)      | NO   | PRI | NULL    | auto_increment |
+| stu_name    | varchar(25)  | NO   |     | NULL    |                |
+| stu_num     | varchar(18)  | YES  | UNI | NULL    |                |
+| stu_address | varchar(150) | YES  |     | NULL    |                |
+| score       | float        | YES  |     | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
+5 rows in set (0.00 sec)
+```
+
+**新加的字段在原来原有表字段的前边或者后边**
+
+```sql
+mysql> alter table stu add column  phone varchar(35) after stu_address;
+Query OK, 0 rows affected (0.08 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc stu;
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| stu_id      | int(11)      | NO   | PRI | NULL    | auto_increment |
+| stu_name    | varchar(25)  | NO   |     | NULL    |                |
+| stu_num     | varchar(18)  | YES  | UNI | NULL    |                |
+| stu_address | varchar(150) | YES  |     | NULL    |                |
+| phone       | varchar(35)  | YES  |     | NULL    |                |
+| score       | float        | YES  |     | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
+6 rows in set (0.00 sec)
+```
+
+**新加的字段在第一个**
+
+```sql
+mysql> alter table stu add column  stu_age varchar(35) first ;
+Query OK, 0 rows affected (0.08 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc stu;
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| stu_age     | varchar(35)  | YES  |     | NULL    |                |
+| stu_id      | int(11)      | NO   | PRI | NULL    | auto_increment |
+| stu_name    | varchar(25)  | NO   |     | NULL    |                |
+| stu_num     | varchar(18)  | YES  | UNI | NULL    |                |
+| stu_address | varchar(150) | YES  |     | NULL    |                |
+| phone       | varchar(35)  | YES  |     | NULL    |                |
+| score       | float        | YES  |     | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
+7 rows in set (0.00 sec)
+```
+
+### 7.6 字段的修改
+
+**修改字段的名称**
+
+```sql
+mysql> alter table stu   change phone stu_phone int ;
+Query OK, 1 row affected (0.07 sec)
+Records: 1  Duplicates: 0  Warnings: 0
+
+mysql> desc stu;
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| stu_age     | varchar(35)  | YES  |     | NULL    |                |
+| stu_id      | int(11)      | NO   | PRI | NULL    | auto_increment |
+| stu_name    | varchar(25)  | NO   |     | NULL    |                |
+| stu_num     | varchar(18)  | YES  | UNI | NULL    |                |
+| stu_address | varchar(150) | YES  |     | NULL    |                |
+| stu_phone   | int(11)      | YES  |     | NULL    |                |
+| score       | float        | YES  |     | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
+7 rows in set (0.00 sec)
+```
+
+**修改字段的数据类型**
+
+```sql
+mysql> alter table stu modify column stu_phone varchar(25);
+Query OK, 1 row affected (0.07 sec)
+Records: 1  Duplicates: 0  Warnings: 0
+
+mysql> desc stu;
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| stu_age     | varchar(35)  | YES  |     | NULL    |                |
+| stu_id      | int(11)      | NO   | PRI | NULL    | auto_increment |
+| stu_name    | varchar(25)  | NO   |     | NULL    |                |
+| stu_num     | varchar(18)  | YES  | UNI | NULL    |                |
+| stu_address | varchar(150) | YES  |     | NULL    |                |
+| stu_phone   | varchar(25)  | YES  |     | NULL    |                |
+| score       | float        | YES  |     | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
+7 rows in set (0.00 sec)
+```
+
+**修改表的约束**
+
+```sql
+mysql> alter table stu modify column stu_phone varchar(25) unique;
+Query OK, 0 rows affected (0.03 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc stu;
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| stu_age     | varchar(35)  | YES  |     | NULL    |                |
+| stu_id      | int(11)      | NO   | PRI | NULL    | auto_increment |
+| stu_name    | varchar(25)  | NO   |     | NULL    |                |
+| stu_num     | varchar(18)  | YES  | UNI | NULL    |                |
+| stu_address | varchar(150) | YES  |     | NULL    |                |
+| stu_phone   | varchar(25)  | YES  | UNI | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
+6 rows in set (0.00 sec)
+```
+
+**修改表的字符编码**
+
+```sql
+mysql> alter table stu character set gbk;
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> show create table stu;
++-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table | Create Table
+
+
+                                                             |
++-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| stu   | CREATE TABLE `stu` (
+  `stu_age` varchar(35) CHARACTER SET utf8 DEFAULT NULL,
+  `stu_id` int(11) NOT NULL AUTO_INCREMENT,
+  `stu_name` varchar(25) CHARACTER SET utf8 NOT NULL,
+  `stu_num` varchar(18) CHARACTER SET utf8 DEFAULT NULL,
+  `stu_address` varchar(150) CHARACTER SET utf8 DEFAULT NULL COMMENT '地址',
+  `stu_phone` varchar(25) CHARACTER SET utf8 DEFAULT NULL,
+  PRIMARY KEY (`stu_id`),
+  UNIQUE KEY `stu_num` (`stu_num`),
+  UNIQUE KEY `stu_phone` (`stu_phone`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=gbk   |
++-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+```
+
+### 7.7 字段的删除
+
+```sql
+mysql> alter table stu drop column score;
+Query OK, 0 rows affected (0.08 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc stu;
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| stu_age     | varchar(35)  | YES  |     | NULL    |                |
+| stu_id      | int(11)      | NO   | PRI | NULL    | auto_increment |
+| stu_name    | varchar(25)  | NO   |     | NULL    |                |
+| stu_num     | varchar(18)  | YES  | UNI | NULL    |                |
+| stu_address | varchar(150) | YES  |     | NULL    |                |
+| stu_phone   | varchar(25)  | YES  |     | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
+6 rows in set (0.00 sec)
+```
+
+## 8. 表数据的操作
+
+### 8.1 数据的查询
+
+### 8.2 数据的插入
+
+### 8.3 数据的修改
+
+### 8.4 数据的删除
 
 ## 9. 数据库引擎介绍
 
