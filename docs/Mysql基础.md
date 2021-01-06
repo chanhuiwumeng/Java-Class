@@ -314,19 +314,275 @@ mysql> select * from student;
 
 ## 6. 数据库的操作
 
+### 6.0 常见的mysql系统操作
+
+**查看当前的Mysql版本**
+
+```sql
+mysql> select version();
++------------+
+| version()  |
++------------+
+| 5.7.17-log |
++------------+
+1 row in set (0.00 sec)
+```
+
+**查看当前的mysql登录用户**
+
+```sql
+mysql> select user();
++----------------+
+| user()         |
++----------------+
+| root@localhost |
++----------------+
+1 row in set (0.00 sec)
+```
+
+**Mysql系统登录**
+
+```sql
+C:\Users\chanh\Desktop
+λ mysql -uroot -hlocalhost -P3306 -p
+Enter password: ****
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 7
+Server version: 5.7.17-log MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> quit
+Bye
+
+C:\Users\chanh\Desktop
+λ mysql -uroot  -p
+Enter password: ****
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 5.7.17-log MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql>
+```
+
+**查看当前的系统的时间**
+
+```sql
+mysql> select now();
++---------------------+
+| now()               |
++---------------------+
+| 2021-01-06 14:15:27 |
++---------------------+
+1 row in set (0.00 sec)
+```
+
+**查看当前正在使用的数据库名称**
+
+```sql
+mysql> select database();
++------------+
+| database() |
++------------+
+| haha       |
++------------+
+1 row in set (0.00 sec)
+```
+
 ### 6.1 数据库的创建
 
-### 6.2 数据库的改名
+```sql
+mysql> create database hehe;
+Query OK, 1 row affected (0.00 sec)
 
-### 6.3 数据库的删除
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| atcrowdfunding     |
+| atcrowdfunding01   |
+| cloud              |
+| clouddb01          |
+| clouddb02          |
+| clouddb03          |
+| haha               |
+| hehe               |
+```
 
-### 6.4 修改默认的字符编码
+### 6.2 数据库的删除
 
-### 6.6 忘记密码重新设置密码
+```sql
+mysql> drop database hehe;
+Query OK, 0 rows affected (0.00 sec)
+```
 
-## 7.表的操作
+### 6.3 修改默认的字符编码
+
+```sql
+mysql> create database hehe charset  ='gbk';
+Query OK, 1 row affected (0.00 sec)
+```
+
+**查看Mysql默认的字符编码**
+
+```sql
+mysql> SHOW VARIABLES LIKE 'character%';
++--------------------------+---------------------------------------------------------+
+| Variable_name            | Value                                                   |
++--------------------------+---------------------------------------------------------+
+| character_set_client     | utf8                                                    |
+| character_set_connection | utf8                                                    |
+| character_set_database   | gbk                                                     |
+| character_set_filesystem | binary                                                  |
+| character_set_results    | utf8                                                    |
+| character_set_server     | utf8                                                    |
+| character_set_system     | utf8                                                    |
+| character_sets_dir       | C:\Program Files\MySQL\MySQL Server 5.7\share\charsets\ |
++--------------------------+---------------------------------------------------------+
+8 rows in set, 1 warning (0.00 sec)
+```
+
+**修改Mysql数据库默认的字符编码**
+
+```sql
+mysql> set character_set_database=utf8;
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+```
+
+**通过Mysql安装目录的my.ini文件进行修改**
+
+### 6.4 忘记密码重新设置密码
+
+**忘记密码 密码错误**
+
+```sql
+C:\Users\chanh\Desktop
+λ mysql -uroot -hlocalhost -P3306 -p
+Enter password: ***
+ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: YES)
+
+```
+
+**进行密码的修改**
+
+[Mysql忘记密码操作](https://blog.csdn.net/weixin_30332705/article/details/95553795?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromBaidu-1.control&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromBaidu-1.control)
+
+## 7.表结构的操作
+
+### 7.0 数据库的数据类型
+
+## 数值类型
+
+MySQL支持所有标准SQL数值数据类型。
+
+这些类型包括严格数值数据类型(INTEGER、SMALLINT、DECIMAL和NUMERIC)，以及近似数值数据类型(FLOAT、REAL和DOUBLE PRECISION)。
+
+关键字INT是INTEGER的同义词，关键字DEC是DECIMAL的同义词。
+
+BIT数据类型保存位字段值，并且支持MyISAM、MEMORY、InnoDB和BDB表。
+
+作为SQL标准的扩展，MySQL也支持整数类型TINYINT、MEDIUMINT和BIGINT。下面的表显示了需要的每个整数类型的存储和范围。
+
+| 类型         | 大小                                     | 范围（有符号）                                               | 范围（无符号）                                               | 用途            |
+| :----------- | :--------------------------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- | :-------------- |
+| TINYINT      | 1 byte                                   | (-128，127)                                                  | (0，255)                                                     | 小整数值        |
+| SMALLINT     | 2 bytes                                  | (-32 768，32 767)                                            | (0，65 535)                                                  | 大整数值        |
+| MEDIUMINT    | 3 bytes                                  | (-8 388 608，8 388 607)                                      | (0，16 777 215)                                              | 大整数值        |
+| INT或INTEGER | 4 bytes                                  | (-2 147 483 648，2 147 483 647)                              | (0，4 294 967 295)                                           | 大整数值        |
+| BIGINT       | 8 bytes                                  | (-9,223,372,036,854,775,808，9 223 372 036 854 775 807)      | (0，18 446 744 073 709 551 615)                              | 极大整数值      |
+| FLOAT        | 4 bytes                                  | (-3.402 823 466 E+38，-1.175 494 351 E-38)，0，(1.175 494 351 E-38，3.402 823 466 351 E+38) | 0，(1.175 494 351 E-38，3.402 823 466 E+38)                  | 单精度 浮点数值 |
+| DOUBLE       | 8 bytes                                  | (-1.797 693 134 862 315 7 E+308，-2.225 073 858 507 201 4 E-308)，0，(2.225 073 858 507 201 4 E-308，1.797 693 134 862 315 7 E+308) | 0，(2.225 073 858 507 201 4 E-308，1.797 693 134 862 315 7 E+308) | 双精度 浮点数值 |
+| DECIMAL      | 对DECIMAL(M,D) ，如果M>D，为M+2否则为D+2 | 依赖于M和D的值                                               | 依赖于M和D的值                                               | 小数值          |
+
+> 在实际开发的项目中如果牵扯到金额方面的时候不要使用flolat double , decimal数据类型进行存储。
+
+## 日期和时间类型
+
+表示时间值的日期和时间类型为DATETIME、DATE、TIMESTAMP、TIME和YEAR。
+
+每个时间类型有一个有效值范围和一个"零"值，当指定不合法的MySQL不能表示的值时使用"零"值。
+
+TIMESTAMP类型有专有的自动更新特性，将在后面描述。
+
+| 类型      | 大小 ( bytes) | 范围                                                         | 格式                | 用途                     |
+| :-------- | :------------ | :----------------------------------------------------------- | :------------------ | :----------------------- |
+| DATE      | 3             | 1000-01-01/9999-12-31                                        | YYYY-MM-DD          | 日期值                   |
+| TIME      | 3             | '-838:59:59'/'838:59:59'                                     | HH:MM:SS            | 时间值或持续时间         |
+| YEAR      | 1             | 1901/2155                                                    | YYYY                | 年份值                   |
+| DATETIME  | 8             | 1000-01-01 00:00:00/9999-12-31 23:59:59                      | YYYY-MM-DD HH:MM:SS | 混合日期和时间值         |
+| TIMESTAMP | 4             | 1970-01-01 00:00:00/2038结束时间是第 **2147483647** 秒，北京时间 **2038-1-19 11:14:07**，格林尼治时间 2038年1月19日 凌晨 03:14:07 | YYYYMMDD HHMMSS     | 混合日期和时间值，时间戳 |
+
+## 字符串类型
+
+字符串类型指CHAR、VARCHAR、BINARY、VARBINARY、BLOB、TEXT、ENUM和SET。该节描述了这些类型如何工作以及如何在查询中使用这些类型。
+
+| 类型       | 大小                  | 用途                            |
+| :--------- | :-------------------- | :------------------------------ |
+| CHAR       | 0-255 bytes           | 定长字符串                      |
+| VARCHAR    | 0-65535 bytes         | 变长字符串                      |
+| TINYBLOB   | 0-255 bytes           | 不超过 255 个字符的二进制字符串 |
+| TINYTEXT   | 0-255 bytes           | 短文本字符串                    |
+| BLOB       | 0-65 535 bytes        | 二进制形式的长文本数据          |
+| TEXT       | 0-65 535 bytes        | 长文本数据                      |
+| MEDIUMBLOB | 0-16 777 215 bytes    | 二进制形式的中等长度文本数据    |
+| MEDIUMTEXT | 0-16 777 215 bytes    | 中等长度文本数据                |
+| LONGBLOB   | 0-4 294 967 295 bytes | 二进制形式的极大文本数据        |
+| LONGTEXT   | 0-4 294 967 295 bytes | 极大文本数据                    |
 
 ### 7.1 表的创建
+
+```sql
+mysql> create table student(
+    -> id int (11),
+    -> name varchar(25),
+    -> age int(11),
+    -> score float,
+    -> mark text,
+    -> birth datetime
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> desc student;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| id    | int(11)     | YES  |     | NULL    |       |
+| name  | varchar(25) | YES  |     | NULL    |       |
+| age   | int(11)     | YES  |     | NULL    |       |
+| score | float       | YES  |     | NULL    |       |
+| mark  | text        | YES  |     | NULL    |       |
+| birth | datetime    | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+
+mysql> insert into student values(1,"admin",25,85.5,"admin是一个的好学生，学习成绩还不错，很好很好和好","2020-12-12 14:05:30");
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from student;
++------+-------+------+-------+-------------------------------------------------------------------------+---------------------+
+| id   | name  | age  | score | mark                                                                    | birth               |
++------+-------+------+-------+-------------------------------------------------------------------------+---------------------+
+|    1 | admin |   25 |  85.5 | admin是一个的好学生，学习成绩还不错，很好很好和好                       | 2020-12-12 14:05:30 |
++------+-------+------+-------+-------------------------------------------------------------------------+---------------------+
+1 row in set (0.00 sec)
+```
+
+
 
 ### 7.2 表名的修改
 
@@ -398,5 +654,5 @@ mysql> select * from student;
 
 ## 17 存储过程
 
-
+## 18. 数据库的备份和恢复
 
