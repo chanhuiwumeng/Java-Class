@@ -214,11 +214,11 @@ mysql> show databases;
 ### 4.5 表的创建和表的查看
 
 ```sql
-mysql> create table studen
-    -> name varchar(20),  
-    -> age int(11)        
-    -> );                 
-Query OK, 0 rows affected 
+mysql> create table student(
+    -> name varchar(20),
+    -> age int(11)
+    -> );
+Query OK, 0 rows affected (0.02 sec) 
                           
 mysql> show tables;       
 +----------------+        
@@ -280,4 +280,13 @@ mysql> select * from student;
 +-------+------+
 2 rows in set (0.00 sec)
 ```
+
+### 4.10 Mysql注意的地方:
+
+1. Mysql的sql语句末尾加分号;
+2. 一般情况下Mysql中的所有单词小写
+3. 有的时候我们在添加的时候 表名，字段名 数据库名 使用驼峰命名法
+4. 表名字段名多个单词组成使用_隔开
+5. 因为Mysql学习中命令很多建议写个记事本
+6. 语句先在记事本中写完，检查没问题再在mysql命令端复制粘贴运行。
 
