@@ -464,6 +464,15 @@ mysql> set character_set_database=utf8;
 Query OK, 0 rows affected, 1 warning (0.00 sec)
 ```
 
+**修改数据库的字符编码**
+
+```sql
+mysql> alter database haha character set gbk;
+Query OK, 1 row affected (0.00 sec)
+```
+
+
+
 **通过Mysql安装目录的my.ini文件进行修改**
 
 ### 6.4 忘记密码重新设置密码
@@ -581,8 +590,6 @@ mysql> select * from student;
 +------+-------+------+-------+-------------------------------------------------------------------------+---------------------+
 1 row in set (0.00 sec)
 ```
-
-
 
 ### 7.2 表名的修改
 
