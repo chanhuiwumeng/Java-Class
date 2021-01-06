@@ -589,6 +589,16 @@ TIMESTAMP类型有专有的自动更新特性，将在后面描述。
 
 ### 7.1 表的创建
 
+> create table 表名(
+>
+> 字段名称  字段数据类型(数据类型的长度)  字段的约束,
+>
+> 字段名称  字段数据类型(数据类型的长度)   字段的约束,
+>
+> 字段名称  字段数据类型(数据类型的长度)   字段的约束
+>
+> );
+
 ```sql
 mysql> create table student(
     -> id int (11),
@@ -633,7 +643,7 @@ mysql> select * from student;
 >
 > 在数据设计的时候主键是int值，可以是uuid.现在数据库设计的时候很少uuid了。
 >
-> 主键使用id作为标记。stu_id   来作为逐渐的字段。
+> 主键使用id作为标记。stu_id   来作为主键的字段。
 
 ```sql
 mysql> create table student(
@@ -766,6 +776,8 @@ Query OK, 0 rows affected (0.01 sec)
 ### 7.5 表的字段添加
 
 > 默认新加的字段会在表字段列表的末尾；
+>
+> alter table stu add column  score float;
 
 ```sql
 mysql> alter table stu add column  score float;
@@ -785,6 +797,8 @@ mysql> desc stu;
 ```
 
 **新加的字段在原来原有表字段的前边或者后边**
+
+> alter table stu add column  phone varchar(35) after stu_address;
 
 ```sql
 mysql> alter table stu add column  phone varchar(35) after stu_address;
@@ -806,6 +820,8 @@ mysql> desc stu;
 ```
 
 **新加的字段在第一个**
+
+> alter table stu add column  stu_age varchar(35) first ;
 
 ```sql
 mysql> alter table stu add column  stu_age varchar(35) first ;
@@ -831,6 +847,8 @@ mysql> desc stu;
 
 **修改字段的名称**
 
+> alter table stu   change phone stu_phone int ;
+
 ```sql
 mysql> alter table stu   change phone stu_phone int ;
 Query OK, 1 row affected (0.07 sec)
@@ -852,6 +870,8 @@ mysql> desc stu;
 ```
 
 **修改字段的数据类型**
+
+> alter table stu modify column stu_phone varchar(25);
 
 ```sql
 mysql> alter table stu modify column stu_phone varchar(25);
@@ -875,6 +895,8 @@ mysql> desc stu;
 
 **修改表的约束**
 
+> alter table stu modify column stu_phone varchar(25) unique;
+
 ```sql
 mysql> alter table stu modify column stu_phone varchar(25) unique;
 Query OK, 0 rows affected (0.03 sec)
@@ -895,6 +917,8 @@ mysql> desc stu;
 ```
 
 **修改表的字符编码**
+
+> alter table stu character set gbk;
 
 ```sql
 mysql> alter table stu character set gbk;
@@ -923,6 +947,8 @@ mysql> show create table stu;
 ```
 
 ### 7.7 字段的删除
+
+> alter table stu drop column score;
 
 ```sql
 mysql> alter table stu drop column score;
