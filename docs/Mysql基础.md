@@ -969,15 +969,232 @@ mysql> desc stu;
 6 rows in set (0.00 sec)
 ```
 
-## 8. 表数据的操作
+## 8. 表数据的操作(CRUD)
 
-### 8.1 数据的查询
++ c  create  插入数据
++ r  read  查询数据
++ u  update  修改数据
++ d  delete 删除数据
+
+### 8.1 数据的查询(单表的简单查询)
+
+```sql
+mysql> select stu_id,stu_name,stu_phone from stu;
++--------+----------+-------------+
+| stu_id | stu_name | stu_phone   |
++--------+----------+-------------+
+|      1 | admin    | 13596321584 |
+|      4 | admin    | 13596321588 |
+|      5 | joke     | 13256963215 |
++--------+----------+-------------+
+3 rows in set (0.00 sec)
+
+mysql> select stu_id,stu_name,stu_phone ,stu_address from stu;
++--------+----------+-------------+-------------+
+| stu_id | stu_name | stu_phone   | stu_address |
++--------+----------+-------------+-------------+
+|      1 | admin    | 13596321584 | NULL        |
+|      4 | admin    | 13596321588 | NULL        |
+|      5 | joke     | 13256963215 | NULL        |
++--------+----------+-------------+-------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from stu;
++--------+----------+-------------+-------------+
+| stu_id | stu_name | stu_phone   | stu_address |
++--------+----------+-------------+-------------+
+|      1 | admin    | 13596321584 | NULL        |
+|      4 | admin    | 13596321588 | NULL        |
+|      5 | joke     | 13256963215 | NULL        |
++--------+----------+-------------+-------------+
+3 rows in set (0.00 sec)
+```
 
 ### 8.2 数据的插入
 
+**插入所有字段的数据**
+
+```sql
+mysql> insert into stu (stu_id,stu_name,stu_phone,stu_address) values(null,"lucy","15623154879","西安市");
+Query OK, 1 row affected (0.00 sec)
+```
+
+**插入多条数据**
+
+```sql
+mysql> insert into stu (stu_id,stu_name,stu_phone,stu_address) values(null,"lucy","15623154879","西安市");
+Query OK, 1 row affected (0.00 sec)
+
+```
+
+**插入指定字段的数据值**
+
+```sql
+mysql> insert into stu (stu_id,stu_name,stu_phone) values(null,"lucy","15623157777"),(null,"hanmeiemi","13532459888");
+Query OK, 2 rows affected (0.00 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+```
+
+**插入所有字段数据的简写**
+
+```sql
+mysql> insert into stu values(null,"张三","13322556688","烟台市");
+Query OK, 1 row affected (0.00 sec)
+mysql> insert into stu values(null,"张三","13322555588","烟台市"),(null,"李四","15566993321","深圳市");
+Query OK, 2 rows affected (0.00 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+```
+
 ### 8.3 数据的修改
 
+**修改表中同一个字段的所有值**
+
+```sql
+mysql> update  stu set stu_address = "西安市";
+Query OK, 9 rows affected (0.00 sec)
+Rows matched: 11  Changed: 9  Warnings: 0
+
+mysql> select * from stu;
++--------+-----------+-------------+-------------+
+| stu_id | stu_name  | stu_phone   | stu_address |
++--------+-----------+-------------+-------------+
+|      1 | admin     | 13596321584 | 西安市      |
+|      4 | admin     | 13596321588 | 西安市      |
+|      5 | joke      | 13256963215 | 西安市      |
+|      6 | lucy      | 15623154879 | 西安市      |
+|      9 | lucy      | 15623154877 | 西安市      |
+|     10 | hanmeiemi | 13532459863 | 西安市      |
+|     13 | lucy      | 15623157777 | 西安市      |
+|     14 | hanmeiemi | 13532459888 | 西安市      |
+|     15 | 张三      | 13322556688 | 西安市      |
+|     18 | 张三      | 13322555588 | 西安市      |
+|     19 | 李四      | 15566993321 | 西安市      |
++--------+-----------+-------------+-------------+
+11 rows in set (0.00 sec)
+```
+
+**修改某一条数据的字段值**
+
+```sql
+mysql> update stu set stu_name = "王五",stu_address= "宝鸡市" where stu_id = 10;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from stu;
++--------+-----------+-------------+-------------+
+| stu_id | stu_name  | stu_phone   | stu_address |
++--------+-----------+-------------+-------------+
+|      1 | admin     | 13596321584 | 西安市      |
+|      4 | admin     | 13596321588 | 西安市      |
+|      5 | joke      | 13256963215 | 西安市      |
+|      6 | lucy      | 15623154879 | 西安市      |
+|      9 | lucy      | 15623154877 | 西安市      |
+|     10 | 王五      | 13532459863 | 宝鸡市      |
+|     13 | lucy      | 15623157777 | 西安市      |
+|     14 | hanmeiemi | 13532459888 | 西安市      |
+|     15 | 张三      | 13322556688 | 西安市      |
+|     18 | 张三      | 13322555588 | 西安市      |
+|     19 | 李四      | 15566993321 | 西安市      |
++--------+-----------+-------------+-------------+
+11 rows in set (0.00 sec)
+```
+
+**修改多条数据的字段值**
+
+```sql
+mysql> update stu set stu_name = "韩梅梅",stu_address= "安康市" where stu_id in (1,3,5,7,22,33);
+Query OK, 2 rows affected (0.00 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+mysql> select * from stu;
++--------+-----------+-------------+-------------+
+| stu_id | stu_name  | stu_phone   | stu_address |
++--------+-----------+-------------+-------------+
+|      1 | 韩梅梅    | 13596321584 | 安康市      |
+|      4 | admin     | 13596321588 | 西安市      |
+|      5 | 韩梅梅    | 13256963215 | 安康市      |
+|      6 | lucy      | 15623154879 | 西安市      |
+|      9 | lucy      | 15623154877 | 西安市      |
+|     10 | 王五      | 13532459863 | 宝鸡市      |
+|     13 | lucy      | 15623157777 | 西安市      |
+|     14 | hanmeiemi | 13532459888 | 西安市      |
+|     15 | 张三      | 13322556688 | 西安市      |
+|     18 | 张三      | 13322555588 | 西安市      |
+|     19 | 李四      | 15566993321 | 西安市      |
++--------+-----------+-------------+-------------+
+11 rows in set (0.00 sec)
+```
+
 ### 8.4 数据的删除
+
+**删除一条数据**
+
+```sql
+mysql> delete from stu where stu_id = 19;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from stu;
++--------+-----------+-------------+-------------+
+| stu_id | stu_name  | stu_phone   | stu_address |
++--------+-----------+-------------+-------------+
+|      1 | 韩梅梅    | 13596321584 | 安康市      |
+|      4 | admin     | 13596321588 | 西安市      |
+|      5 | 韩梅梅    | 13256963215 | 安康市      |
+|      6 | lucy      | 15623154879 | 西安市      |
+|      9 | lucy      | 15623154877 | 西安市      |
+|     10 | 王五      | 13532459863 | 宝鸡市      |
+|     13 | lucy      | 15623157777 | 西安市      |
+|     14 | hanmeiemi | 13532459888 | 西安市      |
+|     15 | 张三      | 13322556688 | 西安市      |
+|     18 | 张三      | 13322555588 | 西安市      |
++--------+-----------+-------------+-------------+
+10 rows in set (0.00 sec)
+```
+
+**删除多条数据**
+
+```sql
+mysql> delete from stu where stu_id in(1,5,2,20,30);   
+Query OK, 2 rows affected (0.01 sec)                   
+                                                       
+mysql> select * from stu;                              
++--------+-----------+-------------+-------------+     
+| stu_id | stu_name  | stu_phone   | stu_address |     
++--------+-----------+-------------+-------------+     
+|      4 | admin     | 13596321588 | 西安市      |        
+|      6 | lucy      | 15623154879 | 西安市      |        
+|      9 | lucy      | 15623154877 | 西安市      |        
+|     10 | 王五      | 13532459863 | 宝鸡市      |          
+|     13 | lucy      | 15623157777 | 西安市      |        
+|     14 | hanmeiemi | 13532459888 | 西安市      |        
+|     15 | 张三      | 13322556688 | 西安市      |          
+|     18 | 张三      | 13322555588 | 西安市      |          
++--------+-----------+-------------+-------------+     
+8 rows in set (0.00 sec)                               
+```
+
+**删除所有数据**
+
+```sql
+mysql> delete from stu;
+Query OK, 8 rows affected (0.01 sec)
+```
+
+> 一般不要进行删除所有数据的操作！！慎重!慎重!慎重!慎重!慎重!慎重!慎重!慎重!
+
+```sql
+mysql> insert into stu (stu_id,stu_name,stu_phone,stu_address) values(null,"lucy","15623154879","西安市");
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from stu;
++--------+----------+-------------+-------------+
+| stu_id | stu_name | stu_phone   | stu_address |
++--------+----------+-------------+-------------+
+|     20 | lucy     | 15623154879 | 西安市      |
++--------+----------+-------------+-------------+
+1 row in set (0.00 sec)
+```
+
+> 如果数据库来维护主键的自增，数据清空完成以后 ，在添加新的数据进来，主键是在原有的数据的最后一条数据的id基础之上进制再次递增，不会从1重新开始。
 
 ## 9. 数据库引擎介绍
 
