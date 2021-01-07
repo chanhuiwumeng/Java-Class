@@ -1230,7 +1230,7 @@ mysql> select * from stu;
 
 > truncate 删除标的数据 删除表在创建一张新的表，truncate 删除数据的速度比detele快。
 
-## 9. 表的查询操作
+## 9. 表的查询操作（单表操作）
 
 > select 字段,字段,字段,字段 from 表名 [where  ,group by  ,order by ,like, limit ,having ]
 >
@@ -1238,16 +1238,18 @@ mysql> select * from stu;
 
 ### 9.1 部分查询
 
-> mysql> select stu_id,stu_name from stu;
-> +--------+-----------+
-> | stu_id | stu_name  |
-> +--------+-----------+
-> |      1 | admin     |
-> |      2 | joke      |
-> |      3 | lucy      |
-> |      4 | hanmeiemi |
-> +--------+-----------+
-> 4 rows in set (0.00 sec)
+```sql
+mysql> select stu_id,stu_name from stu;
++--------+-----------+
+| stu_id | stu_name  |
++--------+-----------+
+|      1 | admin     |
+|      2 | joke      |
+|      3 | lucy      |
+|      4 | hanmeiemi |
++--------+-----------+
+4 rows in set (0.00 sec)
+```
 
 ### 9.2 条件查询 where
 
@@ -1597,7 +1599,7 @@ mysql> select distinct stu_address from stu;
 3 rows in set (0.00 sec)
 ```
 
-#### 9.7 分页 limit
+### 9.7 分页 limit
 
 > limit是分页查询的关键字  limit startindex,pagenumber;  startindex 开始查询的数据 ,pagenumber 每页显示多少条记录。
 
@@ -1621,21 +1623,443 @@ mysql> select * from stu limit 2,2;
 2 rows in set (0.00 sec)
 ```
 
-## 10. 高级查询
+### 9.8 having 查询
+
+> having 是在分许以后对数据进行过滤
+>
+> where 是分组前对数据进行过滤
+
+```sql
+mysql> select * from stu where stu_id > 2 group by stu_address;
++--------+----------+-------------+-------------+---------+
+| stu_id | stu_name | stu_phone   | stu_address | stu_age |
++--------+----------+-------------+-------------+---------+
+|      3 | 张三     | 13258894525 | 安康市      |      10 |
+|      4 | 李四     | 18596258741 | 宝鸡市      |     125 |
+|      7 | java     | 13685963248 | 西安市      |      45 |
++--------+----------+-------------+-------------+---------+
+3 rows in set (0.00 sec)
+
+mysql> select * from stu where stu_id > 2 group by stu_address having stu_age > 50;
++--------+----------+-------------+-------------+---------+
+| stu_id | stu_name | stu_phone   | stu_address | stu_age |
++--------+----------+-------------+-------------+---------+
+|      4 | 李四     | 18596258741 | 宝鸡市      |     125 |
++--------+----------+-------------+-------------+---------+
+1 row in set (0.00 sec)
+```
+
+## 10. 高级查询(多表查询)
 
 ### 10.0 数据库引擎介绍
 
+> 数据库引擎是用于存储、处理和保护数据的核心服务。利用数据库引擎可控制访问权限并快速处理事务，从而满足企业内大多数需要处理大量数据的应用程序的要求。 使用数据库引擎创建用于[联机事务处理](https://baike.baidu.com/item/联机事务处理/218843)或联机分析处理数据的关系数据库。这包括创建用于存储数据的表和用于查看、管理和保护数据安全的[数据库对象](https://baike.baidu.com/item/数据库对象/927632)（如索引、视图和[存储过程](https://baike.baidu.com/item/存储过程/1240317)）。可以使用 SQL Server Management Studio 管理数据库对象，使用 SQL Server Profiler 捕获服务器事件。
+>
+> ISAM
+>
+> ISAM是一个定义明确且历经时间考验的数据表格管理方法，它在设计之时就考虑到数据库被查询的次数要远大于更新的次数。因此，ISAM执行读取操作的速度很快，而且不占用大量的内存和存储资源。ISAM的两个主要不足之处在于，它不支持事务处理，也不能够容错：如果你的硬盘崩溃了，那么数据文件就无法恢复了。如果你正在把ISAM用在关键任务应用程序里，那就必须经常备份你所有的实时数据，通过其复制特性，MYSQL能够支持这样的备份应用程序。
+>
+> MYISAM
+>
+> MYISAM是MYSQL的ISAM扩展格式和缺省的数据库引擎。除了提供ISAM里所没有的索引和字段管理的大量功能，MYISAM还使用一种表格锁定的机制，来优化多个并发的读写操作。其代价是你需要经常运行OPTIMIZE TABLE命令，来恢复被更新机制所浪费的空间。MYISAM还有一些有用的扩展，例如用来修复[数据库文件](https://baike.baidu.com/item/数据库文件)的MYISAMCHK工具和用来恢复浪费空间的MYISAMPACK工具。
+>
+> MYISAM强调了快速读取操作，这可能就是为什么MYSQL受到了WEB开发如此青睐的主要原因：在WEB开发中你所进行的大量数据操作都是读取操作。所以，大多数[虚拟主机](https://baike.baidu.com/item/虚拟主机)提供商和INTERNET平台提供商只允许使用MYISAM格式。
+>
+> HEAP
+>
+> HEAP允许只驻留在内存里的临时表格。驻留在内存里让HEAP要比ISAM和MYISAM都快，但是它所管理的数据是不稳定的，而且如果在关机之前没有进行保存，那么所有的数据都会丢失。在数据行被删除的时候，HEAP也不会浪费大量的空间。HEAP表格在你需要使用SELECT[表达式](https://baike.baidu.com/item/表达式)来选择和操控数据的时候非常有用。要记住，在用完表格之后就删除表格。
+>
+> INNODB和BERKLEYDB
+>
+> INNODB和BERKLEYDB（BDB）数据库引擎都是造就MYSQL灵活性的技术的直接产品，这项技术就是MYSQL++ API。在使用MYSQL的时候，你所面对的每一个挑战几乎都源于ISAM和MYISAM数据库引擎不支持事务处理也不支持外来键。尽管要比ISAM和MYISAM引擎慢很多，但是INNODB和BDB包括了对[事务处理](https://baike.baidu.com/item/事务处理)和外来键的支持，这两点都是前两个引擎所没有的。如前所述，如果你的设计需要这些特性中的一者或者两者，那你就要被迫使用后两个引擎中的一个了。
+
+**InnoDB**
+
+> InnoDB，是MySQL的数据库引擎之一，现为MySQL的默认存储引擎，为[MySQL AB](https://baike.baidu.com/item/MySQL AB)发布binary的标准之一。InnoDB由Innobase Oy公司所开发，2006年五月时由[甲骨文公司](https://baike.baidu.com/item/甲骨文公司/430115)并购。与传统的[ISAM](https://baike.baidu.com/item/ISAM)与[MyISAM](https://baike.baidu.com/item/MyISAM)相比，InnoDB的最大特色就是支持了[ACID](https://baike.baidu.com/item/ACID/10738)兼容的[事务](https://baike.baidu.com/item/事务/5945882)（Transaction）功能，类似于[PostgreSQL](https://baike.baidu.com/item/PostgreSQL)。
+>
+> + 支持事务
+> + 行级别的锁
+> + 外键
+> + 外键的自增
+
+**查看数据库的引擎**
+
+```sql
+mysql> show engines;
++--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+| Engine             | Support | Comment                                                        | Transactions | XA   | Savepoints |
++--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+| InnoDB             | DEFAULT | Supports transactions, row-level locking, and foreign keys     | YES          | YES  | YES        |
+| MRG_MYISAM         | YES     | Collection of identical MyISAM tables                          | NO           | NO   | NO         |
+| MEMORY             | YES     | Hash based, stored in memory, useful for temporary tables      | NO           | NO   | NO         |
+| BLACKHOLE          | YES     | /dev/null storage engine (anything you write to it disappears) | NO           | NO   | NO         |
+| MyISAM             | YES     | MyISAM storage engine                                          | NO           | NO   | NO         |
+| CSV                | YES     | CSV storage engine                                             | NO           | NO   | NO         |
+| ARCHIVE            | YES     | Archive storage engine                                         | NO           | NO   | NO         |
+| PERFORMANCE_SCHEMA | YES     | Performance Schema                                             | NO           | NO   | NO         |
+| FEDERATED          | NO      | Federated MySQL storage engine                                 | NULL         | NULL | NULL       |
++--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+9 rows in set (0.00 sec)
+```
+
+**查看数据库引擎的详细信息**
+
+```sql
+mysql> show engines \G;
+*************************** 1. row ***************************
+      Engine: InnoDB
+     Support: DEFAULT
+     Comment: Supports transactions, row-level locking, and foreign keys
+Transactions: YES
+          XA: YES
+  Savepoints: YES
+*************************** 2. row ***************************
+      Engine: MRG_MYISAM
+     Support: YES
+     Comment: Collection of identical MyISAM tables
+Transactions: NO
+          XA: NO
+  Savepoints: NO
+*************************** 3. row ***************************
+      Engine: MEMORY
+     Support: YES
+     Comment: Hash based, stored in memory, useful for temporary tables
+Transactions: NO
+          XA: NO
+  Savepoints: NO
+*************************** 4. row ***************************
+      Engine: BLACKHOLE
+     Support: YES
+     Comment: /dev/null storage engine (anything you write to it disappears)
+Transactions: NO
+          XA: NO
+  Savepoints: NO
+*************************** 5. row ***************************
+      Engine: MyISAM
+     Support: YES
+     Comment: MyISAM storage engine
+Transactions: NO
+          XA: NO
+  Savepoints: NO
+*************************** 6. row ***************************
+      Engine: CSV
+     Support: YES
+     Comment: CSV storage engine
+Transactions: NO
+          XA: NO
+  Savepoints: NO
+*************************** 7. row ***************************
+      Engine: ARCHIVE
+     Support: YES
+     Comment: Archive storage engine
+Transactions: NO
+          XA: NO
+  Savepoints: NO
+*************************** 8. row ***************************
+      Engine: PERFORMANCE_SCHEMA
+     Support: YES
+     Comment: Performance Schema
+Transactions: NO
+          XA: NO
+  Savepoints: NO
+*************************** 9. row ***************************
+      Engine: FEDERATED
+     Support: NO
+     Comment: Federated MySQL storage engine
+Transactions: NULL
+          XA: NULL
+  Savepoints: NULL
+9 rows in set (0.00 sec)
+```
+
+**查看默认的存储引擎**
+
+```sql
+mysql>  show variables like '%storage_engine%';
++----------------------------------+--------+
+| Variable_name                    | Value  |
++----------------------------------+--------+
+| default_storage_engine           | InnoDB |
+| default_tmp_storage_engine       | InnoDB |
+| disabled_storage_engines         |        |
+| internal_tmp_disk_storage_engine | InnoDB |
++----------------------------------+--------+
+4 rows in set, 1 warning (0.00 sec)
+```
+
 ### 10.1 外键
 
-### 10.2 内连接
+> 如果[公共关键字](https://baike.baidu.com/item/公共关键字/1239575)在一个关系中是[主关键字](https://baike.baidu.com/item/主关键字/1239455)，那么这个公共关键字被称为另一个关系的外键。由此可见，外键表示了两个关系之间的[相关](https://baike.baidu.com/item/相关/9882881)联系。以另一个关系的外键作主关键字的表被称为主表，具有此外键的表被称为主表的从表。外键又称作[外关键字](https://baike.baidu.com/item/外关键字)。
 
-### 10.3 外连接
+**修改表的字段是外键**
 
-### 10.4 子查询
+>  alter table stu add foreign key (tea_id) references  teacher (tea_id);
 
-### 10.5 左连接和右连接查询
+```sql
+mysql> alter table stu add foreign key (tea_id) references  teacher (tea_id);
+Query OK, 7 rows affected (0.05 sec)
+Records: 7  Duplicates: 0  Warnings: 0
 
-### 10.6 笛卡尔积查询
+mysql> show create table stu;
++-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table | Create Table
+
+
+                                                  |
++-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| stu   | CREATE TABLE `stu` (
+  `stu_id` int(11) NOT NULL AUTO_INCREMENT,
+  `stu_name` varchar(25) NOT NULL DEFAULT 'admin',
+  `stu_phone` varchar(11) DEFAULT NULL,
+  `stu_address` text,
+  `stu_age` int(11) DEFAULT NULL,
+  `tea_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`stu_id`),
+  UNIQUE KEY `stu_number` (`stu_phone`),
+  UNIQUE KEY `stu_phone` (`stu_phone`),
+  KEY `tea_id` (`tea_id`),
+  CONSTRAINT `stu_ibfk_1` FOREIGN KEY (`tea_id`) REFERENCES `teacher` (`tea_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 |
++-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+```
+
+**关联外键的数据**
+
+> 外键的字段的值是主表中主键字段的值。
+
+```sql
+mysql> update stu set tea_id = 2 where stu_id=3;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> update stu set tea_id = 3 where stu_id=2;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from stu;
++--------+----------+-------------+-------------+---------+--------+
+| stu_id | stu_name | stu_phone   | stu_address | stu_age | tea_id |
++--------+----------+-------------+-------------+---------+--------+
+|      1 | admin    | 13256894525 | 西安市      |      12 |   NULL |
+|      2 | joke     | 13596258741 | 宝鸡市      |      11 |      3 |
+|      3 | 张三     | 13258894525 | 安康市      |      10 |      2 |
+|      4 | 李四     | 18596258741 | 宝鸡市      |     125 |   NULL |
+|      5 | 王五     | 17258894525 | 安康市      |      30 |   NULL |
+|      6 | 赵六     | 14596258741 | 宝鸡市      |      88 |   NULL |
+|      7 | java     | 13685963248 | 西安市      |      45 |   NULL |
++--------+----------+-------------+-------------+---------+--------+
+7 rows in set (0.00 sec)
+```
+
+**创建表的时候添加外键**
+
+```sql
+mysql> create table classes(
+    -> cls_id int primary key auto_increment,
+    -> cls_name varchar(25),
+    -> cls_stus int
+    -> ,
+    -> tea_id int ,
+    -> constraint cls_tea foreign key (tea_id) references teacher (tea_id)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> show create table classes;
++---------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table   | Create Table
+
+                                         |
++---------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| classes | CREATE TABLE `classes` (
+  `cls_id` int(11) NOT NULL AUTO_INCREMENT,
+  `cls_name` varchar(25) DEFAULT NULL,
+  `cls_stus` int(11) DEFAULT NULL,
+  `tea_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`cls_id`),
+  KEY `cls_tea` (`tea_id`),
+  CONSTRAINT `cls_tea` FOREIGN KEY (`tea_id`) REFERENCES `teacher` (`tea_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 |
++---------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+```
+
+### 10.2  笛卡尔积查询(实际没什么意义)
+
+> 两张表的数据数量的乘积
+
+```sql
+mysql> select * from stu ,teacher;
++--------+----------+-------------+-------------+---------+--------+--------+-----------+---------+-------------+
+| stu_id | stu_name | stu_phone   | stu_address | stu_age | tea_id | tea_id | tea_name  | tea_age | tea_program |
++--------+----------+-------------+-------------+---------+--------+--------+-----------+---------+-------------+
+|      1 | admin    | 13256894525 | 西安市      |      12 |   NULL |      1 | 葛老师    |      30 | java        |
+|      1 | admin    | 13256894525 | 西安市      |      12 |   NULL |      2 | 王老师    |      35 | web         |
+|      1 | admin    | 13256894525 | 西安市      |      12 |   NULL |      3 | 范老师    |      35 | ui          |
+|      2 | joke     | 13596258741 | 宝鸡市      |      11 |      3 |      1 | 葛老师    |      30 | java        |
+|      2 | joke     | 13596258741 | 宝鸡市      |      11 |      3 |      2 | 王老师    |      35 | web         |
+|      2 | joke     | 13596258741 | 宝鸡市      |      11 |      3 |      3 | 范老师    |      35 | ui          |
+|      3 | 张三     | 13258894525 | 安康市      |      10 |      2 |      1 | 葛老师    |      30 | java        |
+|      3 | 张三     | 13258894525 | 安康市      |      10 |      2 |      2 | 王老师    |      35 | web         |
+|      3 | 张三     | 13258894525 | 安康市      |      10 |      2 |      3 | 范老师    |      35 | ui          |
+|      4 | 李四     | 18596258741 | 宝鸡市      |     125 |   NULL |      1 | 葛老师    |      30 | java        |
+|      4 | 李四     | 18596258741 | 宝鸡市      |     125 |   NULL |      2 | 王老师    |      35 | web         |
+|      4 | 李四     | 18596258741 | 宝鸡市      |     125 |   NULL |      3 | 范老师    |      35 | ui          |
+|      5 | 王五     | 17258894525 | 安康市      |      30 |   NULL |      1 | 葛老师    |      30 | java        |
+|      5 | 王五     | 17258894525 | 安康市      |      30 |   NULL |      2 | 王老师    |      35 | web         |
+|      5 | 王五     | 17258894525 | 安康市      |      30 |   NULL |      3 | 范老师    |      35 | ui          |
+|      6 | 赵六     | 14596258741 | 宝鸡市      |      88 |   NULL |      1 | 葛老师    |      30 | java        |
+|      6 | 赵六     | 14596258741 | 宝鸡市      |      88 |   NULL |      2 | 王老师    |      35 | web         |
+|      6 | 赵六     | 14596258741 | 宝鸡市      |      88 |   NULL |      3 | 范老师    |      35 | ui          |
+|      7 | java     | 13685963248 | 西安市      |      45 |   NULL |      1 | 葛老师    |      30 | java        |
+|      7 | java     | 13685963248 | 西安市      |      45 |   NULL |      2 | 王老师    |      35 | web         |
+|      7 | java     | 13685963248 | 西安市      |      45 |   NULL |      3 | 范老师    |      35 | ui          |
++--------+----------+-------------+-------------+---------+--------+--------+-----------+---------+-------------+
+21 rows in set (0.00 sec)
+```
+
+### 10.3 内连接 inner join
+
+```sql
+mysql> select stu.stu_id,stu.stu_name,stu.stu_address , teacher.tea_id ,teacher.tea_name ,teacher.tea_age from stu inner join teacher on stu.tea_id = teacher.tea_id;
++--------+----------+-------------+--------+-----------+---------+
+| stu_id | stu_name | stu_address | tea_id | tea_name  | tea_age |
++--------+----------+-------------+--------+-----------+---------+
+|      2 | joke     | 宝鸡市      |      3 | 范老师    |      35 |
+|      3 | 张三     | 安康市      |      2 | 王老师    |      35 |
++--------+----------+-------------+--------+-----------+---------+
+2 rows in set (0.00 sec)
+
+mysql> select * from stu inner join teacher on stu.tea_id = teacher.tea_id;
++--------+----------+-------------+-------------+---------+--------+--------+-----------+---------+-------------+
+| stu_id | stu_name | stu_phone   | stu_address | stu_age | tea_id | tea_id | tea_name  | tea_age | tea_program |
++--------+----------+-------------+-------------+---------+--------+--------+-----------+---------+-------------+
+|      2 | joke     | 13596258741 | 宝鸡市      |      11 |      3 |      3 | 范老师    |      35 | ui          |
+|      3 | 张三     | 13258894525 | 安康市      |      10 |      2 |      2 | 王老师    |      35 | web         |
++--------+----------+-------------+-------------+---------+--------+--------+-----------+---------+-------------+
+2 rows in set (0.00 sec)
+```
+
+
+
+![image-20210107165746879](_media/image-20210107165746879.png)
+
+### 10.4 外连接
+
++ 左连接  left  join 
++ 右连接 right join 
+
+**左连接查询**
+
+> 以左边的表为主表 查询左边表中的所有数据 查询右边表中符合条件的数据
+
+```sql
+mysql> select * from stu left join teacher on stu.tea_id = teacher.tea_id;
++--------+----------+-------------+-------------+---------+--------+--------+-----------+---------+-------------+
+| stu_id | stu_name | stu_phone   | stu_address | stu_age | tea_id | tea_id | tea_name  | tea_age | tea_program |
++--------+----------+-------------+-------------+---------+--------+--------+-----------+---------+-------------+
+|      3 | 张三     | 13258894525 | 安康市      |      10 |      2 |      2 | 王老师    |      35 | web         |
+|      2 | joke     | 13596258741 | 宝鸡市      |      11 |      3 |      3 | 范老师    |      35 | ui          |
+|      1 | admin    | 13256894525 | 西安市      |      12 |   NULL |   NULL | NULL      |    NULL | NULL        |
+|      4 | 李四     | 18596258741 | 宝鸡市      |     125 |   NULL |   NULL | NULL      |    NULL | NULL        |
+|      5 | 王五     | 17258894525 | 安康市      |      30 |   NULL |   NULL | NULL      |    NULL | NULL        |
+|      6 | 赵六     | 14596258741 | 宝鸡市      |      88 |   NULL |   NULL | NULL      |    NULL | NULL        |
+|      7 | java     | 13685963248 | 西安市      |      45 |   NULL |   NULL | NULL      |    NULL | NULL        |
++--------+----------+-------------+-------------+---------+--------+--------+-----------+---------+-------------+
+7 rows in set (0.00 sec)
+```
+
+**右连接查询**
+
+> 以右边的表为主表 查询右边表中的所有数据 查询左边表中符合条件的数据
+
+```sql
+mysql> select * from stu right join teacher on stu.tea_id = teacher.tea_id;
++--------+----------+-------------+-------------+---------+--------+--------+-----------+---------+-------------+
+| stu_id | stu_name | stu_phone   | stu_address | stu_age | tea_id | tea_id | tea_name  | tea_age | tea_program |
++--------+----------+-------------+-------------+---------+--------+--------+-----------+---------+-------------+
+|      2 | joke     | 13596258741 | 宝鸡市      |      11 |      3 |      3 | 范老师    |      35 | ui          |
+|      3 | 张三     | 13258894525 | 安康市      |      10 |      2 |      2 | 王老师    |      35 | web         |
+|   NULL | NULL     | NULL        | NULL        |    NULL |   NULL |      1 | 葛老师    |      30 | java        |
++--------+----------+-------------+-------------+---------+--------+--------+-----------+---------+-------------+
+3 rows in set (0.00 sec)
+```
+
+![image-20210107172342590](_media/image-20210107172342590.png)
+
+### 10.5 表起别名 as 关键字
+
+```sql
+mysql> select s.stu_id ,s.stu_name ,s.stu_address ,t.tea_id,t.tea_name,t.tea_age from stu as s inner join teacher as  t on s.tea_id = t.tea_id;
++--------+----------+-------------+--------+-----------+---------+
+| stu_id | stu_name | stu_address | tea_id | tea_name  | tea_age |
++--------+----------+-------------+--------+-----------+---------+
+|      2 | joke     | 宝鸡市      |      3 | 范老师    |      35 |
+|      3 | 张三     | 安康市      |      2 | 王老师    |      35 |
++--------+----------+-------------+--------+-----------+---------+
+2 rows in set (0.00 sec)
+```
+
+**as 可以省略**
+
+```sql
+mysql> select s.stu_id ,s.stu_name ,s.stu_address ,t.tea_id,t.tea_name,t.tea_age from stu  s inner join teacher  t on s.tea_id = t.tea_id;
++--------+----------+-------------+--------+-----------+---------+
+| stu_id | stu_name | stu_address | tea_id | tea_name  | tea_age |
++--------+----------+-------------+--------+-----------+---------+
+|      2 | joke     | 宝鸡市      |      3 | 范老师    |      35 |
+|      3 | 张三     | 安康市      |      2 | 王老师    |      35 |
++--------+----------+-------------+--------+-----------+---------+
+2 rows in set (0.00 sec)
+```
+
+### 10.6 子查询
+
+> 自己查自己
+
+```sql
+mysql> select * from (select * from stu where stu_age > 15) where stu_address = "宝鸡市";
+ERROR 1248 (42000): Every derived table must have its own alias
+```
+
+**给虚拟的表起别名**
+
+```sql
+mysql> select * from (select * from stu where stu_age > 15) as stus where stus.stu_address = "宝鸡市";
++--------+----------+-------------+-------------+---------+--------+
+| stu_id | stu_name | stu_phone   | stu_address | stu_age | tea_id |
++--------+----------+-------------+-------------+---------+--------+
+|      4 | 李四     | 18596258741 | 宝鸡市      |     125 |   NULL |
+|      6 | 赵六     | 14596258741 | 宝鸡市      |      88 |   NULL |
++--------+----------+-------------+-------------+---------+--------+
+2 rows in set (0.00 sec)
+```
+
+### 10.7 union 查询
+
+> MySQL UNION 操作符用于连接两个以上的 SELECT 语句的结果组合到一个结果集合中。多个 SELECT 语句会删除重复的数据。
+
+```sql
+mysql> select * from stu where stu_id >5 union  select * from stu where stu_age = 10;
++--------+----------+-------------+-------------+---------+--------+
+| stu_id | stu_name | stu_phone   | stu_address | stu_age | tea_id |
++--------+----------+-------------+-------------+---------+--------+
+|      6 | 赵六     | 14596258741 | 宝鸡市      |      88 |   NULL |
+|      7 | java     | 13685963248 | 西安市      |      45 |   NULL |
+|      3 | 张三     | 13258894525 | 安康市      |      10 |      2 |
++--------+----------+-------------+-------------+---------+--------+
+3 rows in set (0.00 sec)
+```
+
+### 10.8 多表之间的复杂查询(表关系查询)
+
+#### 10.8.1 一对一 一夫一妻
+
+#### 10.8.2 一对多 部门和员工
+
+#### 10.8.3 多对多 老师和学生
+
+
 
 ## 11. 聚合函数查询
 
