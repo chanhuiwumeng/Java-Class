@@ -2083,6 +2083,7 @@ mysql> create table husband(
     -> h_mark varchar(50)
     -> );
 Query OK, 0 rows affected (0.01 sec)
+
 ```
 
 ```sql
@@ -2110,6 +2111,15 @@ mysql> select * from husband;
 |    2 | 冯小刚    |    60 | 甲方乙方              |
 |    3 | 邓超      |    45 | 幸福像花儿一样        |
 +------+-----------+-------+-----------------------+
+3 rows in set (0.00 sec)
+mysql> select * from wife join husband on wife.w_id = husband.h_id;
++------+-----------+-------+------+-----------------+------+-----------+-------+-----------------------+
+| w_id | w_name    | w_age | h_id | w_mark          | h_id | h_name    | h_age | h_mark                |
++------+-----------+-------+------+-----------------+------+-----------+-------+-----------------------+
+|    1 | 刘诗诗    |    30 |    1 | 仙剑奇侠传      |    1 | 吴奇隆    |    50 | 小虎队                |
+|    2 | 徐帆      |    50 |    2 | 青衣            |    2 | 冯小刚    |    60 | 甲方乙方              |
+|    3 | 孙俪      |    42 |    3 | 玉观音          |    3 | 邓超      |    45 | 幸福像花儿一样        |
++------+-----------+-------+------+-----------------+------+-----------+-------+-----------------------+
 3 rows in set (0.00 sec)
 
 ```
@@ -2357,12 +2367,176 @@ mysql> select
 +--------+-----------+--------+----------+------------+
 |      1 | 阮小二    |      3 | 李逵     |       5000 |
 +--------+-----------+--------+----------+------------+
+1 row in se0  t (0.00 sec)
+```
+
+```sql
+mysql> select * from student join teahcer on student.stu_age = teahcer.tea_age;
++--------+-----------+---------+------------+-------------+--------+----------+---------+------------+------------+
+| stu_id | stu_name  | stu_age | stu_gender | stu_address | tea_id | tea_name | tea_age | tea_salary | tea_birth  |
++--------+-----------+---------+------------+-------------+--------+----------+---------+------------+------------+
+|      6 | 鲁智深    |      35 | 男         | 相国寺      |      2 | 吴用     |      35 |       4000 | 2021-01-16 |
++--------+-----------+---------+------------+-------------+--------+----------+---------+------------+------------+
 1 row in set (0.00 sec)
 ```
 
 ## 11. 聚合函数查询
 
+> mysql中定义了很多的函数提供我们查询使用
+
+**count 总数**
+
+```sql
+mysql> select count(tea_id) from teahcer;
++---------------+
+| count(tea_id) |
++---------------+
+|             4 |
++---------------+
+1 row in set (0.00 sec)
+
+mysql> select count(*) from student;
++----------+
+| count(*) |
++----------+
+|        7 |
++----------+
+1 row in set (0.00 sec)
+mysql> select count(*) from (select * from teahcer where tea_salary > 4000) as tea;
++----------+
+| count(*) |
++----------+
+|        2 |
++----------+
+1 row in set (0.00 sec)
+```
+
+**avg 平均数**
+
+```sql
+mysql> select avg(tea_salary) from teahcer;
++-----------------+
+| avg(tea_salary) |
++-----------------+
+|       4250.0000 |
++-----------------+
+1 row in set (0.00 sec)
+mysql> select avg(tea_age) from teahcer;
++--------------+
+| avg(tea_age) |
++--------------+
+|      36.7500 |
++--------------+
+1 row in set (0.00 sec)
+```
+
+**sum 求和**
+
+```sql
+mysql> select sum(tea_age) from teahcer;
++--------------+
+| sum(tea_age) |
++--------------+
+|          147 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> select sum(tea_salary) from teahcer;
++-----------------+
+| sum(tea_salary) |
++-----------------+
+|           17000 |
++-----------------+
+1 row in set (0.00 sec)
+```
+
+**max 最大值**
+
+```sql
+mysql> select max(tea_age) from teahcer;
++--------------+
+| max(tea_age) |
++--------------+
+|           40 |
++--------------+
+1 row in set (0.00 sec)
+```
+
+**min 最小值**
+
+```sql
+mysql> select min(tea_age) from teahcer;
++--------------+
+| min(tea_age) |
++--------------+
+|           32 |
++--------------+
+1 row in set (0.00 sec)
+```
+
+**阮小二老师的工资最高的老师名字**
+
+```sql
+mysql> select mark.tea_name ,max(mark.tea_salary) from (select stu.stu_id ,stu.stu_name,stu.stu_gender, tea.tea_id,tea.tea_name ,tea.tea_salary ,tea.tea_age from student stu  join stu_tea  st on  stu.stu_id = st.stu_id join teahcer tea  on st.tea_id = tea.tea_id where stu.stu_name = "阮小二") as mark  ;
++----------+----------------------+
+| tea_name | max(mark.tea_salary) |
++----------+----------------------+
+| 宋江     |                 5000 |
++----------+----------------------+
+1 row in set (0.00 sec)
+```
+
+**MD5加密**
+
+```sql
+mysql> select md5("admin");
++----------------------------------+
+| md5("admin")                     |
++----------------------------------+
+| 21232f297a57a5a743894a0e4a801fc3 |
++----------------------------------+
+1 row in set (0.00 sec)
+```
+
+****
+
+**curdate 系统当前的日期**
+
+```sql
+mysql> select curdate();
++------------+
+| curdate()  |
++------------+
+| 2021-01-08 |
++------------+
+1 row in set (0.00 sec)
+```
+
+**current_timestmp**
+
+````sql
+mysql> select current_timestamp();
++---------------------+
+| current_timestamp() |
++---------------------+
+| 2021-01-08 12:18:50 |
++---------------------+
+1 row in set (0.00 sec)
+````
+
+```sql
+mysql> SELECT DATE_FORMAT('2011-11-11 11:11:11','%Y-%m-%d %r');
++--------------------------------------------------+
+| DATE_FORMAT('2011-11-11 11:11:11','%Y-%m-%d %r') |
++--------------------------------------------------+
+| 2011-11-11 11:11:11 AM                           |
++--------------------------------------------------+
+1 row in set (0.00 sec)
+```
+
 ## 12 事务
+
+
 
 ### 12.1 事务的简介
 
