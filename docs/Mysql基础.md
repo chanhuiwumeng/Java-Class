@@ -1948,6 +1948,7 @@ mysql> select * from stu inner join teacher on stu.tea_id = teacher.tea_id;
 
 + 左连接  left  join 
 + 右连接 right join 
++ 全连接查询  full join 
 
 **左连接查询**
 
@@ -1984,6 +1985,14 @@ mysql> select * from stu right join teacher on stu.tea_id = teacher.tea_id;
 +--------+----------+-------------+-------------+---------+--------+--------+-----------+---------+-------------+
 3 rows in set (0.00 sec)
 ```
+
+**full outer join 全连接查询**
+
+```sql
+mysql 不支持
+```
+
+
 
 ![image-20210107172342590](_media/image-20210107172342590.png)
 
@@ -2055,11 +2064,301 @@ mysql> select * from stu where stu_id >5 union  select * from stu where stu_age 
 
 #### 10.8.1 一对一 一夫一妻
 
+> 一对一 所以这个外键可以放置在任何一张表
+
+```sql
+mysql> create table wife(
+    -> w_id int primary key auto_increment,
+    -> w_name varchar(25),
+    -> w_age int,
+    -> h_id int,
+    -> w_mark varchar(50)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> create table husband(
+    -> h_id int primary key auto_increment,
+    -> h_name varchar(25),
+    -> h_age int ,
+    -> h_mark varchar(50)
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+```
+
+```sql
+mysql> insert into husband values(null,"吴奇隆",50,"小虎队"),(null,"冯小刚",60,"甲方乙方"),(null,"邓超",45,"幸福像花儿一样");
+Query OK, 3 rows affected (0.00 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+mysql> insert into wife values(null,"刘诗诗",30,1,"仙剑奇侠传"),(null,"徐帆",50,2,"青衣"),(null,"孙俪",42,3,"玉观音");
+Query OK, 3 rows affected (0.00 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+mysql> select * from wife;
++------+-----------+-------+------+-----------------+
+| w_id | w_name    | w_age | h_id | w_mark          |
++------+-----------+-------+------+-----------------+
+|    1 | 刘诗诗    |    30 |    1 | 仙剑奇侠传      |
+|    2 | 徐帆      |    50 |    2 | 青衣            |
+|    3 | 孙俪      |    42 |    3 | 玉观音          |
++------+-----------+-------+------+-----------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from husband;
++------+-----------+-------+-----------------------+
+| h_id | h_name    | h_age | h_mark                |
++------+-----------+-------+-----------------------+
+|    1 | 吴奇隆    |    50 | 小虎队                |
+|    2 | 冯小刚    |    60 | 甲方乙方              |
+|    3 | 邓超      |    45 | 幸福像花儿一样        |
++------+-----------+-------+-----------------------+
+3 rows in set (0.00 sec)
+
+```
+
+```sql
+mysql> select * from wife inner join husband on wife.h_id = husband.h_id;
++------+-----------+-------+------+-----------------+------+-----------+-------+-----------------------+
+| w_id | w_name    | w_age | h_id | w_mark          | h_id | h_name    | h_age | h_mark                |
++------+-----------+-------+------+-----------------+------+-----------+-------+-----------------------+
+|    1 | 刘诗诗    |    30 |    1 | 仙剑奇侠传      |    1 | 吴奇隆    |    50 | 小虎队                |
+|    2 | 徐帆      |    50 |    2 | 青衣            |    2 | 冯小刚    |    60 | 甲方乙方              |
+|    3 | 孙俪      |    42 |    3 | 玉观音          |    3 | 邓超      |    45 | 幸福像花儿一样        |
++------+-----------+-------+------+-----------------+------+-----------+-------+-----------------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from wife inner join husband on wife.h_id = husband.h_id where w_name = "刘诗诗";
++------+-----------+-------+------+-----------------+------+-----------+-------+-----------+
+| w_id | w_name    | w_age | h_id | w_mark          | h_id | h_name    | h_age | h_mark    |
++------+-----------+-------+------+-----------------+------+-----------+-------+-----------+
+|    1 | 刘诗诗    |    30 |    1 | 仙剑奇侠传      |    1 | 吴奇隆    |    50 | 小虎队    |
++------+-----------+-------+------+-----------------+------+-----------+-------+-----------+
+1 row in set (0.00 sec)
+mysql> select * from husband inner join wife  on husband.h_id = wife.h_id where h_name = "邓超";
++------+--------+-------+-----------------------+------+--------+-------+------+-----------+
+| h_id | h_name | h_age | h_mark                | w_id | w_name | w_age | h_id | w_mark    |
++------+--------+-------+-----------------------+------+--------+-------+------+-----------+
+|    3 | 邓超   |    45 | 幸福像花儿一样        |    3 | 孙俪   |    42 |    3 | 玉观音    |
++------+--------+-------+-----------------------+------+--------+-------+------+-----------+
+1 row in set (0.00 sec)
+```
+
 #### 10.8.2 一对多 部门和员工
+
+```sql
+mysql> create table department(      
+    ->  dept_id int primary key auto_
+    ->  dept_name varchar(25),       
+    ->  dept_mark varchar(25)        
+    -> );                            
+Query OK, 0 rows affected (0.02 sec) 
+                                     
+mysql> create table employee(        
+    ->  emp_id int primary key auto_i
+    ->  emp_name varchar(25),        
+    ->  emp_age int,                 
+    ->  emp_address varchar(25),     
+    ->  dept_id int                  
+    -> );                            
+Query OK, 0 rows affected (0.02 sec) 
+                                     mysql> alter table employee add foreign key(dept_id) references department(dept_id);
+Query OK, 0 rows affected (0.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> insert into department values(null,"教学部","教学工作"),(null,"财务部","工资核算"),(null,"技术部","技术支持"),(null,"后勤部","后勤保障");
+Query OK, 4 rows affected (0.00 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> insert into employee values(null,"张三",20,"长安区",1);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into employee values(null,"李四",22,"长安区",1);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into employee values(null,"王五",23,"雁塔区",2),(null,"赵六",23,"未央区",2),(null,"小明",30,"高新区",3);
+Query OK, 3 rows affected (0.00 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> select * from department;
++---------+-----------+--------------+
+| dept_id | dept_name | dept_mark    |
++---------+-----------+--------------+
+|       1 | 教学部    | 教学工作     |
+|       2 | 财务部    | 工资核算     |
+|       3 | 技术部    | 技术支持     |
+|       4 | 后勤部    | 后勤保障     |
++---------+-----------+--------------+
+4 rows in set (0.00 sec)
+
+mysql> select * from employee;
++--------+----------+---------+-------------+---------+
+| emp_id | emp_name | emp_age | emp_address | dept_id |
++--------+----------+---------+-------------+---------+
+|      1 | 张三     |      20 | 长安区      |       1 |
+|      2 | 李四     |      22 | 长安区      |       1 |
+|      3 | 王五     |      23 | 雁塔区      |       2 |
+|      4 | 赵六     |      23 | 未央区      |       2 |
+|      5 | 小明     |      30 | 高新区      |       3 |
++--------+----------+---------+-------------+---------+
+5 rows in set (0.00 sec)
+```
+
+```sql
+mysql> select * from employee em inner join department dept on em.dept_id = dept.dept_id where dept.dept_name ="教学部";
++--------+----------+---------+-------------+---------+---------+-----------+--------------+
+| emp_id | emp_name | emp_age | emp_address | dept_id | dept_id | dept_name | dept_mark    |
++--------+----------+---------+-------------+---------+---------+-----------+--------------+
+|      1 | 张三     |      20 | 长安区      |       1 |       1 | 教学部    | 教学工作     |
+|      2 | 李四     |      22 | 长安区      |       1 |       1 | 教学部    | 教学工作     |
++--------+----------+---------+-------------+---------+---------+-----------+--------------+
+2 rows in set (0.00 sec)
+mysql> select * from employee em inner join department dept on em.dept_id = dept.dept_id where em.emp_age < 50;
++--------+----------+---------+-------------+---------+---------+-----------+--------------+
+| emp_id | emp_name | emp_age | emp_address | dept_id | dept_id | dept_name | dept_mark    |
++--------+----------+---------+-------------+---------+---------+-----------+--------------+
+|      1 | 张三     |      20 | 长安区      |       1 |       1 | 教学部    | 教学工作     |
+|      2 | 李四     |      22 | 长安区      |       1 |       1 | 教学部    | 教学工作     |
+|      3 | 王五     |      23 | 雁塔区      |       2 |       2 | 财务部    | 工资核算     |
+|      4 | 赵六     |      23 | 未央区      |       2 |       2 | 财务部    | 工资核算     |
+|      5 | 小明     |      30 | 高新区      |       3 |       3 | 技术部    | 技术支持     |
++--------+----------+---------+-------------+---------+---------+-----------+--------------+
+5 rows in set (0.00 sec)
+```
 
 #### 10.8.3 多对多 老师和学生
 
+> 多对多在使用的时候一定要引入第三方的表来保存主键和外键
 
+```sql
+mysql> create table student(
+    ->  stu_id int primary key auto_increment,
+    ->  stu_name varchar(25),
+    ->  stu_age int ,
+    ->  stu_gender char,
+    ->  stu_address varchar(25)
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> create table teahcer(
+    ->  tea_id int primary key auto_increment,
+    ->  tea_name varchar(25),
+    ->  tea_age int,
+    ->  tea_salary decimal,
+    ->  tea_birth date
+    ->  );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+mysql> create table stu_tea(
+    ->  stu_id int,
+    ->  tea_id int
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+```
+
+```sql
+mysql> select * from student;
++--------+-----------+---------+------------+-------------+
+| stu_id | stu_name  | stu_age | stu_gender | stu_address |
++--------+-----------+---------+------------+-------------+
+|      1 | 阮小二    |      23 | 男         | 梁山泊      |
+|      2 | 阮小七    |      23 | 男         | 梁山泊      |
+|      3 | 武松      |      56 | 男         | 景阳冈      |
+|      4 | 孙二娘    |      24 | 女         | 景阳冈      |
+|      5 | 林冲      |      30 | 男         | 山神庙      |
+|      6 | 鲁智深    |      35 | 男         | 相国寺      |
+|      7 | 燕青      |      30 | 男         | 东京        |
++--------+-----------+---------+------------+-------------+
+7 rows in set (0.00 sec)
+
+mysql> select * from teahcer;
++--------+-----------+---------+------------+------------+
+| tea_id | tea_name  | tea_age | tea_salary | tea_birth  |
++--------+-----------+---------+------------+------------+
+|      1 | 宋江      |      40 |       3500 | 2021-01-08 |
+|      2 | 吴用      |      35 |       4000 | 2021-01-16 |
+|      3 | 李逵      |      32 |       5000 | 2021-01-22 |
+|      4 | 卢俊义    |      40 |       4500 | 2021-01-22 |
++--------+-----------+---------+------------+------------+
+4 rows in set (0.00 sec)
+
+mysql> select * from stu_tea;
++--------+--------+
+| stu_id | tea_id |
++--------+--------+
+|      1 |      1 |
+|      2 |      1 |
+|      3 |      1 |
+|      4 |      1 |
+|      1 |      2 |
+|      2 |      3 |
+|      3 |      2 |
+|      1 |      3 |
+|      2 |      3 |
+|      3 |      3 |
+|      3 |      4 |
+|      2 |      4 |
++--------+--------+
+12 rows in set (0.00 sec)
+```
+
+```sql
+mysql> select * from student  stu inner join stu_tea st on stu.stu_id = st.stu_id inner join teahcer tea on tea.tea_id = st.tea_id;
++--------+-----------+---------+------------+-------------+--------+--------+--------+-----------+---------+------------+------------+
+| stu_id | stu_name  | stu_age | stu_gender | stu_address | stu_id | tea_id | tea_id | tea_name  | tea_age | tea_salary | tea_birth  |
++--------+-----------+---------+------------+-------------+--------+--------+--------+-----------+---------+------------+------------+
+|      1 | 阮小二    |      23 | 男         | 梁山泊      |      1 |      1 |      1 | 宋江      |      40 |       3500 | 2021-01-08 |
+|      2 | 阮小七    |      23 | 男         | 梁山泊      |      2 |      1 |      1 | 宋江      |      40 |       3500 | 2021-01-08 |
+|      3 | 武松      |      56 | 男         | 景阳冈      |      3 |      1 |      1 | 宋江      |      40 |       3500 | 2021-01-08 |
+|      4 | 孙二娘    |      24 | 女         | 景阳冈      |      4 |      1 |      1 | 宋江      |      40 |       3500 | 2021-01-08 |
+|      1 | 阮小二    |      23 | 男         | 梁山泊      |      1 |      2 |      2 | 吴用      |      35 |       4000 | 2021-01-16 |
+|      2 | 阮小七    |      23 | 男         | 梁山泊      |      2 |      3 |      3 | 李逵      |      32 |       5000 | 2021-01-22 |
+|      3 | 武松      |      56 | 男         | 景阳冈      |      3 |      2 |      2 | 吴用      |      35 |       4000 | 2021-01-16 |
+|      1 | 阮小二    |      23 | 男         | 梁山泊      |      1 |      3 |      3 | 李逵      |      32 |       5000 | 2021-01-22 |
+|      2 | 阮小七    |      23 | 男         | 梁山泊      |      2 |      3 |      3 | 李逵      |      32 |       5000 | 2021-01-22 |
+|      3 | 武松      |      56 | 男         | 景阳冈      |      3 |      3 |      3 | 李逵      |      32 |       5000 | 2021-01-22 |
+|      3 | 武松      |      56 | 男         | 景阳冈      |      3 |      4 |      4 | 卢俊义    |      40 |       4500 | 2021-01-22 |
+|      2 | 阮小七    |      23 | 男         | 梁山泊      |      2 |      4 |      4 | 卢俊义    |      40 |       4500 | 2021-01-22 |
++--------+-----------+---------+------------+-------------+--------+--------+--------+-----------+---------+------------+------------+
+12 rows in set (0.00 sec)
+mysql> select * from student  stu inner join stu_tea st on stu.stu_id = st.stu_id inner join teahcer tea on tea.tea_id = st.tea_id where tea.tea_name = "宋江"
+;
++--------+-----------+---------+------------+-------------+--------+--------+--------+----------+---------+------------+------------+
+| stu_id | stu_name  | stu_age | stu_gender | stu_address | stu_id | tea_id | tea_id | tea_name | tea_age | tea_salary | tea_birth  |
++--------+-----------+---------+------------+-------------+--------+--------+--------+----------+---------+------------+------------+
+|      1 | 阮小二    |      23 | 男         | 梁山泊      |      1 |      1 |      1 | 宋江     |      40 |       3500 | 2021-01-08 |
+|      2 | 阮小七    |      23 | 男         | 梁山泊      |      2 |      1 |      1 | 宋江     |      40 |       3500 | 2021-01-08 |
+|      3 | 武松      |      56 | 男         | 景阳冈      |      3 |      1 |      1 | 宋江     |      40 |       3500 | 2021-01-08 |
+|      4 | 孙二娘    |      24 | 女         | 景阳冈      |      4 |      1 |      1 | 宋江     |      40 |       3500 | 2021-01-08 |
++--------+-----------+---------+------------+-------------+--------+--------+--------+----------+---------+------------+------------+
+4 rows in set (0.00 sec)
+mysql> select * from student  stu inner join stu_tea st on stu.stu_id = st.stu_id inner join teahcer tea on tea.tea_id = st.tea_id where stu.stu_name = "阮小
+二";
++--------+-----------+---------+------------+-------------+--------+--------+--------+----------+---------+------------+------------+
+| stu_id | stu_name  | stu_age | stu_gender | stu_address | stu_id | tea_id | tea_id | tea_name | tea_age | tea_salary | tea_birth  |
++--------+-----------+---------+------------+-------------+--------+--------+--------+----------+---------+------------+------------+
+|      1 | 阮小二    |      23 | 男         | 梁山泊      |      1 |      1 |      1 | 宋江     |      40 |       3500 | 2021-01-08 |
+|      1 | 阮小二    |      23 | 男         | 梁山泊      |      1 |      2 |      2 | 吴用     |      35 |       4000 | 2021-01-16 |
+|      1 | 阮小二    |      23 | 男         | 梁山泊      |      1 |      3 |      3 | 李逵     |      32 |       5000 | 2021-01-22 |
++--------+-----------+---------+------------+-------------+--------+--------+--------+----------+---------+------------+------------+
+3 rows in set (0.00 sec)
+```
+
+**查询阮小二的老师工资大于4000的**
+
+```sql
+mysql> select
+    ->  mark.stu_id,mark.stu_name,mark.tea_id,mark.tea_name,mark.tea_salary
+    ->  from
+    ->  (select stu.stu_id ,stu.stu_name,stu.stu_gender, tea.tea_id,tea.tea_name ,tea.tea_salary ,tea.tea_age from student  stu inner join stu_tea st on stu.stu_id = st.stu_id inner join teahcer tea on tea.tea_id = st.tea_id where stu.stu_name = "阮小二")
+    ->  as mark
+    -> where
+    ->  mark.tea_salary > 4000;
++--------+-----------+--------+----------+------------+
+| stu_id | stu_name  | tea_id | tea_name | tea_salary |
++--------+-----------+--------+----------+------------+
+|      1 | 阮小二    |      3 | 李逵     |       5000 |
++--------+-----------+--------+----------+------------+
+1 row in set (0.00 sec)
+```
 
 ## 11. 聚合函数查询
 
