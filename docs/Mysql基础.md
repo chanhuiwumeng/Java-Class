@@ -2666,7 +2666,7 @@ Query OK, 0 rows affected (0.00 sec)
 + READ COMMITTED;
 + SERIALIZABLE  课串行话;
 
-## 13 视图
+## 13 视图(view)
 
 > 我们在复杂的查询的时候 先查出一部分的数据，是在一张虚拟的表中，在根据这张虚拟的表再次查询，我们将查询的结果虚拟的表可以进行存储起来，用作下次查询。
 
@@ -2791,13 +2791,81 @@ mysql> drop  view some_stu;
 Query OK, 0 rows affected (0.01 sec)
 ```
 
-## 14 触发器
+## 14 触发器(trigger)
 
+> 触发器是与表有关的数据库对象，在满足定义条件时触发，并执行触发器中定义的语句集合。触发器的这种特性可以协助应用在数据库端确保数据的完整性。
+>
+> 就是在执行数据库操作后在激发另一个操作。
 
+### 14.0 分隔符;
 
-## 15 索引
+```sql
+delimiter @@;
+```
 
-## 16 存储过程
+### 14.1 创建触发器
+
+```sql
+mysql> delimiter @@
+mysql> create trigger select_count after insert on student for each row
+    ->  begin
+    ->  insert into score(id,c_name,stu_id,grade) values(null,"计算机",new.id,99);
+    ->  end @@
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>  delimiter ;
+mysql> insert into student values(null,"吴京","男",1980,"武术系","北京刹什海",99);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from score;
++----+--------+-----------+-------+
+| id | stu_id | c_name    | grade |
++----+--------+-----------+-------+
+|  1 |    901 | 计算机    |    98 |
+|  2 |    901 | 英语      |    80 |
+|  3 |    902 | 计算机    |    65 |
+|  4 |    902 | 中文      |    88 |
+|  5 |    903 | 中文      |    95 |
+|  6 |    904 | 计算机    |    70 |
+|  7 |    904 | 英语      |    92 |
+|  8 |    905 | 英语      |    94 |
+|  9 |    906 | 计算机    |    90 |
+| 10 |    906 | 英语      |    85 |
+| 11 |    920 | 计算机    |    99 |
++----+--------+-----------+-------+
+11 rows in set (0.00 sec)
+```
+
+### 14.2 执行触发器
+
+### 14.3 删除触发器
+
+```sql
+
+mysql> drop trigger select_count;
+Query OK, 0 rows affected (0.00 sec)
+
+```
+
+### 14.4 查看触发器
+
+```sql
+mysql> show triggers;
+Empty set (0.00 sec)
+
+```
+
+## 15 索引(index)
+
+> 
+
+## 16 存储过程(produce)
+
+> 
 
 ## 17. 数据库的备份和恢复
+
+> 
+
+## 18数据库三范式
 
