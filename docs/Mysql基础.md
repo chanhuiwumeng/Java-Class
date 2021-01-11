@@ -2855,11 +2855,102 @@ Empty set (0.00 sec)
 
 ```
 
-## 15 索引(index)
+## 15 存储过程(produce):imp:
 
-> 
+> 做复杂查询的时候我们写的sql语句很多，很长 那每一次操作不可能重复的去写sql语句，能不能将sql语句定义为一个函数引。
 
-## 16 存储过程(produce)
+### 15.1 创建存储过程
+
+```sql
+mysql> delimiter @@
+mysql> create procedure avg_age ()
+    -> begin
+    -> select avg(age) from student;
+    -> end @@
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> delimiter ;
+
+mysql> call avg_age();
++----------+
+| avg(age) |
++----------+
+| 212.8667 |
++----------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+```
+
+**带参数的存储过程**
+
++ in
++ out
++ inout
+
+```sql
+mysql> delimiter @@
+mysql> create procedure sum_age(in param int)
+    -> begin
+    -> select sum(age + param) from student;
+    -> end @@
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> delimiter ;
+
+mysql> call sum_age(100);
+ 
++------------------+
+| sum(age + param) |
++------------------+
+|             4693 |
++------------------+
+1 row in set (0.00 sec)
+```
+
+```sql
+delimiter @@
+create procedure sum_ages(out param int)	
+begin 
+	set param = 10;
+	select count(*) into param from student;
+end @@
+
+mysql> delimiter ;
+
+mysql> set @param = 10;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> call sum_ages(@param);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select @param;
++--------+
+| @param |
++--------+
+|     15 |
++--------+
+1 row in set (0.00 sec)
+
+mysql>
+```
+
+### 15.2 调用存储过程
+
+```sql
+mysql> call sum_age(100);
+```
+
+### 15.3 删除存储过程
+
+```sql
+mysql> drop procedure sum_ages;
+Query OK, 0 rows affected (0.01 sec)
+```
+
+
+
+## 16索引(index) :imp:
 
 > 
 
