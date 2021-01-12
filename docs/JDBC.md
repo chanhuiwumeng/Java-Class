@@ -396,7 +396,6 @@ public class StudentTest {
 		int addStudent = studentDao.addStudent();
 		System.out.println(addStudent);
 	}
-	
 	@Test
 	public void updateStudent() {
 		
@@ -405,9 +404,275 @@ public class StudentTest {
 
 ```
 
-## 5. PreparedStatement 预编译的Sql语句
+## 5. 出现乱码问题
 
-> 
+```sql
+	private static String USERNAME= "root";
+	private static String PASSWORD= "root";
+	//mysql连接的路径
+	private static String URL= "jdbc:mysql://localhost:3306/hehe?useSSL=true&useEncoding=true&characterEncoding=utf8";
+```
+
+## 6. PreparedStatement 预编译的Sql语句
+
+> 预编译的sql语句:
+>
+> ? 占位符
+>
+> 在编译sql语句的过程中使用？作为占位符，在根据方法传入的参数类型使用preparedStatement的set 方法使用传入的实际参数替换编译以后sql语句中的?
+>
+> 提高了sql语句和代码的复用性，效率提高。 
 
 
+
+```sql
+package com.xdkj.jdbc.dao.impl;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import com.xdkj.jdbc.dao.StudentDao;
+import com.xdkj.jdbc.entity.Student;
+import com.xdkj.jdbc.utils.ConnectionUtils;
+
+public class StudentDaoImpl2 implements StudentDao {
+
+	private Connection con = ConnectionUtils.getConnection();
+	private PreparedStatement  pre = null;
+	private ResultSet rs = null;
+	@Override
+	public List<Student> selectAll() {
+		List<Student> list = new ArrayList<>();
+		String sql = "select * from student";
+		try {
+			pre = con.prepareStatement(sql);
+			rs = 	pre.executeQuery();
+			while(rs.next()) {
+				Student student = new Student();
+				//通过列的下标获取
+				student.setId(rs.getInt(1));
+				student.setName(rs.getString(2));
+				student.setSex(rs.getString(3));
+				student.setBirth(rs.getDate(4));
+				student.setDepartment(rs.getString(5));
+				student.setAddress(rs.getString(6));
+				student.setAge(rs.getInt(7));
+				//从数据获取一条数据 封装一条数据  放入List集合中
+				list.add(student);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	@Override
+	public Student selectById(int id) {
+		//java中先编译后运行
+		String sql = "select * from student where id = ?";
+		Student  student = null;
+		try {
+			pre = 	con.prepareStatement(sql);
+			//使用传入的参数替换占位符号
+			//1代表第一个问号
+			pre.setInt(1, id);
+		
+			rs = pre.executeQuery();
+			
+			if(rs.next()) {
+				student = 	new Student();
+				student.setId(rs.getInt("id"));
+				student.setName(rs.getString("name"));
+				student.setSex(rs.getString("sex"));
+				student.setBirth(rs.getDate("birth"));
+				student.setDepartment(rs.getString("department"));
+				student.setAddress(rs.getString("address"));
+				student.setAge(rs.getInt("age"));
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return student;
+	}
+
+	@Override
+	public int addStudent() {
+		int result = 0;
+		String sql = "insert into student values(null,?,?,?,?,?,?);";
+		try {
+			pre = con.prepareStatement(sql);
+			pre.setString(1, "赵敏");
+			pre.setString(2, "女");
+			pre.setDate(3, null);
+			pre.setString(4, "英语系");
+			pre.setString(5, "陕西省西安市");
+			pre.setInt(6, 100);
+			
+			result = pre.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+
+	@Override
+	public int updateStudent() {
+		int result = 0;
+		String sql = "update student set name =?,age=?,address=? where id = ?";
+		try {
+			pre = con.prepareStatement(sql);
+			pre.setString(1, "白眉鹰王");
+			pre.setInt(2, 999);
+			pre.setString(3, "北京市昌平区");
+			pre.setInt(4, 901);
+			 result = pre.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+
+	@Override
+	public int deleteStudent() {
+		String sql = "delete from student where id = ?";
+		int result = 0;
+		try {
+			pre = con.prepareStatement(sql);
+			pre.setInt(1, 92903);
+		result = pre.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		return result;
+	}
+
+}
+
+```
+
+```sql
+package com.xdkj.jdbc.test;
+
+import java.util.List;
+
+import org.junit.Test;
+
+import com.xdkj.jdbc.dao.StudentDao;
+import com.xdkj.jdbc.dao.impl.StudentDaoImpl2;
+import com.xdkj.jdbc.entity.Student;
+
+public class StudentTest2 {
+	
+	StudentDao studentDao = new StudentDaoImpl2();
+	@Test
+	public void selectAll() {
+		List<Student> list = studentDao.selectAll();
+		System.out.println(list);
+	}
+	
+	@Test
+	public void selectById() {
+		Student student = studentDao.selectById(901);
+		System.out.println(student);
+	}
+	
+	@Test
+	public void addStudent() {
+		int addStudent = studentDao.addStudent();
+		System.out.println(addStudent);
+	}
+	
+	@Test
+	public void updateStudent() {
+		int addStudent = studentDao.updateStudent();
+		System.out.println(addStudent);
+	}
+	
+	@Test
+	public void deleteStudent() {
+		int addStudent = studentDao.deleteStudent();
+		System.out.println(addStudent);
+	}
+}
+
+```
+
+**接口有参数**
+
+```sql
+package com.xdkj.jdbc.dao;
+
+import com.xdkj.jdbc.entity.Student;
+
+public interface StudentMapper {
+	int addStudent(Student student);
+}
+
+```
+
+```sql
+package com.xdkj.jdbc.dao.impl;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import com.xdkj.jdbc.dao.StudentMapper;
+import com.xdkj.jdbc.entity.Student;
+import com.xdkj.jdbc.utils.ConnectionUtils;
+
+public class StudentMapperImpl implements StudentMapper {
+	private Connection con = ConnectionUtils.getConnection();
+	private PreparedStatement  pre = null;
+	private ResultSet rs = null;
+	@Override
+	public int addStudent(Student student) {
+		int result = 0;
+	String sql = "insert into student values(null,?,?,?,?,?,?);";
+		try {
+			pre = con.prepareStatement(sql);
+			pre.setString(1, student.getName());
+			pre.setString(2, student.getSex());
+			pre.setDate(3, null);
+			pre.setString(4, student.getDepartment());
+			pre.setString(5, student.getAddress());
+			pre.setInt(6, student.getAge());
+			
+			result = pre.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+public static void main(String[] args) {
+	Student student = new Student();
+		student.setName("小昭");
+		student.setSex("女");
+		student.setDepartment("中文系");
+		student.setAddress("光明顶");
+		student.setAge(30);
+	
+int result = 	new StudentMapperImpl().addStudent(student);
+System.out.println(result);
+}
+}
+
+```
 
