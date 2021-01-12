@@ -14,11 +14,19 @@
 
 ### 2.1 我们新建项目和导入jar包
 
+**新建项目**
+
+![image-20210112113930175](_media/image-20210112113930175.png)
+
+**导入需要的驱动jar包**
+
 ![image-20210112101928560](_media/image-20210112101928560.png)
+
+构建以后的jar包
 
 ![image-20210112102001491](_media/image-20210112102001491.png)
 
-## 3. 构建数据库连接工具类
+### 2.2. 构建数据库连接工具类
 
 ```sql
 package com.xdkj.jdbc.utils;
@@ -67,9 +75,7 @@ public class ConnectionUtils {
 
 ```
 
-
-
-## 4. 构建数据库映射的类
+### 2.3 . 构建数据库映射的类
 
 ```sql
 public class Student {
@@ -84,7 +90,7 @@ public class Student {
 	}
 ```
 
-## 5. 构建实体类的接口和实现类
+### 2.4  构建实体类的接口和实现类
 
 **Student**
 
@@ -172,7 +178,7 @@ public class StudentDaoImpl implements StudentDao {
 
 ```
 
-## 6. 测试查询
+### 2.5 测试查询
 
 ```sql
 package com.xdkj.jdbc.test;
@@ -199,5 +205,5 @@ public class StudentTest {
 [Student [id=901, name=李世民, sex=男, birth=1985-01-01, department=计算机系, address=北京市海淀区, age=25]]
 ```
 
-## 7. Statement
+## 3. Statement
 
