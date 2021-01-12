@@ -6,7 +6,9 @@
 
 ## 1. 下载Mysql提供的数据库驱动jar包
 
-[Mysql驱动的jar包](https://mvnrepository.com/artifact/mysql/mysql-connector-java/5.1.49)
+[maven Mysql驱动的jar包](https://mvnrepository.com/artifact/mysql/mysql-connector-java/5.1.49)
+
+[Mysql官网提供的](https://dev.mysql.com/downloads/connector/j/)
 
 ![image-20210112101621133](_media/image-20210112101621133.png)
 
