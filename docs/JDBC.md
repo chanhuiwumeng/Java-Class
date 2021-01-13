@@ -32,7 +32,7 @@
 
 ### 2.2. 构建数据库连接工具类
 
-```sql
+```java
 package com.xdkj.jdbc.utils;
 
 import java.sql.Connection;
@@ -98,7 +98,7 @@ public class Student {
 
 **Student**
 
-```sql
+```java
 public class Student {
 	private int id;
 	private String name;
@@ -114,7 +114,7 @@ public class Student {
 
 **StudentDao**
 
-```sql
+```java
 package com.xdkj.jdbc.dao;
 
 import java.util.List;
@@ -129,7 +129,7 @@ public interface StudentDao {
 
 **StudentDaoImpl**
 
-```sql
+```java
 package com.xdkj.jdbc.dao.impl;
 
 import java.sql.Connection;
@@ -184,7 +184,7 @@ public class StudentDaoImpl implements StudentDao {
 
 ### 2.5 测试查询
 
-```sql
+```java
 package com.xdkj.jdbc.test;
 
 import java.util.List;
@@ -220,7 +220,7 @@ public class StudentTest {
 >
 > 因为这个sql语句是写死的不能传参数。所以我们实际开发中不用Statement 使用PreparedStatement
 
-```sql
+```java
 package com.xdkj.jdbc.dao.impl;
 
 import java.sql.Connection;
@@ -338,7 +338,7 @@ public class StudentDaoImpl implements StudentDao {
 
 **使用数据库的字段名称**
 
-```sql
+```java
 @Override
 	public Student selectById(int id) {
 		String sql = "select * from student where id = 901";
@@ -370,7 +370,7 @@ public class StudentDaoImpl implements StudentDao {
 
 ![image-20210112143651907](_media/image-20210112143651907.png)
 
-```sql
+```java
 package com.xdkj.jdbc.test;
 
 import java.util.List;
@@ -425,7 +425,7 @@ public class StudentTest {
 
 
 
-```sql
+```java
 package com.xdkj.jdbc.dao.impl;
 
 import java.sql.Connection;
@@ -589,7 +589,7 @@ public class StudentDaoImpl2 implements StudentDao {
 
 ```
 
-```sql
+```java
 package com.xdkj.jdbc.test;
 
 import java.util.List;
@@ -649,7 +649,7 @@ public interface StudentMapper {
 
 ```
 
-```sql
+```java
 package com.xdkj.jdbc.dao.impl;
 
 import java.sql.Connection;
@@ -789,7 +789,7 @@ public class ConnectionUtils {
 
 ### 7.4 Student实体类
 
-```sql
+```java
 public class Student {
     private  int id;
     private String name;
@@ -804,7 +804,7 @@ public class Student {
 
 **StudentDao*
 
-```sql
+```java
 package com.xdkj.jdbc.dao;
 
 import com.xdkj.jdbc.beans.Student;
@@ -817,7 +817,7 @@ public interface StudentDao {
 
 ```
 
-```StudentDaoImpl
+```java
 package com.xdkj.jdbc.dao.iml;
 
 import com.xdkj.jdbc.beans.Student;
@@ -873,7 +873,7 @@ public class StudentDaoImpl  implements StudentDao {
 
 ```
 
-```test
+```java
 package com.xdkj.jdbc.test;
 
 import com.xdkj.jdbc.beans.Student;
