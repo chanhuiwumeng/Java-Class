@@ -559,6 +559,31 @@ public class StudentDaoImpl2 implements StudentDao {
 	
 		return result;
 	}
+	 @Override
+    public List<Student> selectByName(String name) {
+        String sql = "select * from student where name like concat('%',?,'%') ";
+        List<Student> list = new ArrayList<>();
+        try {
+            pre = con.prepareStatement(sql);
+             pre.setString(1,name);
+            rs = pre.executeQuery();
+            while(rs.next()){
+              Student   student = new Student();
+                student.setId(rs.getInt("id"));
+                student.setName(rs.getString("name"));
+                student.setSex(rs.getString("sex"));
+                student.setBirth(rs.getDate("birth"));
+                student.setDepartment(rs.getString("department"));
+                student.setAddress(rs.getString("address"));
+                student.setAge(rs.getInt("age"));
+                list.add(student);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return list;
+    }
 
 }
 
@@ -672,6 +697,224 @@ public static void main(String[] args) {
 int result = 	new StudentMapperImpl().addStudent(student);
 System.out.println(result);
 }
+}
+
+```
+
+## 7. 数据库连接池
+
+> 数据库连接池负责分配、管理和释放数据库连接，它允许应用程序重复使用一个现有的数据库连接，而不是再重新建立一个；释放空闲时间超过最大空闲时间的数据库连接来避免因为没有释放数据库连接而引起的数据库连接遗漏。这项技术能明显提高对数据库操作的性能。
+
+### 7.1 Druid德鲁伊数据库连接池
+
+[中文官网](https://github.com/alibaba/druid/wiki/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
+
+![image-20210113114453672](_media/image-20210113114453672.png)
+
+需要的jar包
+
+![image-20210113114517981](_media/image-20210113114517981.png)
+
+### 7.2 db.properties
+
+```sql
+jdbc.Driver=com.mysql.jdbc.Driver
+jdbc.Url=jdbc:mysql://localhost:3306/hehe?useSSL=true&useEncoding=true&characterEncoding=utf8
+jdbc.UserName=root
+jdbc.Password=root
+#数据库连接池的参数
+#初始的连接数大小
+jdbc.initialSize=5
+#最大的激活数
+jdbc.maxActive=20
+#配置获取连接等待超时的时间
+jdbc.maxWait=60000
+
+```
+
+### 7.3 ConnectionUtils
+
+```sql
+package com.xdkj.jdbc.utils;
+
+import com.alibaba.druid.pool.DruidDataSource;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
+
+/**
+ * ClassName ConnectioUtils
+ * Description:数据库连接工具
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-01-13-11:13
+ */
+public class ConnectionUtils {
+    //获取外部配置的数据源信息
+    public   static DruidDataSource getDataSource() {
+   InputStream in = ConnectionUtils.class.getClassLoader().getResourceAsStream("db.properties");
+        Properties properties = new Properties();
+        DruidDataSource dataSource = null;
+        try {
+            properties.load(in);
+            //使用Druid数据库连接池
+                dataSource  = new DruidDataSource();
+                Class.forName("com.mysql.jdbc.Driver");
+                dataSource.setDriver(DriverManager.getDriver(properties.getProperty("jdbc.Url")));
+                dataSource.setPassword(properties.getProperty("jdbc.Password"));
+                dataSource.setUsername(properties.getProperty("jdbc.UserName"));
+                dataSource.setUrl(properties.getProperty("jdbc.Url"));
+                dataSource.setMaxActive(Integer.parseInt(properties.getProperty("jdbc.maxActive")));
+                dataSource.setMaxWait(Long.parseLong(properties.getProperty("jdbc.maxWait")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    return  dataSource;
+    }
+    public  static Connection  getConnection() throws SQLException {
+            return  getDataSource().getConnection();
+    }
+}
+
+```
+
+### 7.4 Student实体类
+
+```sql
+public class Student {
+    private  int id;
+    private String name;
+    private String sex;
+    private Date birth;
+    private String department;
+    private String address;
+    private int age;
+    .....set get....
+    }
+```
+
+**StudentDao*
+
+```sql
+package com.xdkj.jdbc.dao;
+
+import com.xdkj.jdbc.beans.Student;
+
+import java.util.List;
+
+public interface StudentDao {
+    List<Student> selectAll();
+}
+
+```
+
+```StudentDaoImpl
+package com.xdkj.jdbc.dao.iml;
+
+import com.xdkj.jdbc.beans.Student;
+import com.xdkj.jdbc.dao.StudentDao;
+import com.xdkj.jdbc.utils.ConnectionUtils;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * ClassName StudentDaoImpl
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-01-13-11:35
+ */
+public class StudentDaoImpl  implements StudentDao {
+    private Connection connection = ConnectionUtils.getConnection();
+    private PreparedStatement pre;
+    private ResultSet rs;
+    public StudentDaoImpl() throws SQLException {
+    }
+
+    @Override
+    public List<Student> selectAll() {
+        List<Student> list = new ArrayList<>();
+        String sql = "select * from student";
+        try {
+            pre = connection.prepareStatement(sql);
+            rs = pre.executeQuery();
+            while(rs.next()){
+                    Student   student = new Student();
+                    student.setId(rs.getInt("id"));
+                    student.setName(rs.getString("name"));
+                    student.setSex(rs.getString("sex"));
+                    student.setBirth(rs.getDate("birth"));
+                    student.setDepartment(rs.getString("department"));
+                    student.setAddress(rs.getString("address"));
+                    student.setAge(rs.getInt("age"));
+                    list.add(student);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return list;
+    }
+}
+
+```
+
+```test
+package com.xdkj.jdbc.test;
+
+import com.xdkj.jdbc.beans.Student;
+import com.xdkj.jdbc.dao.StudentDao;
+import com.xdkj.jdbc.dao.iml.StudentDaoImpl;
+import com.xdkj.jdbc.utils.ConnectionUtils;
+import org.junit.Test;
+
+import java.sql.SQLException;
+import java.util.List;
+
+/**
+ * ClassName StudentTest
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-01-13-11:28
+ */
+public class StudentTest {
+
+
+    public StudentTest() throws SQLException {
+    }
+
+    @Test
+    public void getConnection() throws SQLException {
+        System.out.println(ConnectionUtils.getConnection());
+    }
+    StudentDao studentDao = new StudentDaoImpl();
+
+
+
+    @Test
+    public  void seelctALl(){
+        List<Student> list = studentDao.selectAll();
+        for (Student student : list) {
+            System.out.println(student);
+        }
+    }
+
 }
 
 ```
