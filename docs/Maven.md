@@ -37,13 +37,10 @@ Maven的主要目标是使开发人员能够在最短的时间内理解开发工
 
 MavenDemo
 
-​	| src
-
-​		|main
-
-​			|java
-
-​			| resources
++ src
+  + main
+    + java
+    + resources
 
 ​	|test
 
