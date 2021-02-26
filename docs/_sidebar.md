@@ -25,7 +25,7 @@
   * [第三章 JavaScript](./JavaScript.md)
   * [第四章 Jquery](./Jquery.md)
   * [第六章 Ajax和Json](./Ajax和Json.md)
-  * [第七章 服务器技术](./服务器技术.md)
+  * [第七章 服务器技术](./服务器.md)
   * [第八章 Maven](./Maven.md)
   * [第九章 Xml解析](./Xml解析.md)
   * [第十章 Servlet](./Servlet.md)
