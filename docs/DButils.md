@@ -308,3 +308,5 @@ update(sql,param1,param2);
 
 > 将集合的结果集合封装到ResultSet 的集合中
 
+### 3.2 BeanHandler 单个结果处理器
+
