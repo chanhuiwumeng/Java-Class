@@ -408,15 +408,63 @@ post method!!
 
 **HttpServlet会根据不同的请求方式调用不同的doXXX方法处理请求(由service方法根据请求方式做分发)**
 
-## 5. ServletContext
+## 5. Servlet注解开发
 
-## 6. ServletConfig
+![image-20210301172131723](image-20210301172131723.png)
 
-## 7. HttpServletRequest
+```java
+package com.xdkj.servlet;
 
-## 8. HttpServletResponse
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+/*servlte注解  name 可以省略  urlPatterns 必须添加*/
+@WebServlet(name = "AnnotationServlet",urlPatterns = "/annotation")
+public class AnnotationServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-## 9. 过滤器(Filter)
+    }
 
-## 10 监听器(Lisetner)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println("do get method!!!!!");
+    }
+}
+
+```
+
+```html
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+    <h2>Hello World!</h2>
+    <a href="annotation">AnnotationServlet/a>
+</body>
+</html>
+
+```
+
+
+
+部署运行
+
+## 6. ServletContext
+
+## 7. ServletConfig
+
+## 8. HttpServletRequest
+
+## 9. HttpServletResponse
+
+## 10. 过滤器(Filter)
+
+## 11 监听器(Lisetner)
 
