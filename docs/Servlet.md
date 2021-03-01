@@ -54,6 +54,16 @@ https特点
 
 ### 2.1 新建JavaWeb项目
 
+#### 2.1.1 新建maven web项目
+
+![image-20210301143113320](image-20210301143113320.png)
+
+**保证项目的目录结构符合maven 项目的目录结构**
+
+#### 2.1.2 添加项目依赖的jar包
+
+**pom.xml**
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 
@@ -136,6 +146,7 @@ https特点
 </project>
 
 ```
+#### 2.1.3 新建FirstServlet 实现Servlet接口
 
 ```java
 package com.xdkj.servlet;
@@ -152,7 +163,7 @@ import java.io.IOException;
  * @Date:2021-03-01-12:12
  */
 public class FirstServlet  implements Servlet {
-    /*初始化方法*/
+    /*初始化方法  服务器启动的时候初始化 并且只初始化一次*/
     @Override
     public void init(ServletConfig config) throws ServletException {
         System.out.println("初始化servlet");
@@ -162,7 +173,7 @@ public class FirstServlet  implements Servlet {
     public ServletConfig getServletConfig() {
         return null;
     }
-
+    /*进行servlet接收请求 发送响应的时候 执行一次调用一次*/
     @Override
     public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
         System.out.println("do somethings");
@@ -172,7 +183,7 @@ public class FirstServlet  implements Servlet {
     public String getServletInfo() {
         return null;
     }
-
+    /*服务器停止的时候进行销毁*/
     @Override
     public void destroy() {
         System.out.println("servlet销毁！");
@@ -180,6 +191,7 @@ public class FirstServlet  implements Servlet {
 }
 
 ```
+#### 2.1.4 在web.xml中注册实现Servlet接口的类
 
 ```xml
 <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
@@ -200,6 +212,7 @@ public class FirstServlet  implements Servlet {
   </servlet-mapping>
 </web-app>
 ```
+#### 2.1.5 在index.jsp中配置Servlet的映射路径
 
 ```html
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -218,6 +231,21 @@ public class FirstServlet  implements Servlet {
 
 ```
 
+#### 2.1.6 浏览器打开首页点击查看效果
+
 ![image-20210301123008320](image-20210301123008320.png)
 
+#### 2.1.7 Servlet接口实现类 如何实现接收请求和处理响应
+
 ![image-20210301122949330](image-20210301122949330.png)
+
+### 2.2  项目启动控制台输出日志
+
+**第一次点击发送请求 初始化 和 调用 service方法**
+
+![image-20210301143217500](image-20210301143217500.png)
+
+**init 方法只调用一次**
+
+**destroy 在服务器停止的时候调用一次**
+
