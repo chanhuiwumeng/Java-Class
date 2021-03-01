@@ -79,3 +79,100 @@ MavenDemo
 ![image-20210226154232894](_media/image-20210226154232894.png)
 
 ![image-20210226154422890](_media/image-20210226154422890.png)
+
+## 4.Maven 和IDEA 配置
+
+![image-20210301100231914](_media/image-20210301100231914.png)
+
+![image-20210301100344094](_media/image-20210301100344094.png)
+
+![image-20210301100420713](_media/image-20210301100420713.png)
+
+![image-20210301100513444](_media/image-20210301100513444.png)
+
+![image-20210301100852827](_media/image-20210301100852827.png)
+
+### 3.2 Maven WEB项目
+
+![image-20210301101525170](_media/image-20210301101525170.png)
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.xdkj</groupId>
+  <artifactId>maven-demo-03</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>war</packaging>
+
+  <name>maven-demo-03 Maven Webapp</name>
+  <!-- FIXME change it to the project's website -->
+  <url>http://www.example.com</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>maven-demo-03</finalName>
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <plugins>
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_war_packaging -->
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.8.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>3.2.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
+
+```
+
+### 3.3 修改pom.xml默认配置
+
+![image-20210301101908579](_media/image-20210301101908579.png)
+
+### 3.4 新的项目设置maven 
+
+![image-20210301102046314](_media/image-20210301102046314.png)
+
+![image-20210301102132355](_media/image-20210301102132355.png)
