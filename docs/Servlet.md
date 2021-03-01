@@ -239,7 +239,49 @@ public class FirstServlet  implements Servlet {
 
 ![image-20210301122949330](image-20210301122949330.png)
 
-### 2.2  项目启动控制台输出日志
+### 2.2 servlet映射路径的配置
+
+![image-20210301153755092](image-20210301153755092.png)
+
+![image-20210301154341760](image-20210301154341760.png)
+
+![image-20210301154409634](image-20210301154409634.png)
+
+```xml
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                      http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+  version="4.0">
+
+  <display-name>Archetype Created Web Application</display-name>
+  <servlet>
+    <servlet-name>FirstServlet</servlet-name>
+    <servlet-class>com.xdkj.servlet.FirstServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>FirstServlet</servlet-name>
+    <!--路径的匹配规则-->
+    <url-pattern>/login</url-pattern>
+  </servlet-mapping>
+
+<servlet>
+  <servlet-name>SecondServlet</servlet-name>
+  <servlet-class>com.xdkj.servlet.SecondServlet</servlet-class>
+</servlet>
+  <servlet-mapping>
+    <servlet-name>SecondServlet</servlet-name>
+    <!-- 一定要前面加/
+     1. / 代表的是我们的项目 war包  根路径
+     2. * 通配符  接收所有的请求
+     3. 多层级的路径配置
+    -->
+    <url-pattern>/user/login</url-pattern>
+  </servlet-mapping>
+</web-app>
+```
+
+### 2.3  项目启动控制台输出日志
 
 **第一次点击发送请求 初始化 和 调用 service方法**
 
@@ -248,4 +290,133 @@ public class FirstServlet  implements Servlet {
 **init 方法只调用一次**
 
 **destroy 在服务器停止的时候调用一次**
+
+### 2.4 Servlet的生命周期
+
+#### 2.4.1 Servlet生命周期
+
+1. The servlet is constructed, then initialized with the `init`  method.构造servlet，然后init方法初始化。 
+2. Any calls from clients to the `service` method are  handled.处理客户端对service方法的任何调用。 
+3. The servlet is taken out of service, then destroyed with the  `destroy` method, then garbage collected and finalized.  Servlet从服务中取出，然后destory方法清除，接着垃圾收集和终止。 
+
+#### 2.4.2 init 方法
+
+![image-20210301161911776](image-20210301161911776.png)
+
+#### 2.4.3 service 方法
+
+> 接受请求 处理请求响应处理后的结果
+
+#### 2.4.4 destroy方法
+
+> 由servlet容器调用，表示servlet正被服务清除。该方法只在servlet的service方法退出或者超时被所有线程调用一次。 servlet容器调用该方法后，servlet不会再次调用service方法。
+>
+> 移除servlet创建的对象。由垃圾回收机制清理不用的其他对象。
+
+## 3. GenericServlet
+
+> `GenericServlet` makes writing servlets easier. It provides simple  versions of the lifecycle methods `init` and `destroy` and  of the methods in the `ServletConfig` interface.  `GenericServlet` also implements the `log` method,  declared in the `ServletContext` interface.  GenericServlet使得写servlet更容易。它提供了生命周期方法init、destroy和ServletConfig接口方法的简单版本。  GenericServlet也实现了在ServletContext接口中声明的log方法。 
+
+>GenericServlet是Servlet接口的实现类，是对Servlet接口的增强，如果是基于Http协议的，去继承这个GenericServlet的子类HttpServlet.
+
+## 4. HttpServlet
+
+> - public abstract class **HttpServlet**
+> - extends [GenericServlet](../../../javax/servlet/GenericServlet.html)
+> - implements java.io.Serializable
+>
+> Provides an abstract class to be subclassed to create an HTTP servlet  suitable for a Web site. A subclass of `HttpServlet` must override at  least one method, usually one of these: 
+>
+> - `doGet`, if the servlet supports HTTP GET requests 
+> - `doPost`, for HTTP POST requests 
+> - `doPut`, for HTTP PUT requests 
+> - `doDelete`, for HTTP DELETE requests 
+> - `init` and `destroy`, to manage resources that are  held for the life of the servlet 
+> - `getServletInfo`, which the servlet uses to provide information  about itself 
+>
+> There's almost no reason to override the `service` method.  `service` handles standard HTTP requests by dispatching them to the  handler methods for each HTTP request type (the `do`*XXX*  methods listed above). 通常没有必要去重写service方法，serice处理标准的http请求去根据http请求的类型分发他们。（doXXX方法去处理）
+>
+> Likewise, there's almost no reason to override the `doOptions` and  `doTrace` methods. 
+>
+> Servlets typically run on multithreaded servers, so be aware that a servlet  must handle concurrent requests and be careful to synchronize access to shared  resources. Shared resources include in-memory data such as instance or class  variables and external objects such as files, database connections, and network  connections. See the [Java  Tutorial on Multithreaded Programming](http://java.sun.com/Series/Tutorial/java/threads/multithreaded.html) for more information on handling  multiple threads in a Java program. 
+
+**ThreeHttpServlet.java**
+
+```java
+package com.xdkj.servlet;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * ClassName ThreeHttpServlet
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-01-16:36
+ */
+public class ThreeHttpServlet  extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        System.out.println("get  method!!!");
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        System.out.println("post method!!");
+    }
+}
+
+```
+
+**web.xml**
+
+```xml
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                      http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+  version="4.0">
+
+  <display-name>Archetype Created Web Application</display-name>
+  
+  <servlet>
+    <servlet-name>ThreeHttpServlet</servlet-name>
+    <servlet-class>com.xdkj.servlet.ThreeHttpServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ThreeHttpServlet</servlet-name>
+    <url-pattern>/three</url-pattern>
+  </servlet-mapping>
+</web-app>
+```
+
+```properties
+初始化！！ Servlet
+do sometings!!1
+get  method!!!
+01-Mar-2021 16:39:30.633 信息 [Catalina-utility-2] org.apache.catalina.startup.HostConfig.deployDirectory 把web 应用程序部署到目录 [F:\apache-tomcat-9.0.37\webapps\manager]
+01-Mar-2021 16:39:30.675 信息 [Catalina-utility-2] org.apache.catalina.startup.HostConfig.deployDirectory Web应用程序目录[F:\apache-tomcat-9.0.37\webapps\manager]的部署已在[40]毫秒内完成
+post method!!
+```
+
+**HttpServlet会根据不同的请求方式调用不同的doXXX方法处理请求(由service方法根据请求方式做分发)**
+
+## 5. ServletContext
+
+## 6. ServletConfig
+
+## 7. HttpServletRequest
+
+## 8. HttpServletResponse
+
+## 9. 过滤器(Filter)
+
+## 10 监听器(Lisetner)
 
