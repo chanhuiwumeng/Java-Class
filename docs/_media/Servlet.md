@@ -56,7 +56,7 @@ https特点
 
 #### 2.1.1 新建maven web项目
 
-![image-20210301143113320](./_media/image-20210301143113320.png)
+![image-20210301143113320](image-20210301143113320.png)
 
 **保证项目的目录结构符合maven 项目的目录结构**
 
@@ -233,19 +233,19 @@ public class FirstServlet  implements Servlet {
 
 #### 2.1.6 浏览器打开首页点击查看效果
 
-![image-20210301123008320](./_media/image-20210301123008320.png)
+![image-20210301123008320](image-20210301123008320.png)
 
 #### 2.1.7 Servlet接口实现类 如何实现接收请求和处理响应
 
-![image-20210301122949330](./_media/image-20210301122949330.png)
+![image-20210301122949330](image-20210301122949330.png)
 
 ### 2.2 servlet映射路径的配置
 
-![image-20210301153755092](./_media/image-20210301153755092.png)
+![image-20210301153755092](image-20210301153755092.png)
 
-![image-20210301154341760](./_media/image-20210301154341760.png)
+![image-20210301154341760](image-20210301154341760.png)
 
-![image-20210301154409634](./_media/image-20210301154409634.png)
+![image-20210301154409634](image-20210301154409634.png)
 
 ```xml
 <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
@@ -281,7 +281,7 @@ public class FirstServlet  implements Servlet {
 </web-app>
 ```
 
-![image-20210302094139136](./_media/image-20210302094139136.png)
+![image-20210302094139136](image-20210302094139136.png)
 
 **为什么服务器有直接可以访问的还有不能直接访问的?**
 
@@ -291,7 +291,7 @@ public class FirstServlet  implements Servlet {
 
 **第一次点击发送请求 初始化 和 调用 service方法**
 
-![image-20210301143217500](./_media/image-20210301143217500.png)
+![image-20210301143217500](image-20210301143217500.png)
 
 **init 方法只调用一次**
 
@@ -307,7 +307,7 @@ public class FirstServlet  implements Servlet {
 
 #### 2.4.2 init 方法
 
-![image-20210301161911776](./_media/image-20210301161911776.png)
+![image-20210301161911776](image-20210301161911776.png)
 
 #### 2.4.3 service 方法
 
@@ -416,7 +416,7 @@ post method!!
 
 ## 5. Servlet注解开发
 
-![image-20210301172131723](./_media/image-20210301172131723.png)
+![image-20210301172131723](image-20210301172131723.png)
 
 ```java
 package com.xdkj.servlet;
@@ -481,176 +481,7 @@ public class AnnotationServlet extends HttpServlet {
 + getAttributeNames()  获取所有的属性名
 + getRequestDispacther()  获取资源分发器  
 
-**ServletContextDemo.java**
-
-```java
-package com.xdkj.servlet;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Enumeration;
-
-/**
- * ClassName ServletContextDemo
- * Description:
- *
- * @Author:一尘
- * @Version:1.0
- * @Date:2021-03-02-10:05
- */
-@WebServlet("/servletContextDemo")
-public class ServletContextDemo extends HttpServlet {
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        /*先获取ServletContext的实现类的对象
-        * org.apache.catalina.core.ApplicationContextFacade@192e22ed
-        * 接口实现类的对象什么时候创建的?
-        * 容器帮我们在初始化的时候创建的。
-        * */
-        ServletContext servletContext =  this.getServletContext();
-        System.out.println(servletContext);
-        System.out.println(servletContext.getInitParameter("encoding"));
-        /*获取所有的共享的数据  多个配置的信息数据*/
-        Enumeration<String> initParameterNames = servletContext.getInitParameterNames();
-        while(initParameterNames.hasMoreElements()){
-            String name = initParameterNames.nextElement();
-            String value = servletContext.getInitParameter(name);
-            System.out.println(value);
-        }
-        /*获取资源的真实的物理路径   */
-        System.out.println(servletContext.getRealPath("upload"));
-        InputStream  inputStream =  servletContext.getResourceAsStream("C:\\Users\\chanh\\InteliJIdeaWorkSpace\\xdkj\\servlet-demo-04\\src\\main\\resources\\db.properties");
-        System.out.println(inputStream);
-        //Archetype Created Web Application
-        System.out.println(servletContext.getServletContextName());
-        //向上下文绑定属性
-        servletContext.setAttribute("name","HelloWorld");
-        /*页面跳转*/
-        servletContext.getRequestDispatcher("/hello.html").forward(req,resp);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        doGet(req,resp);
-    }
-}
-
-```
-
-**SecondServlet.java**
-
-```java
-package com.xdkj.servlet;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-/**
- * ClassName SecondServlet
- * Description:
- *
- * @Author:一尘
- * @Version:1.0
- * @Date:2021-03-02-10:19
- */
-@WebServlet("/secondServlet")
-public class SecondServlet  extends HttpServlet {
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        ServletContext  servletContext = this.getServletContext();
-        System.out.println(servletContext.getInitParameter("encoding"));
-
-        //获取上下文对象的属性
-        System.out.println(servletContext.getAttribute("name"));
-
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        doGet(req,resp);
-    }
-}
-
-```
-
-**web.xml**
-
-```xml
-<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
-                      http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
-  version="4.0">
-
-  <display-name>Archetype Created Web Application</display-name>
-  <!--全局的初始化参数-->
-  <context-param>
-    <param-name>encoding</param-name>
-    <param-value>GBK</param-value>
-  </context-param>
-  <context-param>
-    <param-name>address</param-name>
-    <param-value>西安市</param-value>
-  </context-param>
-</web-app>
-```
-
-**index.jsp**
-
-```html
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>index</title>
-</head>
-<body>
-    <h2>Hello World!</h2>
-    <a href="servletContextDemo">ServletContextDemo</a>
-    <br>
-    <a href="secondServlet">SecondServlet</a>
-    <%--el表达式--%>
-    ${name}
-</body>
-</html>
-
-```
-
-**hello.html**
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>hello</title>
-</head>
-<body>
-    <h3>Hello html page!!!!!!!!!!!</h3>
-</body>
-</html>
-```
-
-
-
-![image-20210302105701206](./_media/image-20210302105701206.png)
+![image-20210302105701206](image-20210302105701206.png)
 
 ## 7. ServletConfig
 
