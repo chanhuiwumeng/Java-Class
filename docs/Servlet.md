@@ -813,42 +813,42 @@ public class ServletConfigDemo extends HttpServlet {
 >
 > servlrt容器初始化接口的实现类的对象 传递给我们去使用  在请求到达的时候在进行实例化对象，传递给doXXX方法去使用。
 
-+ getContextPath()  获取项目的根路径
-+ getCookies() 获取所有的cookie
++ :star:getContextPath()  获取项目的根路径 :star:
++ :star:getCookies() 获取所有的cookie 
 + getDateHeader()  获取日期头
-+ getHeader()  获取请求头信息
++ :star:getHeader()  获取请求头信息
 + getHeaderNames() 获取所有的请求名称
-+ getMethod() 请求方式
++ :star:getMethod() 请求方式
 + getPathInfo()
 + getQueryString() 
 + getRemoteUser()
-+ getRequestURL()
-+ getRequestURI()
++ :star:getRequestURL()
++ :star:getRequestURI()
 + getServletPath()
-+ getSession()
-+ getAttribute()
-+ setAttribute()
-+ removeAttribute()
-+ getCharacterEncoding()
++ :star:getSession()
++ :star:getAttribute()
++ :star:setAttribute()
++ :star:removeAttribute()
++ :star:getCharacterEncoding()
 + getContentLength()
 + getContentTYpe()
-+ getInputStream()
++ :star:getInputStream()
 + getLocale()
 + getLocalPort()
 + getLocalName()
-+ getParameter()
-+ getParameterMap()
++ :star:getParameter()
++ :star:getParameterMap()
 + getParameterNames()
 + getParameterValues()
-+ getReader()
-+ getRealPath()
++ :star:getReader()
++ :star:getRealPath()
 + getRemoteAddr()
 + getRemotePort()
-+ getRequestDispatcher()
-+ getScheme()  获取网络协议
-+ getServerName()  获取主机名称
-+ getServerPort()  获取主机端口
-+ setCharacterEncoding()
++ :star:getRequestDispatcher()
++ :star:getScheme()  获取网络协议
++ :star:getServerName()  获取主机名称
++ :star:getServerPort()  获取主机端口
++ :star:setCharacterEncoding()
 
 **HttpServletRequestDemo.java**
 
@@ -915,7 +915,85 @@ public class HttpServletRequestDemo extends HttpServlet {
 
 ```
 
+**HttpServletRequestDemo.java**
 
+```java
+package com.xdkj.servlet.HttpServletRequestDemo;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@WebServlet(name = "HtttpServletRequestDemo2",urlPatterns = "/httpServletRequestDemo2")
+public class HttpServletRequestDemo2 extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    /*乱码处理:
+     *      post 提交请求的方式 使用设置请求和响应的编码
+     *      get只能使用字符串解码和编码解决
+    * */
+        /*String  name = request.getParameter("name");
+        String newName = new String(name.getBytes("iso8859-1"),"utf8") ;
+        System.out.println(newName);*/
+        System.out.println("----------编码获取和设置 仅限于post的提交方式-----------");
+        request.setCharacterEncoding("utf8");
+        System.out.println(request.getCharacterEncoding());
+        System.out.println("-------------获取参数--------------");
+
+        /* name=%27joke%27&age=18 */
+        System.out.println(request.getQueryString());
+        /*根据参数的名称获取参数的值 从前端页面获取到的所有数据都是字符串*/
+        System.out.println(request.getParameter("name"));
+        System.out.println(request.getParameter("age"));
+        System.out.println("---------------向页面传递值--------------");
+        request.setAttribute("address","陕西省西安市");
+        /*页面跳转  本质是 有我们的服务器 帮助我们进行页面跳转 并且页面跳转客户端只发送一次请求  所以从头到尾
+        * 只有一个request对象
+        *  */
+        request.getRequestDispatcher("/main.jsp").forward(request,response);
+
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            doPost(request,response);
+    }
+}
+
+```
+
+**main.jsp**
+
+```html
+<%--
+  Created by IntelliJ IDEA.
+  User: chanh
+  Date: 2021/3/2
+  Time: 17:17
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>main</title>
+</head>
+<body>
+    ${address}
+</body>
+</html>
+
+```
+
+![image-20210302170820364](image-20210302170820364.png)
+
+
+
+### 8.2 URL解析
+
+![image-20210302171130130](_media/image-20210302171130130.png)
 
 ## 9. HttpServletResponse :imp:
 
