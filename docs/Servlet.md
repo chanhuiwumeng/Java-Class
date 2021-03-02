@@ -817,5 +817,13 @@ public class ServletConfigDemo extends HttpServlet {
 
 ## 11 监听器(Lisetner) :imp:
 
+## 12.文件上传
+
+## 13. 分页
+
+## 14. 验证码
+
+## 15.Ajax+Json
+
 
 
