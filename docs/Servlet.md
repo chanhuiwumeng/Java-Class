@@ -803,9 +803,117 @@ public class ServletConfigDemo extends HttpServlet {
 
 ```
 
-
-
 ## 8. HttpServletRequest :imp:
+
+> Extends the [`ServletRequest`](../../../javax/servlet/ServletRequest.html)  interface to provide request information for HTTP servlets. 
+>
+> The servlet container creates an `HttpServletRequest` object and  passes it as an argument to the servlet's service methods (`doGet`,  `doPost`, etc). 
+>
+> 继承自ServletReuest 
+>
+> servlrt容器初始化接口的实现类的对象 传递给我们去使用  在请求到达的时候在进行实例化对象，传递给doXXX方法去使用。
+
++ getContextPath()  获取项目的根路径
++ getCookies() 获取所有的cookie
++ getDateHeader()  获取日期头
++ getHeader()  获取请求头信息
++ getHeaderNames() 获取所有的请求名称
++ getMethod() 请求方式
++ getPathInfo()
++ getQueryString() 
++ getRemoteUser()
++ getRequestURL()
++ getRequestURI()
++ getServletPath()
++ getSession()
++ getAttribute()
++ setAttribute()
++ removeAttribute()
++ getCharacterEncoding()
++ getContentLength()
++ getContentTYpe()
++ getInputStream()
++ getLocale()
++ getLocalPort()
++ getLocalName()
++ getParameter()
++ getParameterMap()
++ getParameterNames()
++ getParameterValues()
++ getReader()
++ getRealPath()
++ getRemoteAddr()
++ getRemotePort()
++ getRequestDispatcher()
++ getScheme()  获取网络协议
++ getServerName()  获取主机名称
++ getServerPort()  获取主机端口
++ setCharacterEncoding()
+
+**HttpServletRequestDemo.java**
+
+```java
+package com.xdkj.servlet.HttpServletRequestDemo;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Enumeration;
+
+@WebServlet(name = "HttpServletRequestDemo",urlPatterns = "/httpServletRequestDemo")
+public class HttpServletRequestDemo extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        //org.apache.catalina.connector.RequestFacade@27091857
+        /*根据不同的客户端  创建不同的HttpServletRequest对象  请求到达的时候在创建对象*/
+            System.out.println(request);
+        System.out.println("---------------------获取项目信息------------");
+        //项目部署的根路径
+        System.out.println(request.getContextPath());
+        System.out.println("---------------获取服务器相关的信息--------------");
+        System.out.println(request.getScheme());//http
+        System.out.println(request.getServerName());//主机
+        System.out.println(request.getServerPort());//端口
+        //远程服务器
+        System.out.println(request.getRemoteUser());
+        System.out.println(request.getRemoteAddr());
+        System.out.println(request.getRemoteHost());
+        System.out.println(request.getRemotePort());
+        //本地服务器
+        System.out.println(request.getLocalAddr());
+        System.out.println(request.getLocalName());
+        System.out.println(request.getLocalPort());
+        System.out.println("---------------获取请求头信息---------------");
+        System.out.println(request.getDateHeader("Date"));
+        System.out.println(request.getHeader("Accept"));
+        System.out.println(request.getHeader("Connection"));
+        /*获取所有请求头的名称*/
+        Enumeration<String> names = request.getHeaderNames();
+        while(names.hasMoreElements()){
+            String name = names.nextElement();
+            String value = request.getHeader(name);
+            System.out.println(name + "=" + value);
+        }
+        System.out.println("---------------获取请求方式------");
+        System.out.println(request.getMethod());
+        System.out.println("-----------***获取资源路径------------");
+        System.out.println(request.getRequestURL());//绝对路径
+        /* /servlet_demo_httprequest_war_exploded/httpServletRequestDemo */
+        System.out.println(request.getRequestURI());//资源路径
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+            doPost(request,response);
+    }
+}
+
+```
 
 
 
@@ -824,6 +932,8 @@ public class ServletConfigDemo extends HttpServlet {
 ## 14. 验证码
 
 ## 15.Ajax+Json
+
+
 
 
 
