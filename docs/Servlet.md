@@ -473,7 +473,7 @@ public class AnnotationServlet extends HttpServlet {
 + getInitparameter() 获取全局的初始化的参数
 + getInitParameterNames()
 + getRealPath()  获取真实的物理路径
-+ getResourceAsStream()  获取资源转换为输入流
++ getResourceAsStream()  获取资源转换为输入流  指定路径(必须是webapp下面的内容)
 + getServletContextName() 获取根路径
 + setAttribute()  设置属性
 + getAttribute()  获取属性
@@ -495,6 +495,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
+import java.util.Properties;
 
 /**
  * ClassName ServletContextDemo
@@ -526,7 +527,10 @@ public class ServletContextDemo extends HttpServlet {
         }
         /*获取资源的真实的物理路径   */
         System.out.println(servletContext.getRealPath("upload"));
-        InputStream  inputStream =  servletContext.getResourceAsStream("C:\\Users\\chanh\\InteliJIdeaWorkSpace\\xdkj\\servlet-demo-04\\src\\main\\resources\\db.properties");
+        InputStream  inputStream =  servletContext.getResourceAsStream("db.properties");
+        Properties properties = new Properties();
+        properties.load(inputStream);
+        System.out.println(properties.getProperty("jdbc.username"));
         System.out.println(inputStream);
         //Archetype Created Web Application
         System.out.println(servletContext.getServletContextName());
