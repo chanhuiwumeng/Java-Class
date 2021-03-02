@@ -658,11 +658,164 @@ public class SecondServlet  extends HttpServlet {
 
 ## 7. ServletConfig
 
-## 8. HttpServletRequest
+> A servlet configuration object used by a servlet container to pass information  to a servlet during initialization. 一个servlet配置对象，在初始化过程中由servlet容器传递信息给servlet。 
+>
+> ServletConfig 是当前的Servlet的类的配置信息的对象  别的servlet获取不到。
 
-## 9. HttpServletResponse
+**ServletConfigDemo.java**
 
-## 10. 过滤器(Filter)
+```java
+package com.xdkj.servlet;
 
-## 11 监听器(Lisetner)
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * ClassName ServletConfigDemo
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-02-14:16
+ */
+//@WebServlet("/servletConfigDemo")
+public class ServletConfigDemo extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        /* ServletConfig 由容器传递信息给Servlet  当servlet初始化的时候*/
+        ServletConfig  config =  this.getServletConfig();
+        System.out.println(config);
+        System.out.println(config.getInitParameter("name"));
+        System.out.println(config.getInitParameter("encoding"));
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        doGet(req,resp);
+    }
+}
+
+```
+
+
+
+**web.xml**
+
+```xml
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                      http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+  version="4.0">
+
+  <display-name>Archetype Created Web Application</display-name>
+  <!--全局的初始化参数-->
+  <context-param>
+    <param-name>encoding</param-name>
+    <param-value>GBK</param-value>
+  </context-param>
+  <context-param>
+    <param-name>address</param-name>
+    <param-value>西安市</param-value>
+  </context-param>
+  <servlet>
+    <servlet-name>ServletConfigDemo</servlet-name>
+    <servlet-class>com.xdkj.servlet.ServletConfigDemo</servlet-class>
+    <!--当前的servlet初始化参数-->
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>utf8</param-value>
+    </init-param>
+    <init-param>
+      <param-name>name</param-name>
+      <param-value>joke</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ServletConfigDemo</servlet-name>
+    <url-pattern>/servletConfigDemo</url-pattern>
+  </servlet-mapping>
+</web-app>
+```
+
+**注解配置初始化信息:**
+
+```java
+package com.xdkj.servlet;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebInitParam;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Enumeration;
+
+/**
+ * ClassName ServletConfigDemo
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-02-14:16
+ */
+@WebServlet(urlPatterns = "/servletConfigDemo",
+        initParams = {@WebInitParam(name="encoding",value = "utf8"),
+                @WebInitParam(name="address",value = "USA")
+})
+public class ServletConfigDemo extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        /* ServletConfig 由容器传递信息给Servlet  当servlet初始化的时候*/
+        ServletConfig  config =  this.getServletConfig();
+        System.out.println(config);
+        System.out.println(config.getInitParameter("address"));
+        System.out.println(config.getInitParameter("encoding"));
+        Enumeration<String> initParameterNames = config.getInitParameterNames();
+        while(initParameterNames.hasMoreElements()){
+            String name = initParameterNames.nextElement();
+            String value = config.getInitParameter(name);
+            System.out.println(name + "="+ value);
+        }
+        //        获取servlet全限定性名称
+        System.out.println(config.getServletName());
+        /*获取全局的配置对象*/
+        ServletContext servletContext = config.getServletContext();
+        System.out.println(servletContext);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        doGet(req,resp);
+    }
+}
+
+```
+
+
+
+## 8. HttpServletRequest :imp:
+
+
+
+## 9. HttpServletResponse :imp:
+
+
+
+## 10. 过滤器(Filter) :imp:
+
+## 11 监听器(Lisetner) :imp:
+
+
 
