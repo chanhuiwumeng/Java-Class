@@ -997,6 +997,152 @@ public class HttpServletRequestDemo2 extends HttpServlet {
 
 ## 9. HttpServletResponse :imp:
 
+> Extends the [`ServletResponse`](../../../javax/servlet/ServletResponse.html)  interface to provide HTTP-specific functionality in sending a response. For  example, it has methods to access HTTP headers and cookies. 
+>
+> The servlet container creates an `HttpServletResponse` object and  passes it as an argument to the servlet's service methods (`doGet`,  `doPost`, etc). 
+>
+> 请求到达的时候。由容器进行接口的实现类的对象的实例化创建。
+
++ getCharacterEncoding()
++ setCharacterEncoding()
++ getBufferSize()
++ getOutputStream()
++ getWriter()
++ getContentType()
++ resetBuffer()
++ setBufferSize()
++ addCookie()
++ addHeader()
++ containsHeader()
++ sendRedirect()
++ setStatus()
++ senError()
+
+```java
+package com.xdkj.servlet;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * ClassName HttpServletResponseDemo
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-03-10:02
+ */
+@WebServlet("/httpServletResponse")
+public class HttpServletResponseDemo  extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        /*org.apache.catalina.connector.ResponseFacade@260fb5d9*/
+         System.out.println(resp);
+            /*完整的post请求乱码处理*/
+            req.setCharacterEncoding("utf8");
+            resp.setCharacterEncoding("utf8");
+            /*响应的内容的类型*/
+            resp.setContentType("text/html;charset=utf8");
+            /*添加响应头的信息*/
+            resp.setHeader("Address","陕西省西安市");
+            /*获取响应的内容类型*/
+              System.out.println(resp.getContentType());
+            req.getRequestDispatcher("/main.jsp").forward(req,resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        doGet(req,resp);
+    }
+}
+
+```
+
+```java
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+    <h2>Hello World!</h2>
+    <a href="httpServletResponse">HttpServletResponse</a>
+    <hr>
+    <a href="httpServletResponseDemo2">HttpServletResponseDemo2</a>
+</body>
+</html>
+
+```
+
+### 9.2 响应输出流（为了响应ajax数据）
+
+响应输出流是默认带有缓冲技术的。
+
+````java
+package com.xdkj.servlet;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+/**
+ * ClassName HttpServletResponseDemo2
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-03-10:22
+ */
+@WebServlet("/httpServletResponseDemo2")
+public class HttpServletResponseDemo2 extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        /*字节输出流*/
+        /*ServletOutputStream outputStream = resp.getOutputStream();
+             *//*设置缓冲区的大小*//*
+            resp.setBufferSize(10420);
+            outputStream.write("HelloWorld".getBytes());
+            outputStream.write("<h3 style='color:red;'>Hello HttpServletResponse</h3>".getBytes());
+            outputStream.print("<h3 style='color:red;'>Hello HttpServletResponse</h3>");
+             *//*获取默认的缓冲区大小  8192  8K*//*
+         System.out.println(resp.getBufferSize());
+            //刷新缓冲区
+         resp.flushBuffer();*/
+        /*打印流 万能流*/
+        PrintWriter writer = resp.getWriter();
+             writer.print("<h3>Hello PrintWriter!!!</h3>");
+             writer.print("<p>Hello PrintWriter!!!</p>");
+            writer.write("Hello world!!!!");
+            writer.write("<p>Hello PrintWriter!!!</p>");
+            writer.write(122344);
+
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        doGet(req,resp);
+    }
+}
+
+````
+
+
+
 
 
 ## 10. 过滤器(Filter) :imp:
