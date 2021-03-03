@@ -1144,7 +1144,265 @@ public class HttpServletResponseDemo2 extends HttpServlet {
 
 ````
 
+### 9.3 页面重定向
 
+![image-20210303122532073](_media/image-20210303122532073.png)
+
+```java
+package com.xdkj.servlet;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@WebServlet(name = "RedirectServlet",urlPatterns = "/redirectServlet")
+public class RedirectServlet extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+            /*页面重定向*/
+        	request.setAttribute("score","999999999999");
+                response.sendRedirect("main.jsp");
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doPost(request,response);
+    }
+}
+
+```
+
+重定向是: 先由客户端向服务器发送请求，如果使用endRedirect就意味着向服务器重新发送一个资源的请求，服务器能找到资源就进行页面的跳转。
+
+页面重定向是发送了两次请求。
+
+你找张三借钱，张三说我没有，但是李四有，你再去直接找李四借钱，借到了。  登录注册必须使用重定向
+
+### 9.4 Ajax和HttpServletResponse响应数据
+
+**AjaxResponseServlet.java**
+
+```java
+package com.xdkj.servlet;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@WebServlet(name = "AjaxResponseServlet",urlPatterns = "/ajaxResposne")
+public class AjaxResponseServlet extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("utf8");
+        response.setCharacterEncoding("utf8");
+        response.setContentType("text/html;charset=utf8");
+        /*接受请求的参数*/
+        String name = request.getParameter("name");
+        String age = request.getParameter("age");
+        System.out.println(name + "===" + age);
+        /*向外响应数据*/
+        ServletOutputStream outputStream = response.getOutputStream();
+            outputStream.write("data recive success!!!".getBytes());
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            doPost(request,response);
+    }
+}
+
+```
+
+**index.jsp**
+
+```html
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+    <h2>Hello World!</h2>
+    <a href="httpServletResponse">HttpServletResponse</a>
+    <hr>
+    <a href="httpServletResponseDemo2">HttpServletResponseDemo2</a>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(function(){
+            $.ajax({
+                url:"ajaxResposne",
+                type:"get",
+                data:{name:"joke",age:18},
+                success:function (result) {
+                    console.log(result)
+                }
+            })
+        })
+    </script>
+</body>
+</html>
+
+```
+
+### 9.5 Ajax+HttpServletReposne+json
+
+```xml
+<!--    导入gson的工具包-->
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.8.6</version>
+    </dependency>
+  </dependencies>
+```
+
+**main.jsp**
+
+```jsp
+<%--
+  Created by IntelliJ IDEA.
+  User: chanh
+  Date: 2021/3/3
+  Time: 10:13
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>main</title>
+</head>
+<body>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(function(){
+        $.ajax({
+            url:"ajaxResponseServletJson",
+            type:"get",
+            data:{name:"joke",age:18},
+            dataType:"json",
+            /*返回的数据格式是json */
+            success:function (result) {
+                console.log(result)
+            }
+        })
+    })
+</script>
+</body>
+</html>
+
+```
+
+**AjaxResponseServletJson.java**
+
+```java
+package com.xdkj.servlet;
+
+import com.google.gson.Gson;
+import com.xdkj.beans.Student;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * ClassName AjaxResponseServletJson
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-03-12:04
+ */
+@WebServlet("/ajaxResponseServletJson")
+public class AjaxResponseServletJson  extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setCharacterEncoding("utf8");
+        response.setCharacterEncoding("utf8");
+        response.setContentType("text/html;charset=utf8");
+        /*接受请求的参数*/
+        String name = request.getParameter("name");
+        String age = request.getParameter("age");
+        System.out.println(name + "===" + age);
+        /*返回的数据是Json格式*/
+        ServletOutputStream outputStream = response.getOutputStream();
+        /*原生的json数据处理很麻烦*/
+        /*"{\"name\":\"aaa\",\"id\":123}"*/
+        /*使用第三方的json工具类
+        *  fastjson
+        * jsonObject
+        *  hutool
+         **/
+        Student student = new Student();
+            student.setAge(Integer.parseInt(age));
+            student.setName(name);
+        /*对象转为json数据*/
+        Gson gson = new Gson();
+        /*将student转为json字符串*/
+        String json = gson.toJson(student);
+        outputStream.write(json.getBytes());
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doGet(request,response);
+    }
+}
+
+```
+
+**Student.java**
+
+```java
+package com.xdkj.beans;
+
+/**
+ * ClassName Student
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-03-12:13
+ */
+public class Student {
+    private String name;
+    private int age;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+}
+
+```
 
 
 
