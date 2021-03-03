@@ -1144,7 +1144,7 @@ public class HttpServletResponseDemo2 extends HttpServlet {
 
 ````
 
-### 9.3 页面重定向
+### 9.3 页面重定向 :imp:
 
 ![image-20210303122532073](_media/image-20210303122532073.png)
 
@@ -1404,7 +1404,563 @@ public class Student {
 
 ```
 
+## Servlet+数据库+登录验证
 
+### 1. 新建数据库的表Student
+
+![image-20210303163331024](_media/image-20210303163331024.png)
+
+### 2. 新建Mavenweb项目
+
+![image-20210303163456416](_media/image-20210303163456416.png)
+
+### 3. 添加项目的maven依赖
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.xdkj</groupId>
+  <artifactId>servlet-mysql-login</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>war</packaging>
+
+  <name>servlet-mysql-login Maven Webapp</name>
+  <!-- FIXME change it to the project's website -->
+  <url>http://www.example.com</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+    <!--servlet相关的jar包-->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>4.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>jstl</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <!--数据库相关-->
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.49</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-dbutils</groupId>
+      <artifactId>commons-dbutils</artifactId>
+      <version>1.7</version>
+    </dependency>
+    <!--json数据转换-->
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.8.6</version>
+    </dependency>
+    <!--lombok-->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.10</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>servlet-mysql-login</finalName>
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <plugins>
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_war_packaging -->
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.8.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>3.2.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
+
+```
+
+### 4. 定义表的实体类
+
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Student {
+    private int id;
+    private String name;
+    private String address;
+    private String department;
+    private int age;
+    private String sex;
+    private String birth;
+
+}
+
+```
+
+### 5. 定义业务接口
+
+```java
+public interface StudentDao {
+    List<Student> queryList();
+    Student queryById(int id);
+    List<Student> queryLikeName(String  name);
+    int addStudent(Student student);
+    int updateStudent(Student student);
+    int deleteStudent(Student student);
+
+```
+
+### 6. 定义数据库工具类
+
+**db.properties**
+
+```properties
+jdbc.Driver=com.mysql.jdbc.Driver
+jdbc.Url=jdbc:mysql://localhost:3306/hehe?useEncoding=true&characterEncoding=utf8&useSSL=true
+jdbc.UserName=root
+jdbc.Password=root
+```
+
+**RunnerUtil.java**
+
+```java
+package com.xdkj.util;
+
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import org.apache.commons.dbutils.QueryRunner;
+
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+/**
+ * ClassName RunnerUtil
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-03-15:31
+ */
+public class RunnerUtil {
+    public static  DataSource  getDataSource(){
+        InputStream inputStream = RunnerUtil.class.getClassLoader().getResourceAsStream("db.properties");
+        Properties  properties = new Properties();
+        MysqlDataSource mysqlDataSource  = new MysqlDataSource();
+        try {
+            properties.load(inputStream);
+            mysqlDataSource.setUser(properties.getProperty("jdbc.UserName"));
+            mysqlDataSource.setPassword(properties.getProperty("jdbc.Password"));
+            mysqlDataSource.setURL(properties.getProperty("jdbc.Url"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return  mysqlDataSource;
+
+    }
+    /*DButils的核心工具对象*/
+    public static QueryRunner  getRunner(){
+        return  new QueryRunner(getDataSource());
+    }
+}
+
+```
+
+### 7. 定义接口的实现类
+
+```java
+package com.xdkj.dao.impl;
+
+import com.xdkj.beans.Student;
+import com.xdkj.dao.StudentDao;
+import com.xdkj.util.RunnerUtil;
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
+
+import java.sql.SQLException;
+import java.util.List;
+
+/**
+ * ClassName StudentDaoImpl
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-03-15:36
+ */
+public class StudentDaoImpl implements StudentDao {
+    private QueryRunner runner = RunnerUtil.getRunner();
+    @Override
+    public List<Student> queryList() {
+        List<Student> list = null;
+        try {
+            list = runner.query("select * from student",new BeanListHandler<>(Student.class));
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return list;
+    }
+
+    @Override
+    public Student queryById(int id) {
+        Student student = null;
+        try {
+            student = runner.query("select * from student where id = ?",
+                    new BeanHandler<>(Student.class),
+                    id);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return student;
+    }
+
+    @Override
+    public List<Student> queryLikeName(String name) {
+        List<Student> list = null;
+        try {
+            list = runner.query("select * from student where name like concat('%',?,'%')",new BeanListHandler<>(Student.class),name);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return list;
+    }
+
+    @Override
+    public int addStudent(Student student) {
+        int result = 0;
+        try {
+            result = runner.update("insert into student values(null,?,?,?,?,?,?)",
+                    student.getName(),
+                    student.getSex(),
+                    student.getBirth(),
+                    student.getDepartment(),
+                    student.getAddress(),
+                    student.getAge());
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    public int updateStudent(Student student) {
+        return 0;
+    }
+
+    @Override
+    public int deleteStudent(Student student) {
+        return 0;
+    }
+}
+
+```
+
+### 8. 定义接口实现类的测试类
+
+```java
+package com.xdkj.test;
+
+import com.xdkj.beans.Student;
+import com.xdkj.dao.StudentDao;
+import com.xdkj.dao.impl.StudentDaoImpl;
+import org.junit.Test;
+
+/**
+ * ClassName StudentTest
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-03-15:43
+ */
+public class StudentTest {
+    StudentDao studentDao = new StudentDaoImpl();
+    @Test
+    public  void queryAll(){
+        System.out.println(studentDao.queryList());
+    }
+    @Test
+    public  void queryById(){
+        System.out.println(studentDao.queryById(903));
+    }
+    @Test
+public  void queryLikeName(){
+        System.out.println(studentDao.queryLikeName("张三"));
+    }
+    @Test
+    public  void addStudent(){
+        Student student = new Student();
+        student.setName("姜子牙");
+        student.setAddress("渭水");
+        student.setDepartment("众神之长");
+        student.setAge(75);
+        student.setSex("男");
+        student.setBirth("10");
+        System.out.println(studentDao.addStudent(student));
+    }
+}
+
+```
+
+### 9. 定义页面
+
+**login.html**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="login">
+        <form action="login" method="post">
+            <label for="name">用户名:</label>
+            <input type="text" name="name" id="name">
+            <br>
+            <label for="age">年&ensp;&ensp;龄:</label>
+            <input type="text" name="age" id="age">
+            <br>
+            <input type="submit" value="登录">
+        </form>
+        <a href="register.html">请注册</a>
+    </div>
+</body>
+</html>
+```
+
+**style.css**
+
+```css
+body,html,ul,li,img,a,p,h1,h2,h3,h4,h5,h6{
+    margin: 0;
+    padding: 0;
+}
+a{
+    text-decoration: none;
+}
+ul{
+    list-style: none;
+}
+body{
+    background: #f5f5f5;
+}
+.login{
+    position: relative;
+    top: 200px;
+    width:400px ;
+    height: 300px;
+    margin: 0 auto;
+    border: 1px solid red;
+    border-radius: 10px;
+    background: #fff;
+}
+input{
+    height: 35px;
+    width: 80%;
+    margin-top:15px;
+}
+input[type='submit']{
+    margin-left: 55px;
+}
+```
+
+**register.html**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+</head>
+<body>
+<form action="register" method="post">
+    <input type="text" name="name" id="name"><br>
+    <input type="text" name="sex" id="sex"><br>
+    <input type="text" name="address" id="address"><br>
+    <input type="text" name="age" id="age"><br>
+    <input type="text" name="department" id="department"><br>
+    <input type="text" name="birth" id="birth"><br>
+    <input type="submit" value="注册">
+</form>
+</body>
+</html>
+```
+
+### 10.登录和注册的业务交互
+
+**Loginservlet.java**
+
+```java
+package com.xdkj.servlet;
+
+import com.xdkj.beans.Student;
+import com.xdkj.dao.StudentDao;
+import com.xdkj.dao.impl.StudentDaoImpl;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+
+/**
+ * ClassName StudentServlet
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-03-15:53
+ */
+@WebServlet("/login")
+public class LoginServlet extends HttpServlet {
+    /*业务接口的实现类对象*/
+    private StudentDao  studentDao = new StudentDaoImpl();
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        req.setCharacterEncoding("utf8");
+        resp.setCharacterEncoding("utf8");
+        /*接受收参数*/
+        String name = req.getParameter("name");
+        String age = req.getParameter("age");
+        Student student = new Student();
+            student.setName(name);
+             student.setAge(Integer.parseInt(age));
+        List<Student> students = studentDao.queryLikeName(name);
+            if(students==null){//没查到数据
+                resp.getOutputStream().write("javascrpt:alert('数据不存在')".getBytes());
+            }else{
+                //名字相等的年龄有没有
+               if(name.equals("张三")){
+                   resp.sendRedirect("index.html");
+               }else{
+                   System.out.println("登录失败！！！");
+                   resp.sendRedirect("login.html");
+               }
+            }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        doGet(req,resp);
+    }
+}
+
+```
+
+**RegisterServlet.java**
+
+```java
+package com.xdkj.servlet;
+
+import com.xdkj.beans.Student;
+import com.xdkj.dao.StudentDao;
+import com.xdkj.dao.impl.StudentDaoImpl;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@WebServlet(name = "RegisterServlet",urlPatterns = "/register")
+public class RegisterServlet extends HttpServlet {
+    private StudentDao studentDao = new StudentDaoImpl();
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("utf8");
+        response.setCharacterEncoding("utf8");
+            String name  = request.getParameter("name");
+            String age  = request.getParameter("age");
+            String sex  = request.getParameter("sex");
+            String birth  = request.getParameter("birth");
+            String address  = request.getParameter("address");
+            String department  = request.getParameter("department");
+        /*数据封装*/
+        Student student = new Student();
+        student.setName(name);
+        student.setAddress(address);
+        student.setDepartment(department);
+        student.setAge(Integer.parseInt(age));
+        student.setSex(sex);
+        student.setBirth(birth);
+        int i = studentDao.addStudent(student);
+        if(i>=0){
+            //注册成功
+            response.sendRedirect("login.html");
+        }else {
+            //注册失败
+            request.getRequestDispatcher("/register.html").forward(request,response);
+        }
+
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request,response);
+    }
+}
+
+```
+
+![image-20210303164033398](_media/image-20210303164033398.png)
+
+![image-20210303164051330](_media/image-20210303164051330.png)
 
 ## 10. 过滤器(Filter) :imp:
 
