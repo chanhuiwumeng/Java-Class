@@ -1111,6 +1111,9 @@ public class HttpServletResponseDemo2 extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+            resp.setCharacterEncoding("utf8");
+        /*响应的内容的类型*/
+            resp.setContentType("text/html;charset=utf8");
         /*字节输出流*/
         /*ServletOutputStream outputStream = resp.getOutputStream();
              *//*设置缓冲区的大小*//*
