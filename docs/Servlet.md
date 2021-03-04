@@ -1966,7 +1966,9 @@ public class RegisterServlet extends HttpServlet {
 
 <img src="./_media/Servlet生命周期第一版.png">
 
-## 10.文件上传
+## 10.文件上传和下载
+
+### 10.1 文件上传
 
 **pom.xml**
 
@@ -2148,6 +2150,131 @@ public class FileUploadServlet extends HttpServlet {
 **文件上传成功！！！！！**
 
 ![image-20210304120107030](_media/image-20210304120107030.png)
+
+### 10.2 文件下载
+
+**infos.html*
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>下载</title>
+    <link rel="stylesheet" href="font-awesome-4.7.0/font-awesome-4.7.0/css/font-awesome.min.css">
+    <style>
+        ul{
+            width: 600px;
+            height: 70px;
+            list-style: none;
+            border: 1px solid red;
+        }
+        li{
+            color: #ff9000;
+            border: 1px solid #f5f5f5;
+            float: left;
+            padding: 0 20px;
+        }
+        i:hover{
+            cursor: pointer;
+            color: #ff5000;
+        }
+        img{
+            transition: all 2s ease;
+        }
+        img:hover{
+            transform: rotateZ(180deg) scale(1.2);
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <ul>
+            <li><a href="#"><img src="imgs/b1.png" alt=""></a><i class="fa fa-download" aria-hidden="true"></i></li>
+            <li><a href="#"><img src="imgs/b2.png" alt=""></a><i class="fa fa-download" aria-hidden="true"></i></li>
+            <li><a href="#"><img src="imgs/b3.png" alt=""></a><i class="fa fa-download" aria-hidden="true"></i></li>
+            <li><a href="#"><img src="imgs/b4.png" alt=""></a><i class="fa fa-download" aria-hidden="true"></i></li>
+        </ul>
+    </div>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(function(){
+        let tags = $("i");
+        $.each(tags,(index,item)=>{
+            $(item).click(()=>{
+                console.log($(item).prev().find("img").attr("src"));
+                window.location.href="download?imgSrc="+$(item).prev().find("img").attr("src");
+            })
+        })
+    })
+</script>
+</body>
+</html>
+```
+
+**FileDownloadServlet.java**
+
+```java
+package com.xdkj.servlet.FileUploadServlet;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Date;
+
+@WebServlet(name = "FileUploadServlet",urlPatterns = "/upload")
+/*文件上传的注解*/
+@MultipartConfig
+public class FileUploadServlet extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setCharacterEncoding("utf8");
+        response.setCharacterEncoding("utf8");
+            /*文件上传 servlet3.0 api 中的内容
+            *
+            *   content-disposition
+             *   form-data; name="file"; filename="20180412031959734.jpg"
+             *   content-type
+              *  image/jpeg
+            * */
+            //先获取上传的内容
+        Part part = request.getPart("file");
+        String filename = part.getHeader("content-disposition");
+        //获取文件的全名称  截取文件的扩展名
+        String str =    filename.substring(filename.indexOf("."),filename.length()-1);
+        //文件上传的真实的五路路径
+      String realPath =   this.getServletContext().getRealPath("upload");
+      //按照年月日进行文件分类保存
+      File realFile = new File(realPath, LocalDate.now().toString());
+       if(!realFile.exists()){
+           //文件夹不存在就创建
+           realFile.mkdirs();
+       }
+       //写入文件的路径 文件名称加入时间戳
+        File newFile = new File(realFile,File.separator+new Date().getTime()+str);
+        System.out.println(newFile);
+        //写入就可以了
+        part.write(newFile.toString());
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doPost(request,response);
+    }
+}
+
+```
+
+![image-20210304153605628](_media/image-20210304153605628.png)
 
 ## 11. 过滤器(Filter) :imp:
 
