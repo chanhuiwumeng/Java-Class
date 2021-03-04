@@ -2218,56 +2218,43 @@ public class FileUploadServlet extends HttpServlet {
 package com.xdkj.servlet.FileUploadServlet;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.Date;
+import java.io.*;
 
-@WebServlet(name = "FileUploadServlet",urlPatterns = "/upload")
-/*文件上传的注解*/
-@MultipartConfig
-public class FileUploadServlet extends HttpServlet {
+@WebServlet(name = "FileDowloadServlet",urlPatterns = "/download")
+public class FileDowloadServlet extends HttpServlet {
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.setCharacterEncoding("utf8");
-        response.setCharacterEncoding("utf8");
-            /*文件上传 servlet3.0 api 中的内容
-            *
-            *   content-disposition
-             *   form-data; name="file"; filename="20180412031959734.jpg"
-             *   content-type
-              *  image/jpeg
-            * */
-            //先获取上传的内容
-        Part part = request.getPart("file");
-        String filename = part.getHeader("content-disposition");
-        //获取文件的全名称  截取文件的扩展名
-        String str =    filename.substring(filename.indexOf("."),filename.length()-1);
-        //文件上传的真实的五路路径
-      String realPath =   this.getServletContext().getRealPath("upload");
-      //按照年月日进行文件分类保存
-      File realFile = new File(realPath, LocalDate.now().toString());
-       if(!realFile.exists()){
-           //文件夹不存在就创建
-           realFile.mkdirs();
-       }
-       //写入文件的路径 文件名称加入时间戳
-        File newFile = new File(realFile,File.separator+new Date().getTime()+str);
-        System.out.println(newFile);
-        //写入就可以了
-        part.write(newFile.toString());
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //接受下载资源的参数
+        String name = request.getParameter("imgSrc");
+        //获取资源在真实物理盘符中的路径
+        String realPath = this.getServletContext().getRealPath(name);
+        System.out.println(realPath);
+        File  file  = new File(realPath);
+        //设置响应头信息
+        response.setHeader("Content-Disposition","attachment;filename="+file.getName());
+        response.setHeader("Content-Type","img/jpeg");
+        //完了就使用响应输出流读取文件内容 写出去
+        ServletOutputStream outputStream = response.getOutputStream();
+        InputStream  inputStream = new FileInputStream(file);
+        BufferedInputStream  bufferedInputStream = new BufferedInputStream(inputStream);
+        BufferedOutputStream  bufferedOutputStream  = new BufferedOutputStream(outputStream);
+        byte[] by = new byte[1024];
+        int len = 0;
+        while((len = bufferedInputStream.read(by))!=-1){
+            bufferedOutputStream.write(by,0,len);
+        }
+        bufferedOutputStream.flush();
+        bufferedOutputStream.close();
+        bufferedInputStream.close();
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request,response);
     }
 }
