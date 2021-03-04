@@ -993,7 +993,7 @@ public class HttpServletRequestDemo2 extends HttpServlet {
 
 ### 8.2 URL解析
 
-![image-20210302171130130](_media/image-20210302171130130.png)
+<img src="_media/image-20210302171130130.png" width="400px">
 
 ## 9. HttpServletResponse :imp:
 
@@ -1958,15 +1958,200 @@ public class RegisterServlet extends HttpServlet {
 
 ```
 
-![image-20210303164033398](_media/image-20210303164033398.png)
+<img src="_media/image-20210303164033398.png" width="400px">
 
 ![image-20210303164051330](_media/image-20210303164051330.png)
 
-## 10. 过滤器(Filter) :imp:
+## Servlet完整的生命周期 :imp:
 
-## 11 监听器(Lisetner) :imp:
+<img src="./_media/Servlet生命周期第一版.png">
 
-## 12.文件上传
+## 10.文件上传
+
+**pom.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.xdkj</groupId>
+  <artifactId>servlet-upload</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>war</packaging>
+
+  <name>servlet-upload Maven Webapp</name>
+  <!-- FIXME change it to the project's website -->
+  <url>http://www.example.com</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>4.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>jstl</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <!--文件上传的jar-->
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.7</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>servlet-upload</finalName>
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <plugins>
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_war_packaging -->
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.8.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>3.2.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
+
+```
+
+**index.html**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+<form action="upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" id="file">
+    <br>
+    <input type="submit" value="上传">
+</form>
+</body>
+</html>
+```
+
+**FileUploadServlet.java**
+
+```java
+package com.xdkj.servlet.FileUploadServlet;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Date;
+
+@WebServlet(name = "FileUploadServlet",urlPatterns = "/upload")
+/*文件上传的注解*/
+@MultipartConfig
+public class FileUploadServlet extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setCharacterEncoding("utf8");
+        response.setCharacterEncoding("utf8");
+            /*文件上传 servlet3.0 api 中的内容
+            *
+            * content-disposition
+             *   form-data; name="file"; filename="20180412031959734.jpg"
+             *   content-type
+              *  image/jpeg
+            * */
+            //先获取上传的内容
+        Part part = request.getPart("file");
+        String filename = part.getHeader("content-disposition");
+        //获取文件的全名称  截取文件的扩展名
+        String str =    filename.substring(filename.indexOf("."),filename.length()-1);
+        //文件上传的真实的五路路径
+      String realPath =   this.getServletContext().getRealPath("upload");
+      //按照年月日进行文件分类保存
+      File realFile = new File(realPath, LocalDate.now().toString());
+       if(!realFile.exists()){
+           //文件夹不存在就创建
+           realFile.mkdirs();
+       }
+       //写入文件的路径 文件名称加入时间戳
+        File newFile = new File(realFile,File.separator+new Date().getTime()+str);
+        System.out.println(newFile);
+        //写入就可以了
+        part.write(newFile.toString());
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doPost(request,response);
+    }
+}
+
+```
+
+![image-20210304120041699](_media/image-20210304120041699.png)
+
+**文件上传成功！！！！！**
+
+![image-20210304120107030](_media/image-20210304120107030.png)
+
+## 11. 过滤器(Filter) :imp:
+
+## 12 监听器(Lisetner) :imp
 
 ## 13. 分页
 
