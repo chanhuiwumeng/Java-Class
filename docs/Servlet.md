@@ -2263,15 +2263,196 @@ public class FileDowloadServlet extends HttpServlet {
 
 ![image-20210304153605628](_media/image-20210304153605628.png)
 
-## 11. 过滤器(Filter) :imp:
+## 11.Session和Cookie
 
-## 12 监听器(Lisetner) :imp
+### 11.1 Session(会话)
 
-## 13. 分页
+> Session：在计算机中，尤其是在网络应用中，称为“会话控制”。[Session对象](https://baike.baidu.com/item/Session对象/5250998)存储特定用户会话所需的属性及配置信息。这样，当用户在应用程序的Web页之间跳转时，存储在Session对象中的变量将不会丢失，而是在整个用户会话中一直存在下去。当用户请求来自应用程序的 Web页时，如果该用户还没有会话，则Web服务器将自动创建一个 Session对象。当会话过期或被放弃后，服务器将终止该会话。Session 对象最常见的一个用法就是存储用户的首选项。例如，如果用户指明不喜欢查看图形，就可以将该信息存储在Session对象中。有关使用Session 对象的详细信息，请参阅“ASP应用程序”部分的“管理会话”。注意会话状态仅在支持cookie的浏览器中保留
+>
+> 在浏览器打开网站访问网站多个页面直到浏览器关闭(网站关闭)为一次会话。
 
-## 14. 验证码
++ getId()  获取session的ID值
++ getAttribute()
++ setAttribute()
++ getLastAccessTime()  最后一次访问的时间
++ invilidate()  会话失效
 
-## 15.Ajax+Json
+![image-20210305102730089](_media/image-20210305102730089.png)
+
+![image-20210305103539846](_media/image-20210305103539846.png)
+
+**SessionServlet.java**
+
+```java
+package com.xdkj.servlet;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+
+@WebServlet(name = "SessionServlet",urlPatterns = "/session")
+public class SessionServlet extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+     String name =    request.getParameter("username");
+        /*org.apache.catalina.session.StandardSessionFacade@33090aa9
+        * session是由服务器创建 每一个会话session都是不一样的
+        * sessionID是32为的字符串
+        * session失效时间默认是30分钟
+        * session存储用户信息
+        * invalidate()
+         */
+        System.out.println(session);
+        /*91728ED6DE1178066594A8CBC4819CA2*/
+        System.out.println(session.getId());
+        session.setAttribute("username",name);
+        /*最后一次访问的时间*/
+        System.out.println(session.getLastAccessedTime());
+        /* 60 */
+        System.out.println(session.getMaxInactiveInterval());
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            doPost(request,response);
+    }
+}
+
+```
+
+**HelloSession.java**
+
+```java
+package com.xdkj.servlet;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@WebServlet(name = "HelloServlet",urlPatterns = "/hello")
+public class HelloServlet extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println(request.getSession().getAttribute("username"));
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request,response);
+    }
+}
+
+```
+
+**Logout.Servlet.java**
+
+```java
+package com.xdkj.servlet;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@WebServlet(name = "LogoutServlet",urlPatterns = "/logout")
+public class LogoutServlet extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        /*清空session*/
+        request.getSession().invalidate();
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request,response);
+    }
+}
+
+```
+
+**index.jsp**
+
+```html
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+    <h2>Hello World!</h2>
+    ${username}
+    <a href="session">SessionServlet</a>
+    <hr>
+    <form action="session" method="post">
+        <input type="text" name="username" id="username">
+        <br>
+        <input type="submit" value="登录">
+    </form>
+    <a href="logout">退出</a>
+</body>
+</html>
+
+```
+
+```html
+<%--
+  Created by IntelliJ IDEA.
+  User: chanh
+  Date: 2021/3/5
+  Time: 10:17
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>main</title>
+</head>
+<body>
+    ${username}
+</body>
+</html>
+
+```
+
+**web.xml**
+
+```xml
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                      http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+  version="4.0">
+
+  <display-name>Archetype Created Web Application</display-name>
+  <session-config>
+    <session-timeout>1</session-timeout>
+  </session-config>
+</web-app>
+```
+
+
+
+## 12. 过滤器(Filter) :imp:
+
+## 13 监听器(Lisetner) :imp
+
+
+
+
 
 
 
