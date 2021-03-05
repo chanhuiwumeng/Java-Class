@@ -2444,7 +2444,88 @@ public class LogoutServlet extends HttpServlet {
 </web-app>
 ```
 
+### 11.2 Cookie
 
+> Cookie，有时也用其复数形式 [Cookies](https://baike.baidu.com/item/Cookies/187064)。类型为“**小型文本文件**”，是某些网站为了辨别用户身份，进行[Session](https://baike.baidu.com/item/Session/479100)跟踪而储存在用户本地终端上的数据（通常经过加密），由用户[客户端](https://baike.baidu.com/item/客户端/101081)计算机暂时或永久保存的信息
+>
+> Cookie是一段不超过4KB的小型[文本](https://baike.baidu.com/item/文本/5443630)数据，由一个名称（Name）、一个值（Value）和其它几个用于控制Cookie有效期、安全性、使用范围的可选属性组成
+
+![image-20210305120527320](_media/image-20210305120527320.png)
+
+![image-20210305121323438](_media/image-20210305121323438.png)
+
+```java
+package com.xdkj.servlet;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@WebServlet(name = "CookieServlet",urlPatterns = "/cookie")
+public class CookieServlet extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //获取cookie
+        Cookie[] cookies = request.getCookies();
+        System.out.println(cookies);
+        for (Cookie cookie : cookies) {
+            System.out.println(cookie);
+            System.out.println(cookie.getName()+"===="+cookie.getValue());
+            /*域名*/
+            System.out.println(cookie.getDomain());
+            /*失效时间*/
+            System.out.println(cookie.getMaxAge());
+        }
+        /*自己设置cookie*/
+        Cookie  cookie = new Cookie("Address","中国陕西省西安市");
+            //设置cookie的有效时间
+            cookie.setMaxAge(60);
+            /*注释*/
+            cookie.setComment("地址信息");
+        Cookie  name = new Cookie("Username","admin");
+            response.addCookie(cookie);
+            response.addCookie(name);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request,response);
+    }
+}
+
+```
+
+```html
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+    <h2>Hello World!</h2>
+    ${username}
+    <a href="session">SessionServlet</a>
+    <hr>
+    <form action="session" method="post">
+        <input type="text" name="username" id="username">
+        <br>
+        <input type="submit" value="登录">
+    </form>
+    <a href="logout">退出</a>
+
+    <hr>
+    <a href="cookie">cookie</a>
+</body>
+</html>
+
+```
 
 ## 12. 过滤器(Filter) :imp:
 
