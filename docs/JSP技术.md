@@ -380,9 +380,88 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
 
 ```
 
-## 4. El表达式
+## 4. El表达式(Exepression Language表达式语言) :imp:
+
+[https://docs.oracle.com/javaee/1.4/tutorial/doc/JSPIntro7.html](https://docs.oracle.com/javaee/1.4/tutorial/doc/JSPIntro7.html)
+
+> The web container evaluates a variable that appears in an expression by looking up its value according to the behavior of `PageContext.findAttribute(String)`. For example, when evaluating the expression `${product}`, the container will look for `product` in the page, request, session, and application scopes and will return its value. If `product` is not found, `null` is returned. A variable that matches one of the implicit objects described in [Implicit Objects](https://docs.oracle.com/javaee/1.4/tutorial/doc/JSPIntro7.html#wp71043) will return that implicit object instead of the variable's value.
+>
+> el表达式是Servlet2.0以后支持的  是去寻找键对应的值 在 page --->  request---->session----->application 中寻找使用pageContext.findAttribute() 方法寻找
+>
+> 先在哪个域对象中找到就使用 ，没找到就返回null
 
 ### 4.1 EL核心表达式
+
+```jsp
+<%@ page import="com.xdkj.beans.Student" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.HashSet" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.Set" %><%--
+  Created by IntelliJ IDEA.
+  User: chanh
+  Date: 2021/3/8
+  Time: 12:02
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>el表达式</title>
+</head>
+<body>
+<%--el表达式--%>
+<%
+    application.setAttribute("name","joke");
+    Student  student = new Student();
+        student.setName("张三");
+        student.setAge(88);
+    application.setAttribute("student",student);
+
+    String [] str = new String[]{"Hello","World","JAVA"};
+        application.setAttribute("str",str);
+
+    Set<String> set = new HashSet<>();
+        set.add("张三丰");
+        set.add("张无忌");
+        set.add("张翠三");
+        application.setAttribute("hero",set);
+
+    Map<Integer,String> map = new HashMap<>();
+        map.put(1,"hello");
+        map.put(2,"world");
+        application.setAttribute("map",map);
+
+    Map<String ,Student> maps = new HashMap<>();
+        maps.put("a",student);
+        maps.put("b",new Student());
+        maps.put("c",new Student());
+        application.setAttribute("maps",maps);
+
+        request.setAttribute("student","李四");
+        session.setAttribute("student","王五");
+%>
+
+<h4>获取字符串</h4>
+${name}
+<h4>获取对象</h4>
+<%--${student}-----${student.name}-------------${student.age}--%>
+<h4>获取数组的值</h4>
+${str}-----${str[0]}
+<h4>获取set集合数据</h4>
+${hero}-----
+<h4>获取map集合</h4>
+${map}------------${map['2']}------------${map['1']}
+<%--获取map--%>
+<h4>map值是自定义对象</h4>
+${maps}----${maps['a']}-----${maps['a'].name}
+
+<h4>指定域获取值  page ---------request ----session----appplication</h4>
+    ${requestScope.student}-----------${sessionScope.student}
+</body>
+</html>
+
+```
 
 ### 4.2 EL函数库
 
