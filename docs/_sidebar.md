@@ -29,7 +29,7 @@
   * [第八章 Maven](./Maven.md)
   * [第九章 Xml解析](./Xml解析.md)
   * [第十章 Servlet](./Servlet.md)
-  * [第十一章 Jsp技术](./Jsp技术.md)
+  * [第十一章 Jsp技术](./JSP技术.md)
   * [第十二章 EL表达式](./EL表达式.md)
   * [第十三章 JSTL标签库](./JSTL标签库.md)
   * [第十四章 文件上传下载](./文件上传下载.md)
