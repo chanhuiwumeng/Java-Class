@@ -463,7 +463,44 @@ ${maps}----${maps['a']}-----${maps['a'].name}
 
 ```
 
-### 4.2 EL函数库
+### 4.2 El内置对象
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>el内置对象</title>
+</head>
+<body>
+<%--el 表达式的内置对象--%>
+   <%=request.getServletContext()%>
+   <%=request.getParameter("name")%>
+<%--获取上下文路径  根路径--%>
+<hr>
+    ${pageContext.request.contextPath}
+<hr>
+    <h4>获取参数和参数的值</h4>
+    ${param}----${param.name}
+<hr>
+${header}----${header.cookie}-----------${header.cookie}
+<hr>
+${cookie['JSESSIONID']}------------${cookie['JSESSIONID'].name}------------${cookie['JSESSIONID'].value}
+<%--只要是绝对路径就没问题--%>
+<a href="${pageContext.request.contextPath}/hello">HelloServlet</a>
+</body>
+</html>
+
+```
+
+### 4.3 EL运算符
+
+
+
+
+
+### 4.4 EL函数库
+
+
 
 ## 5. JSP内置对象
 
@@ -482,4 +519,52 @@ ${maps}----${maps['a']}-----${maps['a'].name}
 ![image-20210308111837721](_media/image-20210308111837721.png)
 
 ## 6. JSTL标签库
+
+## 7. 绝对路径和相对路径
+
+### 7.1 前端路径
+
+![image-20210308143144379](_media/image-20210308143144379.png)
+
+### 7.2 后端路径
+
+
+
+```jsp
+<%--只要是绝对路径就没问题--%>
+<a href="${pageContext.request.contextPath}/hello">HelloServlet</a>
+```
+
+### 7.3 MyEclipse中解决路径的问题
+
+```jsp
+<%--
+  Created by IntelliJ IDEA.
+  User: chanh
+  Date: 2021/3/8
+  Time: 14:41
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<%
+    String path = request.getContextPath();
+    String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+    System.out.println(basePath);
+%>
+<head>
+    <title>Title</title>
+    <base href="<%=basePath%>">
+</head>
+<body>
+
+<a href="hello">HelloServlet</a>
+</body>
+</html>
+
+```
+
+
+
+
 
