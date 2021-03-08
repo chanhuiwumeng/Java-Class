@@ -109,7 +109,18 @@ jsp注释是在页面源码中可以看到 浏览器不会编译 也不会解析
     <jsp:include page="main.jsp"></jsp:include>
 ```
 
+#### 1.1.5 jsp声明<%! %>
+
+> ```
+> <%!
+>     //声明的内容是在编译后的class的类属性的位置 一般去声明静态的的内容
+>    static String address = "西安市";
+> %>
+> ```
+
 ## 2. Jsp原理
+
+### 2.1JSP执行原理
 
 > jsp就是Servlet 在服务器启动的时候Jsp页面被编译为Servlet ,jsp的注释不会被编译进去。jsp片段会进行拼接。
 
@@ -310,4 +321,76 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
 }
 
 ```
+
+### 2.2 JSP生命周期
+
++ Compilation
++ Initialization
++ Excution
++ CleanUp
+
+![image-20210308103812841](_media/image-20210308103812841.png)
+
+## 3. Jsp标签
+
+> 在早起的时候我们先学在jsp/servlet项目中自定义标签。现在jsp淘汰了自定义标签就不学了。
+>
+> jsp已经定义好的标签
+
+![image-20210308105848646](_media/image-20210308105848646.png)
+
+### 3.1 页面跳转
+
+```java
+<%--页面跳转--%>
+    <%--<jsp:forward page="main.jsp"></jsp:forward>--%>
+```
+
+### 3.2 JAVABEAN (pojo 普通的java类)
+
++ 无参数的构造器
++ 属性私有化
++ 提供公开的访问方式
+
+```jsp
+<%@ page import="com.xdkj.beans.Student" %><%--
+  Created by IntelliJ IDEA.
+  User: chanh
+  Date: 2021/3/8
+  Time: 10:58
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>jsp标签</title>
+</head>
+<body>
+    <%--页面跳转--%>
+    <%--<jsp:forward page="main.jsp"></jsp:forward>--%>
+<%-- 我们说jsp就是在html页面写java代码 jsp中不能出现一行的java代码  --%>
+    <%--创建类的实例化对象  id 对象的变量名称--%>
+<jsp:useBean id="student" class="com.xdkj.beans.Student"></jsp:useBean>
+    <%--给对象设置属性的值--%>
+<jsp:setProperty name="student" property="name" value="joke"></jsp:setProperty>
+
+<jsp:getProperty name="student" property="name"/>
+</body>
+</html>
+
+```
+
+## 4. El表达式
+
+### 4.1 EL核心表达式
+
+### 4.2 EL函数库
+
+## 5. JSP内置对象
+
+> 
+
+![image-20210308111837721](_media/image-20210308111837721.png)
+
+## 6. JSTL标签库
 
