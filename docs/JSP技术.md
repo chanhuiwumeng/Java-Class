@@ -494,13 +494,95 @@ ${cookie['JSESSIONID']}------------${cookie['JSESSIONID'].name}------------${coo
 
 ### 4.3 EL运算符
 
+```jsp
+<%--
+  Created by IntelliJ IDEA.
+  User: chanh
+  Date: 2021/3/8
+  Time: 14:53
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>el表达式运算符</title>
+</head>
+<body>
+<h4>算数运算符</h4>
+    ${100+200}----${100-50}----${100/2}----${100%3}
+<h4>关系运算符</h4>
+${100 > 20}------${100<200}------${!(100 > 20)}
+<br>
+${100 gt 20 }---------${100 lt 20}------${100 eq '100'}-----${100 ne '100'}
+<h4>逻辑运算符</h4>
+${100 > 20 && 100 < 200}----${100 < 20 || 100 > 10}----${!(100 > 200)}
+<h4>判断对象是否为空</h4>
+${empty(student)}------${empty pageContext}
+<h4>条件运算符  三元运算符</h4>
+${empty pageContext eq fasle ?"对象为空":"对象不为空"}
+</body>
+</html>
 
-
-
+```
 
 ### 4.4 EL函数库
 
+![image-20210308150425833](_media/image-20210308150425833.png)
 
+![image-20210308150918436](_media/image-20210308150918436.png)
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<html>
+<head>
+    <title>el函数库</title>
+</head>
+<body>
+    ${fn:contains("HelloWorld","Hello" )}<br>
+    ${fn:toLowerCase("HELLO")}----${fn:toUpperCase("helllo")}
+    <br>
+    ${fn:trim("     Hello World      ")}
+    <br>
+    ${fn:indexOf("Hello", "o")}
+    <br>
+    ${fn:startsWith("hello",'he' )}
+    <br>
+    ${fn:replace("Hello","l" ,"w" )}
+</body>
+</html>
+
+```
+
+### 4.5 数据库标签库
+
+```jsp
+<%--
+  Created by IntelliJ IDEA.
+  User: chanh
+  Date: 2021/3/8
+  Time: 15:14
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" import="com.mysql.jdbc.Driver" %>
+<%@taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<html>
+<head>
+    <title>数据库标签库</title>
+</head>
+<body>
+<%--var 就是变量名称--%>
+    <sql:setDataSource driver="com.mysql.jdbc.Driver" url="jdbc:mysql:///hehe"
+    user="root" password="root" scope="page" var="dataSource"></sql:setDataSource>
+<%--从域对象中获取dataSource--%>
+    <sql:query var="stu" sql="select * from student"  dataSource="${dataSource}" ></sql:query>
+${stu}---------${stu.getRows()}-----${stu.getRows()[0]}
+</body>
+</html>
+
+```
+
+![image-20210308152636321](_media/image-20210308152636321.png)
 
 ## 5. JSP内置对象
 
