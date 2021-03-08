@@ -388,7 +388,17 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
 
 ## 5. JSP内置对象
 
-> 
+> jsp 九大内置对象:
+
++ PageConetxt  pageContext  当前页面的上下文环境  通常用来获取其他的内置对象
++ ServletConetxt appplication  web应用的上下文环境
++ ServletConfig config  当前的servlet初始化信息的配置对象
++ page this   当前jsp编译后servlet运行是的对象
++ HttpServletRequest  request   http请求对象
++ HttpServletResponse response  http新昂扬对象
++ JspWriter  out   向jsp页面输出内容的对象
++ Exception exception  异常对象
++ HttpSession session  会话对象
 
 ![image-20210308111837721](_media/image-20210308111837721.png)
 
