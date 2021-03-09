@@ -2696,11 +2696,156 @@ public class FilterServletDemo extends HttpServlet {
 
 ## 13 监听器(Lisetner) :imp:
 
+> Java事件监听器是由事件类和监听接口组成，自定义一个事件前，必须提供一个事件的监听接口以及一个事件类。JAVA中监听接口是继承java.util.EventListener的类，事件类继承java.util.EventObject的类。
+>
+> Java事件监听器属性的新增、删除和修改划分成三种，分别针对于ServletContext、HttpSession、ServletRequest对象。
+>
+> 监听器只能对ervletContext、HttpSession、ServletRequest 三个对象增加，修改，删除的时候做什么事情，但是与项目的逻辑业务处理没有任何的干涉。
+
+****
+
+```java
+package com.xdkj.listener;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+
+/**
+ * ClassName ServletContextListenerDemo
+ * Description:ServletContext监听器
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-09-16:34
+ */
+public class ServletContextListenerDemo implements ServletContextListener {
+    /*ServletContext初始化*/
+    @Override
+    public void contextInitialized(ServletContextEvent event) {
+       ServletContext  context =  event.getServletContext();
+        System.out.println(context);
+        context.setAttribute("cpath",context.getContextPath());
+    }
+        /*ServletContext销毁*/
+    @Override
+    public void contextDestroyed(ServletContextEvent event) {
+            event.getServletContext().removeAttribute("cpath");
+    }
+}
+
+```
+
+**HttpSessionListenerDemo.java**
+
+```java
+package com.xdkj.listener;
+
+import javax.servlet.ServletContext;
+import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
+
+@WebListener
+public class HttpSessionListenerDemo implements  HttpSessionListener {
+        int sessionCount = 0;
+    public HttpSessionListenerDemo() {
+    }
+    //session创建
+    @Override
+    public void sessionCreated(HttpSessionEvent event) {
+      HttpSession  session =  event.getSession();
+        System.out.println(session.getId()+"已经进来了！！！！！");
+        ServletContext context = session.getServletContext();
+        context.setAttribute("sessionCount",sessionCount++);
+    }
+    //session销毁
+    @Override
+    public void sessionDestroyed(HttpSessionEvent event) {
+        HttpSession session = event.getSession();
+        System.out.println(session.getId()+"已经退出来了！！！！！");
+        ServletContext context = session.getServletContext();
+        int count = (int)context.getAttribute("sessionCount");
+        context.setAttribute("sessionCount",count--);
+    }
 
 
+}
 
+```
 
+**ServletRequestListenerDemo.java**
 
+```java
+package com.xdkj.listener;
+
+import javax.servlet.ServletRequestEvent;
+import javax.servlet.ServletRequestListener;
+import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpServletRequest;
+
+@WebListener
+public class ServletRequestListenerDemo implements ServletRequestListener {
+
+    public ServletRequestListenerDemo() {
+    }
+    //请求初始化
+    @Override
+    public void requestInitialized(ServletRequestEvent event) {
+     HttpServletRequest  request = (HttpServletRequest) event.getServletRequest();
+        String requestURI = request.getRequestURI();
+        request.setAttribute("uri",requestURI);
+    }
+    //请求销毁
+    @Override
+    public void requestDestroyed(ServletRequestEvent event) {
+
+    }
+
+}
+
+```
+
+**web.xml**
+
+```java
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                      http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+  version="4.0">
+
+  <display-name>Archetype Created Web Application</display-name>
+  <!--配置监听器-->
+  <listener>
+    <listener-class>com.xdkj.listener.ServletContextListenerDemo</listener-class>
+  </listener>
+</web-app>
+```
+
+**index.jsp**
+
+```java
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+    <h2>Hello World!</h2>
+    <a href="${cpath}hello">HelloServlet</a>
+    <hr>
+当前在线人数是:${sessionCount}
+    <hr>
+请求的资源是:${requestScope.uri}
+</body>
+</html>
+
+```
 
 
 
