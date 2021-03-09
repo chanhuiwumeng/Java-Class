@@ -2529,7 +2529,176 @@ public class CookieServlet extends HttpServlet {
 
 ## 12. 过滤器(Filter) :imp:
 
-## 13 监听器(Lisetner) :imp
+> Filter 技术是servlet 2.3 新增加的功能。servlet2.3是sun公司于2000年10月发布的，它的开发者包括许多个人和公司团体，充分体现了sun公司所倡导的代码开放性原则。在众多参与者的共同努力下，servlet2.3比以往功能都强大了许多，而且性能也有了大幅提高。
+>
+> \1. 在servlet被调用之前截获；
+>
+> \2. 在servlet被调用之前检查servlet request;
+>
+> \3. 根据需要修改request头和request数据；
+>
+> \4. 根据需要修改response头和response数据；
+>
+> \5. 在servlet被调用之后截获.
+>
+> 你能够配置一个filter 到一个或多个servlet；单个servlet或servlet组能够被多个filter 使用。几个实用的filter 包括：用户辨认filter，日志filter，审核filter，加密filter，符号filter，能改变xml内容的XSLT filter等。
+>
+> 一个filter必须实现javax.servlet.Filter。
+
+**web.xml**
+
+```xml
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                      http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+  version="4.0">
+
+  <display-name>Archetype Created Web Application</display-name>
+  <filter>
+    <filter-name>GlobalFiler</filter-name>
+    <filter-class>com.xdkj.filter.GlobalFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>GlobalFiler</filter-name>
+    <!--过滤所有的请求-->
+    <url-pattern>/*</url-pattern>
+    <!--<servlet-name>/filter</servlet-name>-->
+    <!-- REQUEST  说明只有直接访问该目标资源时该过滤器才会起作用，对转发到该目标资源的请求将忽略不处理。
+        forword  直接访问不处理  转发进行处理
+    -->
+    <dispatcher>REQUEST</dispatcher>
+  </filter-mapping>
+</web-app>
+```
+
+**GlobalEncodingRequest.java**
+
+```java
+package com.xdkj.util;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import java.io.UnsupportedEncodingException;
+import java.util.Enumeration;
+
+/**
+ * ClassName GlobalEncodingRequest
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-09-15:01
+ */
+public class GlobalEncodingRequest  extends HttpServletRequestWrapper {
+    public GlobalEncodingRequest(HttpServletRequest request) {
+        super(request);
+        Enumeration<String> parameterNames = request.getParameterNames();
+            while(parameterNames.hasMoreElements()){
+                /*获取到参数的名字*/
+                String name = parameterNames.nextElement();
+                getParameter(name);
+            }
+    }
+
+    @Override
+    public String getParameter(String name) {
+        String str = "";
+        try {
+           str = new String(super.getParameter(name).getBytes("utf8"),"GBK");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return str;
+    }
+}
+
+```
+
+**GlobalFilter.java**
+
+```java
+package com.xdkj.filter;
+
+import com.xdkj.util.GlobalEncodingRequest;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * ClassName GlobalFilter
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-09-14:30
+ */
+public class GlobalFilter  implements Filter {
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        System.out.println("filter初始化！！");
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        System.out.println("do com.xdkj.filter!!!");
+        /* 过滤器就是接收请求  处理响应  我们现在开发都是基于http协议 */
+        HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse resp = (HttpServletResponse) response;
+        /*post请求乱码*/
+        request.setCharacterEncoding("utf8");
+        response.setCharacterEncoding("utf8");
+
+      GlobalEncodingRequest  globalEncodingRequest =   new GlobalEncodingRequest(req);
+      //将自定义的请求乱码处理的包装器传入进去
+        chain.doFilter(globalEncodingRequest,resp);
+    }
+
+    @Override
+    public void destroy() {
+        System.out.println("com.xdkj.filter 销毁！！");
+    }
+}
+
+```
+
+**FilterServletDemo.java**
+
+```java
+package com.xdkj.servlet;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@WebServlet(name = "FilterServletDemo",urlPatterns = "/filter")
+public class FilterServletDemo extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        System.out.println(request.getParameter("name"));
+        //String newName = new String( request.getParameter("name").getBytes("utf8"),"GBK");
+        //System.out.println(newName);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request,response);
+    }
+}
+
+```
+
+## 13 监听器(Lisetner) :imp:
+
+
+
+
 
 
 
