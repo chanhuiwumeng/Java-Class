@@ -600,15 +600,13 @@ ${stu}---------${stu.getRows()}-----${stu.getRows()[0]}
 
 ![image-20210308111837721](_media/image-20210308111837721.png)
 
-## 6. JSTL标签库
+## 6. 绝对路径和相对路径
 
-## 7. 绝对路径和相对路径
-
-### 7.1 前端路径
+### 6.1 前端路径
 
 ![image-20210308143144379](_media/image-20210308143144379.png)
 
-### 7.2 后端路径
+### 6.2 后端路径
 
 
 
@@ -617,7 +615,7 @@ ${stu}---------${stu.getRows()}-----${stu.getRows()[0]}
 <a href="${pageContext.request.contextPath}/hello">HelloServlet</a>
 ```
 
-### 7.3 MyEclipse中解决路径的问题
+### 6.3 MyEclipse中解决路径的问题
 
 ```jsp
 <%--
@@ -646,7 +644,129 @@ ${stu}---------${stu.getRows()}-----${stu.getRows()[0]}
 
 ```
 
+## 7. JSTL标签库
 
+> jsp standar tag libary  jsp标准的标签库
 
+![image-20210309100854299](_media/image-20210309100854299.png)
 
+```jsp
+<%@ page import="java.util.Arrays" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="com.xdkj.beans.Member" %><%--
+  Created by IntelliJ IDEA.
+  User: chanh
+  Date: 2021/3/9
+  Time: 10:06
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<html>
+<head>
+    <title>jstl</title>
+</head>
+<body>
+<%
+    request.setAttribute("stu","Hello World  JSTL");
+%>
+<br>--------------------c:out-----------<br>
+    <c:out value="hello"></c:out>
+    <c:out value="${stu}"></c:out>
+    <%--获取不到值的时候使用默认值--%>
+    <c:out value="${student}" default="值未找到"></c:out>
+    <%--escapeXml false解析标签--%>
+    <c:out value="<h4>JSTL TAG</h4>" escapeXml="false"></c:out>
+    <br>--------------------c:if test的值是boolean值 true就执行中间的代码-----------<br>
+    <c:if test="${10 gt 2}">
+        <p>条件成立</p>
+    </c:if>
 
+    <c:if test="${! empty stu}">
+        <p>条件成立</p>
+    </c:if>
+<br>--------------------c:choose-----------<br>
+<c:choose>
+    <c:when test="${empty stu}">
+        stu 是空对象！！
+    </c:when>
+    <c:otherwise>
+        stu不是空对象！！
+    </c:otherwise>
+</c:choose>
+
+<c:choose>
+    <c:when test="${empty stu}">
+        stu 是空对象！！
+    </c:when>
+    <c:when test="${10 < 100}">
+        10 < 100成立！！！
+    </c:when>
+    <c:otherwise>
+        stu不是空对象！！
+    </c:otherwise>
+</c:choose>
+<br>--------------------c:UL-----------<br>
+<c:url value="https://www.baidu.com" var="baidu" scope="page" ></c:url>
+    <a href="${baidu}">百度一下</a>  <a href="${baidu}/s?tn=02003390_42_hao_pg&ie=utf-8&wd=java">百度一下</a>
+<br>
+<c:url value="https://www.baidu.com" var="bd" scope="page" >
+    <c:param name="name" value="joke"></c:param>
+</c:url>
+<a href="${bd}">百度param</a>
+<br>--------------------c:remove 作用域中移除对象-----------<br>
+<c:remove var="bd" scope="page"></c:remove>
+${bd}
+<br>--------------------c:import  包含页面----------<br>
+<c:import url="index.jsp"></c:import>
+<br>--------------------c:redirect  重定向页面----------<br>
+<%--<c:redirect url="index.jsp"></c:redirect>--%>
+<br>--------------------c:set  设置变量----------<br>
+<c:set var="name" value="admin" scope="page"></c:set>
+    ${name}
+<br>--------------------c:catch  捕获异常----------<br>
+<c:catch var="e"   >
+    <%
+        System.out.println(1/0);
+    %>
+</c:catch>
+${e.message}
+<br>--------------------c:forEach----------<br>
+<%
+    request.setAttribute("list", Arrays.asList("Hello","Java","Python","c#"));
+    Map<Integer,String> map = new HashMap<>();
+        map.put(1,"沾上干三");
+        map.put(2,"完颜洪烈");
+        map.put(3,"完颜阿骨打");
+        map.put(4,"金轮法王");
+        request.setAttribute("map",map);
+
+    Map<String, Member> maps = new HashMap<>();
+        maps.put("one",new Member(1,"admin","1234@qq.com"));
+        maps.put("two",new Member(2,"joke","1234@qq.com"));
+        maps.put("three",new Member(3,"lucy","1234@qq.com"));
+        maps.put("four",new Member(4,"kobe","1234@qq.com"));
+        maps.put("five",new Member(5,"james","1234@qq.com"));
+        request.setAttribute("members",maps);
+%>
+${list}----${list[0]}
+<%--var 集合中下标对应的元素 items是集合 step 迭代的步数 begin 开始位置  end结束位置 varStatus 元素的状态--%>
+<c:forEach var="str" items="${list}" step="1"   varStatus="strStatus">
+    ${str}---${strStatus.first}-----${strStatus.last}----${strStatus.count}<br>
+</c:forEach>
+<hr>
+<%--键值映射关系--%>
+<c:forEach var="entry" items="${map}">
+    ${entry.key}------------${entry.value}<br>
+</c:forEach>
+<hr>
+<c:forEach items="${members}" var="member">
+    ${member.key}-----${member.value.memberId}------${member.value.memberName}-----${member.value.memberEmail}<br>
+</c:forEach>
+</body>
+</html>
+
+```
+
+![](./_media/screenshot-localhost-2021.03.09-10_50_53.png)
