@@ -57,3 +57,35 @@
 ![image-20210311111936019](_media/image-20210311111936019.png)
 
 ![image-20210311112157133](_media/image-20210311112157133.png)
+
+## 5.设置静态IP地址
+
+![image-20210311151443376](_media/image-20210311151443376.png)
+
+![image-20210311151506926](_media/image-20210311151506926.png)
+
+```shell
+[root@localhost ~]# vim /etc/sysconfig/network-scripts/ifcfg-ens33
+```
+
+![image-20210311152629798](_media/image-20210311152629798.png)
+
+```shell
+[root@localhost ~]# service network restart
+Restarting network (via systemctl):                        [  确定  ]
+[root@localhost ~]# 
+```
+
+```shell
+[root@localhost ~]# ifconfig
+ens33: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.59.154  netmask 255.255.255.0  broadcast 192.168.59.255
+        inet6 fe80::a5b9:5dbc:dec5:28b0  prefixlen 64  scopeid 0x20<link>
+        ether 00:0c:29:a8:94:5b  txqueuelen 1000  (Ethernet)
+        RX packets 2256  bytes 2052179 (1.9 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 1401  bytes 189880 (185.4 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+```
+
+静态IP配置成功!!!!
