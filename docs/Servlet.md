@@ -2694,7 +2694,7 @@ public class FilterServletDemo extends HttpServlet {
 
 ```
 
-## 13 监听器(Lisetner) :imp:
+## 13 监听器(Listener) :imp:
 
 > Java事件监听器是由事件类和监听接口组成，自定义一个事件前，必须提供一个事件的监听接口以及一个事件类。JAVA中监听接口是继承java.util.EventListener的类，事件类继承java.util.EventObject的类。
 >
