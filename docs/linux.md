@@ -89,3 +89,88 @@ ens33: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 ```
 
 静态IP配置成功!!!!
+
+## 6.Vim 编辑
+
+![img](_media/vi-vim-cheat-sheet-sch.gif)
+
+## 7. 配置yum的阿里云加速镜像地址
+
+**备份原始的镜像 /etc/yum.repos.d**
+
+```shell
+[root@www yum]#
+cp CentOS-Base.repo  ./CentOS-Base.repo.back
+```
+
+**安装新的**
+
+```shell
+ wget -O CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+ wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
+
+```
+
+**刷新缓存**
+
+```shell
+yum clean all
+  293  yum makecache
+
+```
+
+## 8. 安装jdk配置环境变量
+
+**安装gcc-c++**
+
+```shell
+yum install gcc-c++ -y
+```
+
+**上传jdk**
+
+**解压jdk**
+
+```shell
+tar -zxvf jdk-8u241-linux-i586.tar.gz
+```
+
+**卸载旧的jdk openjdk**
+
+**查看所有的openjdk相关的**
+
+```shell
+rpm -qa | grep java
+```
+
+**删除不需要的**
+
+```shell
+rpm -e --nodeps java-1.8.0-openjdk-1.8.0.242.b08-1.el7.x86_64
+   rpm -e --nodeps java-1.7.0-openjdk-headless-1.7.0.251-2.6.21.1.el7.x86_64
+    rpm -e --nodeps java-1.7.0-openjdk-1.7.0.251-2.6.21.1.el7.x86_64
+```
+
+**配置环境变量**
+
+![image-20210312173908649](_media/image-20210312173908649.png)
+
+```shell
+export JAVA_HOME=/opt/jdk1.8.0_241
+export CLASSPATH=.:${JAVA_HOME}/jre/lib/rt.jar:${JAVA_HOME}/lib/dt.jar:${JAVA_HOME}/lib/tools.jar
+export PATH=$PATH:${JAVA_HOME}/bin
+```
+
+**刷新文件**
+
+```shell
+source /etc/profile
+```
+
+**查看版本**
+
+```
+java -version
+```
+
+![image-20210312174107385](_media/image-20210312174107385.png)
