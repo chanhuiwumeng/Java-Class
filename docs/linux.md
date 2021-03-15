@@ -167,6 +167,12 @@ export PATH=$PATH:${JAVA_HOME}/bin
 source /etc/profile
 ```
 
+**报错**
+
+```
+sudo yum install glibc.i686
+```
+
 **查看版本**
 
 ```
