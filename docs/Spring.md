@@ -214,6 +214,43 @@ public class SpringTest {
 
 每一个配置文件就是一个容器
 
+```java
+package com.xdkj.spring.test;
+
+import com.xdkj.spring.beans.Student;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+
+/**
+ * ClassName SpringTest
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-22-15:00
+ */
+public class SpringTest {
+    public static void main(String[] args) {
+        //Student  stu = new Student();
+        //加载spring核心的配置文件  启动Spring容器  类路径  编译后的classes文件夹
+        ApplicationContext context  = new ClassPathXmlApplicationContext("classpath:spring-beans.xml","classpath:spring-dao.xml");
+        //就是ioc
+      Student student =   context.getBean("student", Student.class);
+        Student student1 =   context.getBean("student", Student.class);
+        Student student3 =   context.getBean("student1", Student.class);
+      //com.xdkj.spring.beans.Student@42e26948
+        System.out.println(student);
+        System.out.println(student1);
+        System.out.println("--------------多配置整合以后的-------");
+        System.out.println(student3);
+    }
+}
+
+```
+
+
+
 也可以进行容器的整合
 
 ### 2.3 spring多配置文件整合
@@ -292,4 +329,173 @@ public class SpringTest {
 ```
 
 ## 3. Bean的注入
+
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Student {
+    private Integer id;
+    private String name;
+    private int age;
+    private String address;
+}
+
+```
+
+### 3.1 无参构造器注入
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!--Spring注入bean的方式-->
+    <!--使用的是无参构造器 实例化对象  new Student()-->
+    <bean id="student" class="com.xdkj.beans.Student"></bean>
+</beans>
+```
+
+### 3.2 setter方法注入
+
+> 类要有对应的带参数的构造器 不然就会报错
+
+```xml
+<!--使用get set 方法设置属性值-->
+    <bean id="student1" class="com.xdkj.beans.Student">
+        <property name="id" value="11111"/>
+        <property name="age" value="888"/>
+        <property name="name" value="joke"/>
+        <property name="address" value="北京市"/>
+    </bean>
+```
+
+### 3.3 构造器注入
+
++ 名称注入
++ 索引注入
++ 类型注入
+
+```xml
+<!--使用带参数的构造器输入属性值-->
+    <bean id="student2" class="com.xdkj.beans.Student">
+        <constructor-arg name="id" value="123"/>
+        <constructor-arg name="address" value="北京市朝阳区"/>
+        <constructor-arg name="age" value="88"/>
+        <constructor-arg name="name" value="张三"/>
+    </bean>
+<!--注意书写顺序要和  构造器属性顺序一致-->
+    <bean id="student3" class="com.xdkj.beans.Student">
+        <constructor-arg type="java.lang.Integer" value="123"/>
+        <constructor-arg type="java.lang.String" value="北京市朝阳区"/>
+        <constructor-arg type="int" value="88"/>
+        <constructor-arg type="java.lang.String" value="张三"/>
+    </bean>
+    <!--通过构造器中属性的索引值-->
+    <bean id="student4" class="com.xdkj.beans.Student">
+        <constructor-arg index="0" value="123"/>
+        <constructor-arg index="3" value="北京市朝阳区"/>
+        <constructor-arg index="2" value="88"/>
+        <constructor-arg index="1" value="张三"/>
+    </bean>
+```
+
+### 3.4 p/c命名空间注入
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+     <!--p property/c constructor命名空间输入 就是简化写法-->
+    <bean id="student5" class="com.xdkj.beans.Student" p:id="6666" p:name="hahah" p:address="陕西省" p:age="99"></bean>
+</beans>
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!--c  命名空间 -->
+    <bean id="student6" class="com.xdkj.beans.Student" c:id="3636" c:address="南京市" c:age="863" c:name="李四"></bean>
+</beans>
+```
+
+**SpringDemoTest.java**
+
+```java
+package com.xdkj.test;
+
+import com.xdkj.beans.Student;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+/**
+ * ClassName SpringDemoTest
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-22-16:55
+ */
+public class SpringDemoTest {
+    public static void main(String[] args) {
+        ApplicationContext  context =new  ClassPathXmlApplicationContext("classpath:spring-beans.xml");
+        Student student = context.getBean("student", Student.class);
+        //Student student = (Student) context.getBean("student");
+        /*System.out.println(student);
+            student.setId(123);
+            student.setName("admin");
+            student.setAddress("西安市");*/
+        System.out.println(student);
+        System.out.println("----------------set 方法注入属性值---------");
+        Student student1 = context.getBean("student1", Student.class);
+        System.out.println(student1);
+        System.out.println("----------------构造器 参数名称 注入属性值---------");
+        Student student2 = context.getBean("student2", Student.class);
+        System.out.println(student2);
+        System.out.println("----------------构造器 参数类型 注入属性值---------");
+        Student student3 = context.getBean("student3", Student.class);
+        System.out.println(student3);
+        System.out.println("----------------构造器 参数的索引值 注入属性值---------");
+        Student student4 = context.getBean("student4", Student.class);
+        System.out.println(student4);
+        System.out.println("----------------p命名空间 注入属性值---------");
+        Student student5 = context.getBean("student5", Student.class);
+        System.out.println(student5);
+        System.out.println("----------------c命名空间 注入属性值---------");
+        Student student6 = context.getBean("student6", Student.class);
+        System.out.println(student6);
+    }
+}
+
+```
+
+### 3.5 数组注入
+
+### 3.6 list集合注入
+
+### 3.7 set集合注入
+
+### 3.8 Map集合注入
+
+### 3.9 Properties注入
+
+### 3.10 工厂方法注入
+
+#### 3.10.1动态工厂方法注入
+
+#### 3.10.2 静态工厂方法注入
+
+### 3.11 自动注入
+
+#### 3.11.1按类型注入
+
+#### 3.11.2 按名称注入
 
