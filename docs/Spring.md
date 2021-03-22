@@ -38,6 +38,8 @@
 
 ### 1.4 Spring-HelloWorld
 
+![image-20210322153253543](_media/image-20210322153253543.png)
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -147,4 +149,147 @@ public class SpringTest {
     }
 }
 ```
+
+## 2. Inversion of Control (IoC) container/dependency injection (DI).
+
+> IOC 控制反转: 是一种思想 不是一种技术只是Spring将他发扬光大了。
+>
+> 在传统的开发中我们的代码严重 的存在耦合关系。类和类之间存在依赖。
+>
+> 所谓的控制反转就是将类的创建对象实例化的权利交给了Spring容器，在我们使用AppliacationContext 实现类去加载Spring的配置文件的时候，spring容器就会帮助我们创建类的实例化对象，
+>
+> 默认是以单例的设计模式去创建的。底层使用的是BeanFactory创建。再在我们使用的时候使用getBean()从容器中获取创建好的对象，拿过来使用。
+>
+> DI:依赖注入 
+>
+> 我们要使用的类的实例化对象依赖于Spring容器去创建，在使用getBean()的时候有容器注入给我们去使用。
+
+### 2.1 ApplicationContext
+
+
+
+![image-20210322160137939](_media/image-20210322160137939.png)
+
+**SpringTest.java**
+
+```java
+package com.xdkj.spring.test;
+
+import com.xdkj.spring.beans.Student;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+
+/**
+ * ClassName SpringTest
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-22-15:00
+ */
+public class SpringTest {
+    public static void main(String[] args) {
+        //Student  stu = new Student();
+        //加载spring核心的配置文件  启动Spring容器  类路径  编译后的classes文件夹
+        ApplicationContext context  = new ClassPathXmlApplicationContext("classpath:spring-beans.xml");
+        //就是ioc
+      Student student =   context.getBean("student", Student.class);
+        Student student1 =   context.getBean("student", Student.class);
+      //com.xdkj.spring.beans.Student@42e26948
+        System.out.println(student);
+        System.out.println(student1);
+        //从文件系统加载配置
+        ApplicationContext  context1 = new FileSystemXmlApplicationContext("D:\\spring-beans.xml");
+        Student student2 = context1.getBean("student", Student.class);
+        System.out.println(student2);
+    }
+}
+
+```
+
+### 2.2 Spring的多模块配置文件
+
+![image-20210322161148602](_media/image-20210322161148602.png)
+
+每一个配置文件就是一个容器
+
+也可以进行容器的整合
+
+### 2.3 spring多配置文件整合
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--整合多个配置文件-->
+    <import resource="spring-dao.xml"></import>
+    <import resource="spring-mvc.xml"/>
+    <!--spring是一个容器  容器自动帮助我们进行对象的实例化
+        score bean的作用域 默认是单例模式
+        prototype 获取一次new一个对象
+        lazy-int 就是懒加载 就是程序执行到的时候在进行bean的初始化
+      -->
+    <bean id="student" class="com.xdkj.spring.beans.Student" scope="singleton"
+          lazy-init="true"></bean>
+</beans>
+```
+
+### 2.4 Bean的概述
+
+![image-20210322162657104](_media/image-20210322162657104.png)
+
+1. Class  使用bean的类的全限定性名称 包名+类名
+2. name
+
+```xml
+<!--nameBean
+        使用name 对bean进行命名
+        name 可以有多个值 中间使用,隔开 命名方式可以不遵守驼峰命名法 
+		所以不使用name 命名
+    -->
+    <bean name="stu,ss,sd" class="com.xdkj.spring.beans.Student" scope="singleton"></bean>
+```
+
+3. 使用id命名
+
+>id命名严格遵守驼峰命名法 习惯于id值是class类名的小驼峰写法。
+
+4. scope 作用域 默认是singleton 单例设计模式  prototype是原型模式
+
+### 2.5 Spring的别名机制
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--整合多个配置文件-->
+    <import resource="spring-dao.xml"></import>
+    <import resource="spring-mvc.xml"/>
+    <!--spring是一个容器  容器自动帮助我们进行对象的实例化
+        score bean的作用域 默认是单例模式
+        prototype 获取一次new一个对象
+        lazy-int 就是懒加载 就是程序执行到的时候在进行bean的初始化
+      -->
+
+    <bean id="student" class="com.xdkj.spring.beans.Student" scope="singleton"
+          lazy-init="true"></bean>
+    <!--nameBean
+        使用name 对bean进行命名
+        name 可以有多个值 中间使用,隔开 命名方式可以不遵守驼峰命名法
+    -->
+    <bean name="stu,ss,sd" class="com.xdkj.spring.beans.Student" scope="singleton"></bean>
+
+    <!--Spring 的别名机制-->
+    <alias name="student" alias="s"></alias>
+</beans>
+```
+
+## 3. Bean的注入
 
