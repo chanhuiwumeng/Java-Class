@@ -188,6 +188,22 @@ public interface StudentDao {
     <select id="selectAll" resultType="com.xdkj.beans.Student">
             select * from student
     </select>
+    <!--参数类型-->
+    <select id="queryById" parameterType="int" resultType="com.xdkj.beans.Student">
+    <!--mybais中从上下文中获取参数值的方式-->
+        select * from student where id = #{id}
+    </select>
+    <!--添加 传入的参数是对象  #{获取对象的属性值} 返回值类型是基本数据类型  默认接受 不需要指定resultType-->
+    <insert id="addStudent" parameterType="com.xdkj.beans.Student">
+    insert into student values(null,#{name},#{sex},#{birth},#{department},#{address},#{age});
+</insert>
+<!--修改-->
+    <update id="updateStudent" parameterType="com.xdkj.beans.Student">
+        update student set name = #{name},age = #{age},sex = #{sex} where id = #{id}
+    </update>
+    <delete id="deleteStudent" parameterType="int">
+        delete from student where id = #{id}
+    </delete>
 </mapper>
 ```
 
@@ -223,22 +239,29 @@ private SqlSession  session = MyBatisUtil.getSqlSession();
 
     @Override
     public Student queryById(int id) {
-        return null;
+        return session.selectOne("studentDao.queryById",id);
     }
 
     @Override
     public int addStudent(Student student) {
-        return 0;
+        int result = session.insert("studentDao.addStudent", student);
+        //事务提交
+        session.commit();
+        return result;
     }
 
     @Override
     public int updateStudent(Student student) {
-        return 0;
+        int result = session.update("studentDao.updateStudent",student);
+        session.commit();
+        return result;
     }
 
     @Override
     public int deleteStudent(int id) {
-        return 0;
+        int result = session.delete("studentDao.deleteStudent",id);
+        session.commit();
+        return result;
     }
 }
 
@@ -318,6 +341,31 @@ public class SqlSessionTest {
             System.out.println(student);
 
         }
+    }
+
+    @Test
+    public  void queryById(){
+        System.out.println(studentDao.queryById(906));
+    }
+
+    @Test
+    public  void addStudent(){
+      Student stu =   new Student("李四","男",55,"2001","交通部","上海市");
+        int i = studentDao.addStudent(stu);
+        System.out.println(i);
+    }
+
+    @Test
+    public  void updateStudent(){
+        Student stu =   new Student(92912,"王五","女",44,"2001","交通部","上海市");
+        int i = studentDao.updateStudent(stu);
+        System.out.println(i);
+    }
+
+    @Test
+    public  void deleteStudent(){
+        int i = studentDao.deleteStudent(92913);
+        System.out.println(i);
     }
 }
 
