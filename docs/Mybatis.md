@@ -386,3 +386,285 @@ log4j.appender.stdout.layout.ConversionPattern=%5p [%t] - %m%n
 
 
 
+## 2. MybatisMapper代理
+
+### 2.1 使用mapper的几个规则
+
+1. 映射文件的命名空间必须是 接口的全限定性名称
+2. mapper映射文件中 sql语句的id值必须是接口中方法的方法名
+3. 在核心配置文件中使用package映射接口的映射文件所在位置
+
+
+
+![image-20210330153122178](_media/image-20210330153122178.png)
+
+![image-20210330154425792](_media/image-20210330154425792.png)
+
+![image-20210330155811841](_media/image-20210330155811841.png)
+
+**Student.java**
+
+```java
+package com.xdkj.beans;
+
+import lombok.*;
+
+/**
+ * ClassName Student
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-30-14:14
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@RequiredArgsConstructor
+public class Student {
+    private int id;
+    @NonNull
+    private String name;
+    @NonNull
+    private String sex;
+    @NonNull
+    private int age;
+    @NonNull
+    private String address;
+    @NonNull
+    private String department;
+    @NonNull
+    private String birth;
+}
+
+```
+
+**StudentMapper.java**
+
+```java
+package com.xdkj.dao;
+
+import com.xdkj.beans.Student;
+
+import java.util.List;
+
+public interface StudentMapper {
+    List<Student> selectAll();
+    Student selectById(int id);
+    List<Student> selectLikeName(String name);
+    int addStudent(Student student);
+    int updateStudent(Student student);
+    int deleteStudent(Student student);
+}
+`
+```
+
+**StudentMapperImpl.java**
+
+```java
+package com.xdkj.dao.impl;
+
+import com.xdkj.beans.Student;
+import com.xdkj.dao.StudentMapper;
+import com.xdkj.util.MybatisUtil;
+import org.apache.ibatis.session.SqlSession;
+
+import java.util.List;
+
+/**
+ * ClassName StudentMapperImpl
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-30-15:45
+ */
+public class StudentMapperImpl  implements StudentMapper {
+    private SqlSession  session = MybatisUtil.getSqlSession();
+    //通用的mapper方法
+    public  StudentMapper  getStudentMapper(){
+        return session.getMapper(StudentMapper.class);
+    }
+    @Override
+    public List<Student> selectAll() {
+        return getStudentMapper().selectAll();
+    }
+
+    @Override
+    public Student selectById(int id) {
+        return getStudentMapper().selectById(id);
+    }
+
+    @Override
+    public List<Student> selectLikeName(String name) {
+        return getStudentMapper().selectLikeName(name);
+    }
+
+    @Override
+    public int addStudent(Student student) {
+       int result = getStudentMapper().addStudent(student);
+       session.commit();
+        return result;
+    }
+
+    @Override
+    public int updateStudent(Student student) {
+        return getStudentMapper().updateStudent(student);
+    }
+
+    @Override
+    public int deleteStudent(Student student) {
+        return getStudentMapper().deleteStudent(student);
+    }
+}
+
+```
+
+**Mybatis.cfg.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--引入外部的资源-->
+    <properties resource="db.properties"></properties>
+    <!--配置别名-->
+    <typeAliases>
+        <typeAlias type="com.xdkj.beans.Student" alias="Student"></typeAlias>
+    </typeAliases>
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.Driver}"/>
+                <property name="url" value="${jdbc.Url}"/>
+                <property name="username" value="${jdbc.UserName}"/>
+                <property name="password" value="${jdbc.Password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+      <!--  <mapper resource="com/xdkj/dao/StudentMapper.xml"/>-->
+        <!--包中的所有的映射文件-->
+        <package name="com.xdkj.dao"/>
+    </mappers>
+</configuration>
+```
+
+**StudentMapper.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xdkj.dao.StudentMapper">
+  <select id="selectAll" resultType="Student">
+    select * from student
+  </select>
+
+  <select id="selectById" resultType="Student" >
+  select * from student where id = #{id}
+</select>
+<select id="selectLikeName" resultType="com.xdkj.beans.Student"> </select>
+<insert id="addStudent" parameterType="Student">
+    insert into student values(null,#{name},#{sex},#{age},#{address},#{department},#{birth})
+</insert>
+</mapper>
+```
+
+## 3. Mybatis的核心配置文件讲解
+
+![image-20210330155853605](_media/image-20210330155853605.png)
+
+> 在mybatis的核心配置文件中 标签的书写顺序是严格的。
+
+### 3.1 properties
+
+> 引入外部的数据源资源
+
+### 3.2 settings
+
+### 3.3 类型别名
+
+![image-20210330161052487](_media/image-20210330161052487.png)
+
+### 3.4 plugins 
+
+分页插件 : pagehelper
+
+## 4. Mybatis的映射文件配置
+
+### 4.1 resultType 
+
+> sql语句执行的结果的类型,如果是基本数据类型可以不用写  如果是集合或者查出的是一个对象 只需要写成 集合中对象/单个对象的类的全限定性名称就可以
+
+```xml
+<select id="selectById" parameterType="string"  resultType="Student" >
+  select * from student where id = #{id}
+</select>
+```
+
+### 4.2 parameterType
+
+> 参数的类型  如果是基本数据类型可以不写  引用数据类型使用类的全限定性名称（自定义类）
+
+### 4.3 resultMap :imp:
+
+> 如果数据库中的字段和实体类的属性名不一致那么mybatis就不能自动做rowmapper数据封装。需要字段的映射
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xdkj.dao.StudentMapper">
+    <!--结果集合的映射  type实体类的全新定性名称或者别名-->
+    <resultMap id="basicMapper" type="Student">
+    <!--主键映射-->
+        <id property="id" column="id" ></id>
+        <result column="stuname" property="name"/>
+        <result column="stusex" property="sex"/>
+        <result column="stubirth" property="birth"/>
+    </resultMap>
+
+<select id="selectAll" resultMap="basicMapper">
+    select * from student
+  </select>
+  <!--<select id="selectAll" resultType="Student">
+    select * from student
+  </select>-->
+
+  <select id="selectById" parameterType="string"  resultType="Student" >
+  select * from student where id = #{id}
+</select>
+<select id="selectLikeName" resultType="com.xdkj.beans.Student"> </select>
+<insert id="addStudent" parameterType="Student">
+    insert into student values(null,#{name},#{sex},#{age},#{address},#{department},#{birth})
+</insert>
+</mapper>
+```
+
+### 4.4 \$和#的区别
+
+> \#是获取值进行填充,在模糊查询中我们使用 \$进行值的获取和字符串的拼接。
+
+```xml
+<!--模糊查询-->
+<select id="selectLikeName" resultMap="basicMapper">
+    select * from student where stuname like '%${name}%'
+ </select>
+```
+
+```xml
+<!--模糊查询-->
+<select id="selectLikeName" resultMap="basicMapper">
+    <!--select * from student where stuname like '%${name}%'-->
+    select * from student where stuname like concat('%',#{name},'%')
+ </select>
+```
+
+
+
