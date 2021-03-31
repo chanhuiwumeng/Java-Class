@@ -955,7 +955,243 @@ public class HusbandTest {
 
 ### 5.2 一对多
 
+**Department.java**
+
+```java
+package com.xdkj.beans.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Department {
+    private Integer deptid;
+
+    private String deptname;
+
+    private String deptdesc;
+    //获取多的一方的数据
+    private List<Employee> employees = new ArrayList<>();
+}
+```
+
+**Employee.java**
+
+```java
+package com.xdkj.beans.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Employee {
+    private Integer empid;
+
+    private String empname;
+
+    private Integer empage;
+
+}
+```
+
+**DepartmentMapper.java**
+
+```java
+package com.xdkj.beans.dao;
+
+import com.xdkj.beans.entity.Department;
+
+import java.util.List;
+
+public interface DepartmentMapper {
+    List<Department> selectAll();
+}
+```
+
+**DepartmentMapperImpl.java**
+
+```java
+package com.xdkj.beans.dao.impl;
+
+import com.xdkj.beans.dao.DepartmentMapper;
+import com.xdkj.beans.entity.Department;
+import com.xdkj.beans.util.MybatisUtil;
+import org.apache.ibatis.session.SqlSession;
+
+import java.util.List;
+
+/**
+ * ClassName DepartmentMapperImpl
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-31-15:56
+ */
+public class DepartmentMapperImpl  implements DepartmentMapper {
+
+    private SqlSession session = MybatisUtil.getSession();
+
+    private DepartmentMapper getDepartmentMapper(){
+        return  session.getMapper(DepartmentMapper.class);
+    }
+    @Override
+    public List<Department> selectAll() {
+        return getDepartmentMapper().selectAll();
+    }
+}
+
+```
+
+
+
+**DepartmentMapper.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xdkj.beans.dao.DepartmentMapper">
+  <resultMap id="BaseResultMap" type="Department">
+    <!--@mbg.generated-->
+    <!--@Table department-->
+    <id column="deptid" jdbcType="INTEGER" property="deptid" />
+    <result column="deptname" jdbcType="VARCHAR" property="deptname" />
+    <result column="deptdesc" jdbcType="VARCHAR" property="deptdesc" />
+    <!--对应多的一方的数据-->
+    <collection property="employees"   javaType="Employee">
+     <id column="empid" property="empid"></id>
+     <result property="empname" column="empname"/>
+     <result property="empage" column="empage"/>
+    </collection>
+  </resultMap>
+  <select id="selectAll" resultMap="BaseResultMap">
+        select
+            dept.deptid,dept.deptname,dept.deptdesc,emp.empid,emp.empname,emp.empage
+            from  department as dept join employee as  emp
+            on
+             dept.deptid = emp.deptid
+  </select>
+
+</mapper>
+```
+
+```properties
+Department(deptid=1, deptname=教育部, deptdesc=教育学生的, employees=[Employee(empid=1, empname=张三, empage=25), Employee(empid=3, empname=王五, empage=30)])
+Department(deptid=2, deptname=交通部, deptdesc=交通管理, employees=[Employee(empid=2, empname=李四, empage=24), Employee(empid=4, empname=赵六, empage=40)])
+```
+
 ### 5.3 多对多(太复杂)
 
 
+
+## 6. Mybatis反向生成器
+
+[http://mybatis.org/generator/](http://mybatis.org/generator/)
+
+**generatorconfig.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <!--上下文环境-->
+    <!--数据源信息-->
+    <context id="DB2Tables" targetRuntime="MyBatis3Simple">
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/hehe?useSSL=true"
+                        userId="root"
+                        password="root">
+        </jdbcConnection>
+        <!--高精度数据转换-->
+        <javaTypeResolver >
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+        <!--model 实体类生成-->
+        <javaModelGenerator targetPackage="com.xdkj.beans" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+        <!--映射文件保存的位置-->
+        <sqlMapGenerator targetPackage="com.xdkj.mapper"  targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+        <!--接口 -->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.xdkj.mapper"  targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+        <!--表关联-->
+        <table schema="hehe" tableName="student" domainObjectName="Student" >
+            <property name="useActualColumnNames" value="true"/>
+            <!--主键-->
+            <generatedKey column="id" sqlStatement="mysql" identity="true" />
+        </table>
+
+    </context>
+</generatorConfiguration>
+```
+
+**MbgDemo.java**
+
+```java
+package com.xdkj.mbg;
+
+import org.mybatis.generator.api.MyBatisGenerator;
+import org.mybatis.generator.config.Configuration;
+import org.mybatis.generator.config.xml.ConfigurationParser;
+import org.mybatis.generator.exception.InvalidConfigurationException;
+import org.mybatis.generator.exception.XMLParserException;
+import org.mybatis.generator.internal.DefaultShellCallback;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * ClassName MbgDemo
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-31-17:19
+ */
+public class MbgDemo {
+    public static void main(String[] args)  {
+        try {
+            List<String> warnings = new ArrayList<String>();
+            boolean overwrite = true;
+            File configFile = new File("C:\\Users\\chanh\\InteliJIdeaWorkSpace\\xdkj\\mybatis-MBG\\src\\main\\resources\\genaratorConfig.xml");
+            ConfigurationParser cp = new ConfigurationParser(warnings);
+            Configuration config = cp.parseConfiguration(configFile);
+            DefaultShellCallback callback = new DefaultShellCallback(overwrite);
+            MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config, callback, warnings);
+            myBatisGenerator.generate(null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (XMLParserException e) {
+            e.printStackTrace();
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+```
 
