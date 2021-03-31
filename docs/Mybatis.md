@@ -666,5 +666,296 @@ public class StudentMapperImpl  implements StudentMapper {
  </select>
 ```
 
+## 5. 表的关联映射
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--外部的数据源文件-->
+    <properties resource="db.properties"></properties>
+    <!--设置-->
+    <settings>
+        <!--不写日志也可以自动适配-->
+        <setting name="logImpl" value="log4j"/>
+    </settings>
+    <!--别名-->
+    <typeAliases>
+       <!-- <typeAlias type="com.xdkj.Student" alias="Student"/>-->
+        <!--默认使用类名作为别名-->
+        <package name="com.xdkj.beans"/>
+    </typeAliases>
+    
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.Driver}"/>
+                <property name="url" value="${jdbc.Url}"/>
+                <property name="username" value="${jdbc.UserName}"/>
+                <property name="password" value="${jdbc.Password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <package name="com.xdkj.beans.dao"/>
+    </mappers>
+</configuration>
+```
+
+### 5.1 一对一
+
+**Husband.java**
+
+```java
+package com.xdkj.beans.entity;
+
+import lombok.*;
+
+import java.io.Serializable;
+
+/**
+ * (Husband)实体类
+ *
+ * @author makejava
+ * @since 2021-03-31 14:52:29
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@RequiredArgsConstructor
+public class Husband implements Serializable {
+    private static final long serialVersionUID = -73479789192220417L;
+
+    private Integer hid;
+    @NonNull
+    private String hname;
+    @NonNull
+    private Integer hage;
+    @NonNull
+    private Integer wid;
+    @NonNull
+    private  Wife wife;
+}
+
+```
+
+**Wife.java**
+
+```java
+package com.xdkj.beans.entity;
+
+import java.io.Serializable;
+
+/**
+ * (Wife)实体类
+ *
+ * @author makejava
+ * @since 2021-03-31 14:52:30
+ */
+public class Wife implements Serializable {
+    private static final long serialVersionUID = -12424177485150880L;
+
+    private Integer wid;
+
+    private String wname;
+
+    private Integer wage;
+
+
+    public Integer getWid() {
+        return wid;
+    }
+
+    public void setWid(Integer wid) {
+        this.wid = wid;
+    }
+
+    public String getWname() {
+        return wname;
+    }
+
+    public void setWname(String wname) {
+        this.wname = wname;
+    }
+
+    public Integer getWage() {
+        return wage;
+    }
+
+    public void setWage(Integer wage) {
+        this.wage = wage;
+    }
+
+    @Override
+    public String toString() {
+        return "Wife{" +
+                "wid=" + wid +
+                ", wname='" + wname + '\'' +
+                ", wage=" + wage +
+                '}';
+    }
+}
+
+```
+
+**HusbandDao.java**
+
+```java
+package com.xdkj.beans.dao;
+
+import com.xdkj.beans.entity.Husband;
+
+import java.util.List;
+
+/**
+ * (Husband)表数据库访问层
+ *
+ * @author makejava
+ * @since 2021-03-31 14:52:29
+ */
+public interface HusbandDao {
+    List<Husband> selectAll();
+}
+
+
+```
+
+**HusbandDaoImpl.java**
+
+```java
+package com.xdkj.beans.dao.impl;
+
+import com.xdkj.beans.dao.HusbandDao;
+import com.xdkj.beans.entity.Husband;
+import com.xdkj.beans.util.MybatisUtil;
+import org.apache.ibatis.session.SqlSession;
+
+import java.util.List;
+
+/**
+ * ClassName HusbandDaoImpl
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-31-15:03
+ */
+public class HusbandDaoImpl  implements HusbandDao {
+    private SqlSession  session = MybatisUtil.getSession();
+
+        private HusbandDao getHusbandDao(){
+            return  session.getMapper(HusbandDao.class);
+        }
+    @Override
+    public List<Husband> selectAll() {
+        return getHusbandDao().selectAll();
+    }
+}
+
+```
+
+**HusbandDao.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xdkj.beans.dao.HusbandDao">
+
+    <!--<resultMap type="Husband" id="HusbandMap">
+       <id column="hid" property="hid"></id>
+        <result property="hname" column="hname" jdbcType="VARCHAR"/>
+        <result property="hage" column="hage" jdbcType="INTEGER"/>
+        <result property="wid" column="wid" jdbcType="INTEGER"/>
+        &lt;!&ndash;一对一是在resultmap中进行配置&ndash;&gt;
+        <association property="wife" column="wid" javaType="Wife">
+            &lt;!&ndash;这里面也是表的列和实体类的属性关联映射&ndash;&gt;
+            <id property="wid" column="wid"></id>
+            <result column="wname" property="wname"></result>
+            <result column="wage" property="wage"></result>
+         </association>
+    </resultMap>-->
+    <!--引用其他表的resultMap-->
+    <resultMap type="Husband" id="HusbandMap">
+       <id column="hid" property="hid"></id>
+        <result property="hname" column="hname" jdbcType="VARCHAR"/>
+        <result property="hage" column="hage" jdbcType="INTEGER"/>
+        <result property="wid" column="wid" jdbcType="INTEGER"/>
+        <!--一对一是在resultmap中进行配置-->
+        <association property="wife" column="wid" javaType="Wife" resultMap="com.xdkj.beans.dao.WifeDao.WifeMap"></association>
+    </resultMap>
+
+    <select id="selectAll" resultMap="HusbandMap">
+        select
+            husband.hid,husband.hname,husband.hage,wife.wid,wife.wname,wife.wage
+        from
+            husband join wife
+        on
+            husband.wid = wife.wid
+    </select>
+
+
+
+</mapper>
+
+
+```
+
+**WifeDao.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xdkj.beans.dao.WifeDao">
+    <!--wife 的实体类和表的字段映射关系-->
+    <resultMap type="com.xdkj.beans.entity.Wife" id="WifeMap">
+        <id property="wid" column="wid"></id>
+        <result property="wname" column="wname" jdbcType="VARCHAR"/>
+        <result property="wage" column="wage" jdbcType="INTEGER"/>
+    </resultMap>
+</mapper>
+```
+
+**HusbandTest.java**
+
+```java
+package com.xdkj.test;
+
+import com.xdkj.beans.dao.HusbandDao;
+import com.xdkj.beans.dao.impl.HusbandDaoImpl;
+import com.xdkj.beans.entity.Husband;
+import org.junit.Test;
+
+import java.util.List;
+
+/**
+ * ClassName HusbandTest
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-03-31-15:05
+ */
+public class HusbandTest {
+    private HusbandDao  husbandDao = new HusbandDaoImpl();
+
+    @Test
+    public  void selectAll(){
+        List<Husband> husbands = husbandDao.selectAll();
+        for (Husband husband : husbands) {
+            System.out.println(husband);
+
+        }
+    }
+}
+
+```
+
+### 5.2 一对多
+
+### 5.3 多对多(太复杂)
+
 
 
