@@ -1344,3 +1344,51 @@ log4j.appender.E.layout.ConversionPattern = %-d{yyyy-MM-dd HH:mm:ss}  [ %t:%r ] 
 
 
 
+### 8.3 choose when otherwise
+
+```xml
+<!--when  otherwise-->
+<select id="queryByInfo" resultType="Student">
+    <include refid="basicSql"></include>
+    from student
+    <where>
+        <choose>
+        <when test="id != null and id!=0">
+            and id = #{id}
+        </when>
+        <otherwise>
+            and stuname=#{stuname}
+        </otherwise>
+    </choose>
+</where>
+</select>
+```
+
+### 8.4 set
+
+```xml
+<update id="updateStudent" parameterType="Student">
+    update student
+    <set>
+        <if test="stuname != null and stuname != ''">stuname = #{stuname},</if>
+        <if test="stusex != null and stusex != ''">stusex=#{stusex},</if>
+        <if test="age != null">age = #{age},</if>
+        <if test="department != null and department != ''">department = #{department,jdbcType=VARCHAR}</if>
+         where
+         <if test="id != null">id=#{id}</if>
+    </set>
+</update>
+```
+
+## 9. 缓存
+
+[https://blog.csdn.net/luanlouis/article/details/41280959](https://blog.csdn.net/luanlouis/article/details/41280959)
+
+### 9.1 SqlSession一级缓存
+
+> 同一个sqlSession查询完成以后的结果是在本地缓存中保存，再次查询时就从缓存中获取数据，如果session被清空，事务提交，本地缓存就会被清空，下次查询机就会从数据库查询数据。
+
+### 9.2 SqlSessionFactory二级缓存
+
+> 二级缓存缓存 数据库连接
+
