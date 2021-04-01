@@ -1195,3 +1195,152 @@ public class MbgDemo {
 
 ```
 
+## 7. 日志
+
+![image-20210401143028111](_media/image-20210401143028111.png)
+
+**log4j.properties**
+
+```properties
+### 设置###
+log4j.rootLogger = ALL,stdout,D,E
+
+### 输出信息到控制抬 ###
+log4j.appender.stdout = org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.Target = System.out
+log4j.appender.stdout.layout = org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern = [%-5p] %d{yyyy-MM-dd HH:mm:ss,SSS} method:%l%n%m%n
+
+### 输出DEBUG 级别以上的日志到=E://logs/error.log ###
+log4j.appender.D = org.apache.log4j.DailyRollingFileAppender
+log4j.appender.D.File =/logs/mybatis.log
+log4j.appender.D.Append = true
+log4j.appender.D.Threshold = DEBUG 
+log4j.appender.D.layout = org.apache.log4j.PatternLayout
+log4j.appender.D.layout.ConversionPattern = %-d{yyyy-MM-dd HH:mm:ss}  [ %t:%r ] - [ %p ]  %m%n
+
+### 输出ERROR 级别以上的日志到=E://logs/error.log ###
+log4j.appender.E = org.apache.log4j.DailyRollingFileAppender
+log4j.appender.E.File =/logs/error.log 
+log4j.appender.E.Append = true
+log4j.appender.E.Threshold = ERROR 
+log4j.appender.E.layout = org.apache.log4j.PatternLayout
+log4j.appender.E.layout.ConversionPattern = %-d{yyyy-MM-dd HH:mm:ss}  [ %t:%r ] - [ %p ]  %m%n
+```
+
+## 8.动态sql
+
+> 动态 SQL 是 MyBatis 的强大特性之一。如果你使用过 JDBC 或其它类似的框架，你应该能理解根据不同条件拼接 SQL 语句有多痛苦，例如拼接时要确保不能忘记添加必要的空格，还要注意去掉列表最后一个列名的逗号。利用动态 SQL，可以彻底摆脱这种痛苦。
+>
+> 使用动态 SQL 并非一件易事，但借助可用于任何 SQL 映射语句中的强大的动态 SQL 语言，MyBatis 显著地提升了这一特性的易用性。
+>
+> 如果你之前用过 JSTL 或任何基于类 XML 语言的文本处理器，你对动态 SQL 元素可能会感觉似曾相识。在 MyBatis 之前的版本中，需要花时间了解大量的元素。借助功能强大的基于 OGNL 的表达式，MyBatis 3 替换了之前的大部分元素，大大精简了元素种类，现在要学习的元素种类比原来的一半还要少。
+
+### 8.1 sql片段
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xdkj.mapper.StudentMapper">
+  <resultMap id="BaseResultMap" type="Student">
+    <!--@mbg.generated-->
+    <!--@Table student-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="stuname" jdbcType="VARCHAR" property="stuname" />
+    <result column="stubirth" jdbcType="OTHER" property="stubirth" />
+    <result column="stusex" jdbcType="VARCHAR" property="stusex" />
+    <result column="department" jdbcType="VARCHAR" property="department" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="age" jdbcType="INTEGER" property="age" />
+  </resultMap>
+    <!--sql片段-->
+    <sql id="basicSql">
+        select id,stuname,age,stusex,stubirth,department,address
+    </sql>
+
+  <select id="queryAll" resultMap="BaseResultMap" parameterType="Student">
+    <!--插入sql片段-->
+    <include refid="basicSql"></include>
+        from student
+    </select>
+
+</mapper>
+```
+
+### 8.2 where和if  foreach
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xdkj.mapper.StudentMapper">
+  <resultMap id="BaseResultMap" type="Student">
+    <!--@mbg.generated-->
+    <!--@Table student-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="stuname" jdbcType="VARCHAR" property="stuname" />
+    <result column="stubirth" jdbcType="OTHER" property="stubirth" />
+    <result column="stusex" jdbcType="VARCHAR" property="stusex" />
+    <result column="department" jdbcType="VARCHAR" property="department" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="age" jdbcType="INTEGER" property="age" />
+  </resultMap>
+    <!--sql片段-->
+    <sql id="basicSql">
+        select id,stuname,age,stusex,stubirth,department,address
+    </sql>
+
+  <select id="queryAll" resultMap="BaseResultMap" parameterType="Student">
+    <!--插入sql片段-->
+    <include refid="basicSql"></include>
+        from student
+    </select>
+<!--select * from student where and stuname = ?-->
+    <select id="queryByStudent" resultMap="BaseResultMap" >
+        <include refid="basicSql"></include>
+        from student
+        <!--条件成立忽略第一个and-->
+       <where>
+       <!--数据不能为空 if test中必须是对象的属性名称-->
+          <if test="stuname != null and stuname != ''">
+            and stuname= #{stuname}
+            </if>
+            <if test="age != null || age != 0">
+            and age = #{age}
+            </if>
+            <if test="stusex != null and stusex != ''">
+            and stusex = #{stusex}
+            </if>
+        </where>
+    </select>
+    <select id="queryStudentList" resultType="Student" parameterType="int[]">
+    <include refid="basicSql"></include>
+    from student
+    <where>
+        <if test="array != null and array.length != 0">
+        <!--数组遍历-->
+        and id in
+        <foreach collection="array" open="(" close=")" separator=","  item="ids">
+           #{ids}
+        </foreach>
+        </if>
+    </where>
+</select>
+<!--list遍历-->
+<select id="queryStudentIds" resultType="Student" parameterType="list">
+    <include refid="basicSql"></include>
+    from student
+    <where>
+    <if test="list != null and list.size() != 0">
+        and id in
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+        #{item}
+        </foreach>
+    </if>
+</where>
+</select>
+
+</mapper>
+```
+
+
+
