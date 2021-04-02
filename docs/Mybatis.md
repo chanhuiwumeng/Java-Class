@@ -1392,3 +1392,308 @@ log4j.appender.E.layout.ConversionPattern = %-d{yyyy-MM-dd HH:mm:ss}  [ %t:%r ] 
 
 > 二级缓存缓存 数据库连接
 
+## 10. Mybatis整合Spring
+
++ mybatis-spring.jar
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.xdkj</groupId>
+    <artifactId>spring-mybatis</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.49</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.5.5</version>
+        </dependency>
+        <!--mybatis-spring-->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>2.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.27</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.27</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.2.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>5.2.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>5.2.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>5.2.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>5.2.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>5.2.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>5.2.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <version>5.2.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.10</version>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+**mybatis-cfg.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+   <!-- <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper resource="org/mybatis/example/BlogMapper.xml"/>
+    </mappers>-->
+</configuration>
+```
+
+**log.properties**
+
+```properties
+### 设置###
+log4j.rootLogger = DEBUG,stdout
+
+### 输出信息到控制抬 ###
+log4j.appender.stdout = org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.Target = System.out
+log4j.appender.stdout.layout = org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern = [%-5p] %d{yyyy-MM-dd HH:mm:ss,SSS} method:%l%n%m%n
+
+```
+
+**db.properties**
+
+```properties
+jdbc.Driver=com.mysql.jdbc.Driver
+jdbc.Url=jdbc:mysql://localhost:3306/hehe?useEncoding=true&characterEncoding=utf8&useSSL=true
+jdbc.UserName=root
+jdbc.Password=root
+jdbc.maxActive=10
+jdbc.timeout=60000
+```
+
+**spring-beans.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+    <!--组件扫描-->
+    <context:component-scan base-package="com.xdkj"></context:component-scan>
+
+</beans>
+```
+
+**spring-mybatis.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!--扫描外部的数据源文件-->
+    <context:property-placeholder location="classpath*:db.properties"/>
+    <!--数据源-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.Driver}"/>
+        <property name="url" value="${jdbc.Url}"/>
+        <property name="username" value="${jdbc.UserName}"/>
+        <property name="password" value="${jdbc.Password}"/>
+        <property name="maxActive" value="${jdbc.maxActive}"/>
+        <property name="queryTimeout" value="${jdbc.timeout}"/>
+    </bean>
+    <!--整合Mybatis-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--数据源-->
+        <property name="dataSource" ref="dataSource"></property>
+        <!--别名-->
+        <property name="typeAliasesPackage" value="com.xdkj.beans"/>
+        <!--mybatis的核心配置文件-->
+        <!--<property name="configLocation" value="mybatis.cfg.xml"></property>-->
+        <!--接口的映射文件-->
+        <property name="mapperLocations" value="classpath*:mapper/*.xml"/>
+    </bean>
+    <!--配置mybatis映射文件配置加载接口-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--beanName 要的是一个字符串-->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+        <!--接口扫描-->
+        <property name="basePackage" value="com.xdkj.mapper"/>
+    </bean>
+    <!--事务管理-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <!--切面  通知-->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="select*" propagation="NOT_SUPPORTED" read-only="true"/>
+            <tx:method name="query*" propagation="NOT_SUPPORTED" read-only="true"/>
+            <tx:method name="get*" propagation="NOT_SUPPORTED" read-only="true"/>
+            <tx:method name="find*" propagation="NOT_SUPPORTED" read-only="true"/>
+            <tx:method name="insert*"  propagation="REQUIRED" rollback-for="java.lang.RuntimeException"/>
+            <tx:method name="add*"  propagation="REQUIRED" rollback-for="java.lang.RuntimeException"/>
+            <tx:method name="update*"  propagation="REQUIRED" rollback-for="java.lang.RuntimeException"/>
+            <tx:method name="delete*"  propagation="REQUIRED" rollback-for="java.lang.RuntimeException"/>
+            <tx:method name="remove*"  propagation="REQUIRED" rollback-for="java.lang.RuntimeException"/>
+        </tx:attributes>
+    </tx:advice>
+    <!--顾问-->
+    <aop:config >
+        <aop:pointcut id="cutPoint" expression="within(com.xdkj.service.*)"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="cutPoint"/>
+    </aop:config>
+</beans>
+```
+
+使用插件反向生成:
+
+![image-20210402150228340](_media/image-20210402150228340.png)
+
+**StudentTest.java**
+
+```java
+package com.xdkj.test;
+
+import com.xdkj.beans.Student;
+import com.xdkj.mapper.StudentMapper;
+import com.xdkj.service.StudentService;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+/**
+ * ClassName StudentTest
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-02-14:33
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration({"classpath:spring-beans.xml","classpath:spring-mybatis.xml"})
+public class StudentTest {
+    @Autowired
+    SqlSessionFactory sqlSessionFactory;
+    @Autowired
+    StudentService  studentService;
+
+    private  StudentMapper  studentMapper = null;
+    @Test
+    public  void queryALl(){
+        Student student = sqlSessionFactory.openSession()
+                .getMapper(StudentMapper.class).selectByPrimaryKey(906);
+        System.out.println(student);
+    }
+
+    @Before
+    public  void  studentMapper(){
+        studentMapper =   sqlSessionFactory.openSession().getMapper(StudentMapper.class);
+    }
+
+    @Test
+    public  void insertStudent(){
+        Student student = new Student();
+            student.setStuname("燕青");
+            student.setStubirth("2001");
+            student.setStusex("男");
+            student.setDepartment("外交部");
+            student.setAddress("梁山");
+            student.setAge(85);
+
+        int result = studentMapper.insert(student);
+        System.out.println(result);
+    }
+}
+
+```
+
