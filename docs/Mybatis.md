@@ -1528,7 +1528,7 @@ log4j.appender.E.layout.ConversionPattern = %-d{yyyy-MM-dd HH:mm:ss}  [ %t:%r ] 
 </configuration>
 ```
 
-**log.properties**
+**log4j.properties**
 
 ```properties
 ### 设置###
