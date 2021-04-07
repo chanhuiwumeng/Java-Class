@@ -1163,6 +1163,150 @@ public class Result {
 
 ```
 
+## 7. 请求重定向
+
+```java
+package com.xdkj.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/redirect")
+public class RedirectController {
+
+    @GetMapping("/one")
+    public String hello(){
+        //页面跳转
+        return "list";
+    }
+
+    @GetMapping("/two")
+    public String two(){
+        //页面跳转
+        //return "redirect:/WEB-INF/jsp/list.jsp";
+        //return "redirect:/ajax.jsp";
+        //请求重定向
+        return "redirect:/redirect/one";
+    }
+}
+
+```
+
+```html
+<br>--------------页面重定向-------------<br>
+    <a href="redirect/one">RedirectController dispacther </a>
+    <br>
+    <a href="redirect/two">RedirectController redirect </a>
+```
+
+## 8. 拦截器机制
+
+
+
+## 9. 转换器
+
+> ​	自定义日期转换器
+
+```java
+package com.xdkj.convertor;
+
+import org.springframework.core.convert.converter.Converter;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ * ClassName MyDateConvertor
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-07-16:51
+ */
+public class MyDateConvertor implements Converter<String,Date>{
+    @Override
+    public Date convert(String source) {
+        System.out.println("---------开始转换--------------");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = null;
+        try {
+            date = simpleDateFormat.parse(source);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+}
+
+```
+
+**注册自定义的日期转换器**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+<!--组件扫描-->
+    <context:component-scan base-package="com.xdkj.controller"></context:component-scan>
+    <!--注解驱动-->
+    <mvc:annotation-driven conversion-service="conversionService">
+    </mvc:annotation-driven>
+
+    <bean id="conversionService"
+          class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="converters">
+            <list>
+                <!--日期转换-->
+                <bean class="com.xdkj.convertor.MyDateConvertor"></bean>
+            </list>
+        </property>
+    </bean>
+
+    <!--视图解析器-->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"></property>
+        <property name="suffix" value=".jsp"/>
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+    </bean>
+
+</beans>
+```
+
+## 10. 文件上传
+
+## 11.静态资源放行
+
+```xml
+<!--静态资源放行-->
+    <!--<mvc:resources mapping="/images/**" location="/images/"></mvc:resources>
+    <mvc:resources mapping="/css/**" location="/css/"></mvc:resources>
+    <mvc:resources mapping="/js/**" location="/js/"></mvc:resources>-->
+    <!--静态资源放行第二种方式-->
+    <mvc:default-servlet-handler></mvc:default-servlet-handler>
+```
+
+## 12. 异常处理机制
+
+## 13. RESULTFUl讲解 :imp:
+
+
+
+## 14. session处理
+
+## 15 纯java代码开发springmvc
+
+## 16 SSM整合
+
+## 17 日志
+
+## 18 跨域处理
+
 
 
 
