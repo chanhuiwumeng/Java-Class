@@ -802,6 +802,369 @@ public class FourController {
 </html>
 ```
 
+## 4.SpringMVC自定义对象数据封装
+
+自定义数据封装的时候 一定注意表单的字段名必须和对象的属性名一致
+
+```java
+package com.xdkj.beans;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * ClassName Student
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-07-14:54
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Student {
+    private String username;
+    private int age;
+    private  String password;
+}
+
+```
+
+
+
+```html
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+    <h2>Hello World!</h2>
+    <a href="hello/one">HelloController one method</a>
+    <br>
+    <a href="hello/two">HelloController two method</a>
+    <br>
+    <a href="hello/three">HelloController Three method</a>
+    <br>
+    <a href="hello/four?name=joke&age=999">HelloController four method</a>
+    <br>
+    <form action="hello/four" method="get">
+        <input type="text" name="name" id="name">
+        <br>
+        <input type="text" name="age" id="age">
+        <br>
+        <input type="submit" value="提交">
+    </form>
+    <hr>
+    <br>--------------自定义对象数据封装-------------<br>
+    <form action="hello/five" method="post">
+        <input type="text" name="username" id="username">
+        <br>
+        <input type="text" name="age" id="userage">
+        <br>
+        <input type="password" name="password" id="">
+        <br>
+        <input type="submit" value="提交">
+    </form>
+</body>
+</html>
+
+```
+
+```java
+package com.xdkj.controller;
+
+import com.xdkj.beans.Student;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+
+/**
+ * ClassName HelloCntroller
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-07-14:33
+ */
+@Controller
+@RequestMapping("/hello")
+public class HelloController {
+
+    @GetMapping("/one")
+    public ModelAndView one(){
+        ModelAndView  modelAndView = new ModelAndView();
+            modelAndView.setViewName("list");
+            modelAndView.addObject("list", Arrays.asList("Spring","SpringMVC","Mybatis","SpringBoot"));
+        return modelAndView;
+    }
+
+    @GetMapping("/two")
+    public String two(HttpServletRequest  request){
+        request.setAttribute("list",Arrays.asList("Spring","SpringMVC","Mybatis","SpringBoot"));
+        //返回的是视图名字 页面跳转
+        return "list";
+    }
+    @GetMapping("/three")
+    public String three(Model model){
+        model.addAttribute("list",Arrays.asList("Spring","SpringMVC","Mybatis","SpringBoot"));
+        //返回的是视图名字 页面跳转
+        return "list";
+    }
+        /*springmvc 自动封装参数  参数的数据类型转换*/
+   /* @GetMapping("/four")
+    public String four(String name,int age){
+        System.out.println(name + "-----"+age);
+        //返回的是视图名字 页面跳转
+        return "list";
+    }*/
+        @GetMapping("/four")
+        public String four(@RequestParam("name") String name, @RequestParam("age") int age){
+            System.out.println(name + "-----"+age);
+            //返回的是视图名字 页面跳转
+            return "list";
+        }
+
+    /*@PostMapping("/five")
+    public String five(String username,int age ,String password){
+        System.out.println(username + "-----"+age+"------------"+password);
+        //返回的是视图名字 页面跳转
+        return "list";
+    }*/
+
+
+    //    参数的名称必须是的属性名称
+    @PostMapping("/five")
+    public String five(Student student){
+        System.out.println(student);
+        //返回的是视图名字 页面跳转
+        return "list";
+    }
+
+}
+
+```
+
+## 5. SpringMVC乱码过滤器
+
+```xml
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                      http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+  version="4.0">
+  <display-name>Archetype Created Web Application</display-name>
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath*:spring-beans.xml</param-value>
+  </context-param>
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  <!--乱码的过滤器-->
+  <filter>
+    <filter-name>encodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>utf8</param-value>
+    </init-param>
+    <init-param>
+      <!--强制转换请求编码-->
+      <param-name>forceRequestEncoding</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <!--所有请求乱码处理-->
+    <filter-name>encodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <servlet>
+    <servlet-name>diapsctherServlet</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>classpath*:spring-mvc.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>diapsctherServlet</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+</web-app>
+```
+
+
+
+## 6. SpringMVC和异步数据交互
+
++ 添加@ResponseBody 一定要添加 \<mvc:annotation-drivern> 和jackson-databind,jackson-core,jackson-annotaions的jar包
++ @ReponseBody在方法上代表方法返回值必须是Json数据格式
++ @ResponseBody在处理器上代表处理器中所有的方法返回值必须是json数据格式
++ @RequestBody 代表传入的数据是json格式的字符串，使用对象自动封装的时候必须添加的注解
+
+```html
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>ajax</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+</head>
+<body>
+    <button id="one">点击一下</button>
+    <button id="two">点击一下</button>
+    <button id="three">点击一下</button>
+    <script>
+       $("#one").click(()=>{
+           // axios.get("ajax/one", {"name": "小黑", "age": 88})
+           //     .then((response) => {
+           //         console.log(response)
+           //     }).catch((error) => {
+           //     console.log(error)
+           // });
+
+           $.ajax({
+               url:"ajax/one",
+               type:'get',
+               data:{"name":"admin","age":88},
+               dataType:'json',
+               success:(result)=>{
+                   console.log(result)
+               }
+           })
+       })
+
+       $("#two").click(()=>{
+           $.ajax({
+               url:"ajax/two",
+               type:'get',
+               data:{"username":"admin","age":88,"password":"123456"},
+               dataType:'json',
+               success:(result)=>{
+                   console.log(result)
+               }
+           })
+       })
+
+       $("#three").click(()=>{
+           $.ajax({
+               url:"ajax/three",
+               type:'post',
+               data:JSON.stringify({"username":"hanmeimei","age":999999,"password":"8888888"}),
+               dataType:'json',
+               contentType:"application/json;charset=utf8",
+               success:(result)=>{
+                   console.log(result)
+               }
+           })
+       })
+    </script>
+</body>
+</html>
+
+```
+
+```java
+package com.xdkj.controller;
+
+import com.xdkj.beans.Student;
+import com.xdkj.util.Result;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * ClassName AjaxDataController
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-07-15:14
+ */
+@Controller
+@RequestMapping("/ajax")
+//控制器中所有的方法返回值都是json数据格式
+//@ResponseBody
+public class AjaxDataController {
+
+    @GetMapping("/one")
+    /*ResponseBody 加上以后springmvc会自动将方法的返回值转为json数据的格式*/
+    @ResponseBody
+    //RequestBody获取请求中的json数据
+    public  String one( String name,  String age){
+        System.out.println(name + "------------"+ age);
+        return "{\"code\":200,\"message\": \"数据获取成功!\"}";
+    }
+
+
+    @GetMapping("/two")
+    /*ResponseBody 加上以后springmvc会自动将方法的返回值转为json数据的格式*/
+    @ResponseBody
+    //RequestBody获取请求中的json数据
+    public Result two(String username, int age, String password){
+        System.out.println(username + "------------"+ age+ "-----"+password);
+        return Result.ok();
+    }
+
+    @PostMapping(value = "/three",produces = "application/json;charset=utf8")
+    /*ResponseBody 加上以后springmvc会自动将方法的返回值转为json数据的格式*/
+    @ResponseBody
+    //RequestBody获取请求中的json字符串数据  post 方式提交ajax请求时 自动做对象封装
+    public Result three(@RequestBody Student student){
+        System.out.println(student);
+        return Result.ok();
+    }
+}
+
+```
+
+```java
+package com.xdkj.util;
+
+import lombok.Data;
+
+/**
+ * ClassName Result
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-07-15:34
+ */
+@Data
+public class Result {
+    private int code;
+    private String message;
+    private Object  data;
+
+    public  static  Result ok(){
+        Result result = new Result();
+        result.setCode(200);
+        result.setMessage("数据查询成功!");
+        result.setData(null);
+        return  result;
+    }
+}
+
+```
+
+
+
 
 
 
