@@ -1163,6 +1163,48 @@ public class Result {
 
 ```
 
+## 请求占位符
+
+```java
+package com.xdkj.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * ClassName PageController
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-08-15:03
+ */
+@Controller
+@RequestMapping("/meishi")
+public class PageController {
+    //占位符请求
+    @GetMapping("/{id}")
+    public  String getById(@PathVariable("id") String id){
+        System.out.println(id);
+        return "list";
+    }
+    @GetMapping("/{type}/{id}")
+    public  String getId(@PathVariable("type") String type,@PathVariable("id") String id){
+        System.out.println(id+"------"+type);
+        return "list";
+    }
+}
+
+```
+
+```html
+<a href="meishi/123456">火锅店 011111</a>
+    <br>
+    <a href="meishi/huoguo/8888888">火锅店 011111</a>
+```
+
 ## 7. 请求重定向
 
 ```java
@@ -1203,7 +1245,64 @@ public class RedirectController {
 
 ## 8. 拦截器机制
 
+```java
+package com.xdkj.interceptor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * ClassName MyInterceptor
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-08-15:17
+ */
+public class MyInterceptor implements HandlerInterceptor {
+    Logger logger = LoggerFactory.getLogger(MyInterceptor.class);
+        //    请求进入处理器之前
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        System.out.println("-----------------------prepared handler----------------");
+        logger.debug(request.getRequestURI());
+        logger.debug(handler.toString());
+        //请求放行
+        return true;
+    }
+    /*处理器处理完请求 进入视图解析器之前*/
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        System.out.println("-----------------------处理之后----------------");
+    }
+        /*完成所有的请求以后*/
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        System.out.println("-----------------------finished----------------");
+    }
+}
+
+```
+
+**注册拦截器**
+
+```xml
+ <!--注解拦截器-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <!--拦截所有请求路径-->
+            <mvc:mapping path="/**"/>
+            <!--请求放行-->
+            <mvc:exclude-mapping path="/meishi/**"/>
+            <bean class="com.xdkj.interceptor.MyInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+```
 
 ## 9. 转换器
 
@@ -1280,6 +1379,111 @@ public class MyDateConvertor implements Converter<String,Date>{
 
 ## 10. 文件上传
 
+```xml
+<!--文件上传jar-->
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.7</version>
+    </dependency>
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>文件上传</title>
+</head>
+<body>
+<form action="upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="file">
+    <br>
+    <input type="submit" value="上传">
+</form>
+</body>
+</html>
+```
+
+**配置文件上传解析器**
+
+```xml
+ <!--文件上传解析器-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="utf8"></property>
+        <!--文件上传最大尺寸-->
+        <property name="maxUploadSize" value="10240"/>
+    </bean>
+```
+
+```java
+package com.xdkj.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
+import java.time.LocalDate;
+import java.util.UUID;
+
+/**
+ * ClassName MyFileUploadController
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-08-16:04
+ */
+@Controller
+public class MyFileUploadController {
+
+    @PostMapping("/upload")
+    public String upload(MultipartFile file, HttpServletRequest  request){
+        //获取文件的名称
+        String originName = file.getOriginalFilename();
+        //扩展名
+        String newName = originName.substring(originName.indexOf("."));
+        //文件上传以后的路径
+      String path =   request.getServletContext().getRealPath("upload");
+        //完整的路径
+      String finalPath =   path+File.separator+ LocalDate.now() ;
+        System.out.println(finalPath);
+        File finalFile = new File(finalPath);
+        if(!finalFile.exists()){
+            //创建路径
+            finalFile.mkdirs();
+        }
+        //获取文件上传的内容
+        try {
+            InputStream inputStream = file.getInputStream();
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(finalPath+ File.separator+ UUID.randomUUID()+newName));
+            byte[] by = new byte[1024];
+            int len = 0;
+            while((len = inputStream.read(by))!=-1){
+                bufferedOutputStream.write(by,0,len);
+            }
+            bufferedOutputStream.flush();
+            bufferedOutputStream.close();
+            inputStream.close();
+        } catch (IOException  e) {
+            e.printStackTrace();
+        }
+
+        return "list";
+    }
+}
+
+```
+
+![image-20210408163526564](_media/image-20210408163526564.png)
+
 ## 11.静态资源放行
 
 ```xml
@@ -1291,21 +1495,203 @@ public class MyDateConvertor implements Converter<String,Date>{
     <mvc:default-servlet-handler></mvc:default-servlet-handler>
 ```
 
-## 12. 异常处理机制
+## 12.数据校验
+
+```xml
+ <!--hibernate提供的数据校验-->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>5.3.6.Final</version>
+    </dependency>
+    <!--orm hibernate orm -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+      <version>5.2.5.RELEASE</version>
+    </dependency>
+```
+
+```java
+@Data
+public class Teacher {
+    private  Integer id;
+    @NotEmpty(message = "用户名不能为空" )
+    @Length(max = 18,min = 6)
+    private String name;
+    @NotEmpty(message = "密码不能为空")
+    @Length(max = 20,min = 6,message = "密码长度不正确")
+    private String password;
+    private String desc;
+
+}
+```
+
+```java
+package com.xdkj.controller;
+
+import com.xdkj.beans.R;
+import com.xdkj.beans.Teacher;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
+
+import javax.validation.Valid;
+import java.util.List;
+
+/**
+ * ClassName LoginController
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-08-16:38
+ */
+@Controller
+@SessionAttributes("teacher")
+public class LoginController {
+
+    @GetMapping("/login")
+    @ResponseBody
+    public R login(@Valid  Teacher teacher , BindingResult  result){
+            if(result.hasErrors()){
+                List<ObjectError> allErrors = result.getAllErrors();
+                for (ObjectError allError : allErrors) {
+                    System.out.println(allError.getDefaultMessage());
+                    //throw  new RuntimeException(allError.getDefaultMessage());
+                    return R.error(allError.getDefaultMessage());
+                }
+            }
+        System.out.println(teacher);
+        return null;
+    }
+
+    @GetMapping("/logout")
+    public String logout(SessionStatus sessionStatus){
+        //session 完成 清除session
+        sessionStatus.setComplete();
+        return "list";
+    }
+}
+
+```
+
+```java
+package com.xdkj.beans;
+
+import lombok.Data;
+
+/**
+ * ClassName R
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-08-17:27
+ */
+@Data
+public class R {
+    private int code;
+    private  String message;
+    private Object data;
+
+    public  static  R error(String message){
+        R r = new R();
+        r.setMessage(message);
+        return r;
+    }
+}
+
+```
 
 ## 13. RESULTFUl讲解 :imp:
 
-
-
 ## 14. session处理
+
+```java
+package com.xdkj.controller;
+
+import com.xdkj.beans.Teacher;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
+
+/**
+ * ClassName LoginController
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-08-16:38
+ */
+@Controller
+@SessionAttributes("teacher")
+public class LoginController {
+
+    @GetMapping("/login")
+    public String login( Teacher teacher){
+        System.out.println(teacher);
+        return "list";
+    }
+
+    @GetMapping("/logout")
+    public String logout(SessionStatus sessionStatus){
+        //session 完成 清除session
+        sessionStatus.setComplete();
+        return "list";
+    }
+}
+
+```
 
 ## 15 纯java代码开发springmvc
 
-## 16 SSM整合
+## 16. 异常处理机制
 
 ## 17 日志
 
 ## 18 跨域处理
+
+IP地址网段不一样 
+
+192.168.59.1
+
+192.168.59.78  
+
+端口不一样
+
+https://img30.360buyimg.com/pop/s1180x940_jfs/t1/173129/26/1731/96321/6066f547E4abf9981/ebdac3a5e3e0af93.jpg.webp
+
++ 基于java代码配置
+
++ 基于注解配置  @CrossOrigin
+
+1. 前端解决跨域
+2. 服务器解决跨域
+
+```java
+@Controller
+@RequestMapping("/hello")
+@CrossOrigin
+public class HelloController {
+private static Logger logger = LoggerFactory.getLogger(HelloController.class);
+    @PostMapping("/list")
+    public String list(Teacher teacher){
+        logger.debug("--------"+teacher);
+        System.out.println(teacher);
+        return "list";
+    }
+}
+```
+
+
+
+## 19  SSM整合
 
 
 
