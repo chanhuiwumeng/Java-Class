@@ -1610,6 +1610,153 @@ public class R {
 
 ## 13. RESULTFUl讲解 :imp:
 
+> [RESTful](http://www.ruanyifeng.com/blog/2011/09/restful.html) 是目前最流行的 API 设计规范，用于 Web 数据接口的设计。
+>
+> 它的大原则容易把握，但是细节不容易做对。本文总结 RESTful 的设计细节，介绍如何设计出易于理解和使用的 API
+>
+> 在网络中进行资源请求的时候 ，一个URL就代表着一种资源的请求.html json 
+>
+> get post  delete put 每种请求方式就代表着对资源的一种操作方式，对应到数据库就是  CRUD
+>
+> get  获取信息
+>
+> put  修改信息
+>
+> post 添加
+>
+> delete 删除信息
+
+```java
+package com.xdkj.controller;
+
+import com.xdkj.beans.Student;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * ClassName ResultfulController
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-09-14:35
+ */
+@Controller
+@RequestMapping("/user")
+public class RestfulController {
+    /**
+     * 获取user所有数据
+     * */
+    @GetMapping("/list")
+    @ResponseBody
+    public List<String> getUserList(){
+        return Arrays.asList("Spring","SpringMVC","SprigBoot");
+    }
+    /**
+     * 根据id获取数据
+    * */
+    @GetMapping("/{id}")
+    @ResponseBody
+    public List<String> getUserById(@PathVariable("id")int id){
+        System.out.format("----------根据%d获取数据----",id);
+        return Arrays.asList("Spring","SpringMVC","SprigBoot");
+    }
+    /**
+     * 添加用户数据
+     * */
+    @PostMapping("/add")
+    @ResponseBody
+    public List<String> addUser(String name,String email,int age){
+        System.out.format("----------用户名:%s----邮箱:%s-----年龄:%d",name,email,age);
+        return Arrays.asList("Spring","SpringMVC","SprigBoot");
+    }
+    /**
+     * 根据id删除用户数据
+     * */
+    @DeleteMapping("/{id}")
+    @ResponseBody
+    public List<String> deleteById(@PathVariable("id")int id){
+        System.out.format("----------根据%d删除数据---",id);
+        return Arrays.asList("Spring","SpringMVC","SprigBoot");
+    }
+
+    /**
+     * 修改用户数据
+     * */
+    @PutMapping("/update")
+    @ResponseBody
+    public List<String> updateUser(String name,String email,Integer age){
+        System.out.format("----------用户名:%s----邮箱:%s-----年龄:%d",name,email,age);
+        return Arrays.asList("Spring","SpringMVC","SprigBoot");
+    }
+
+
+    /**
+     * 修改用户数据
+     * */
+    @PostMapping("/insert")
+    @ResponseBody
+    public List<String> insertUser(@RequestBody Student student){
+        System.out.println(student);
+        return Arrays.asList("Spring","SpringMVC","SprigBoot");
+    }
+
+}
+
+```
+
+```jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+    <h2>Hello World!</h2>
+    <a href="user/list">获取用户数据</a>
+    <br>
+    <a href="user/123">根据id值获取用户数据</a>
+    <hr>
+    <form action="user/add" method="post">
+        <input type="text" name="name" id="name"><br>
+        <input type="text" name="age" id="age"><br>
+        <input type="email" name="email" id="email"><br>
+        <input type="submit" value="添加">
+    </form>
+    <hr>
+    <h3>使用delete覆盖post请求</h3>
+    <form action="user/123" method="post">
+        <input type="hidden" name="_method" value="delete">
+        <input type="text" name="name" ><br>
+        <input type="text" name="age" ><br>
+        <input type="email" name="email" ><br>
+        <input type="submit" value="添加">
+    </form>
+    <h3>使用put覆盖post请求</h3>
+    <form action="user/update" method="post">
+        <input type="hidden" name="_method" value="put">
+        <input type="text" name="name" ><br>
+        <input type="text" name="age" ><br>
+        <input type="email" name="email" ><br>
+        <input type="submit" value="添加">
+    </form>
+</body>
+</html>
+
+```
+
+![image-20210409153441470](_media/image-20210409153441470.png)
+
+**PostMan使用**
+
+![image-20210409153506279](_media/image-20210409153506279.png)
+
 ## 14. session处理
 
 ```java
