@@ -447,6 +447,13 @@ mysql> show create database hehe;
 1 row in set (0.00 sec)
 ```
 
+**创建数据库的时候设置字符编码**
+
+```sql
+mysql> create database java55  character set ="GBK";
+Query OK, 1 row affected (0.00 sec)
+```
+
 ### 6.2 数据库的删除
 
 ```sql
@@ -1625,7 +1632,7 @@ mysql> select * from stu limit 2,2;
 
 ### 9.8 having 查询
 
-> having 是在分许以后对数据进行过滤
+> having 是在分组以后对数据进行过滤
 >
 > where 是分组前对数据进行过滤
 
@@ -2566,6 +2573,14 @@ MySQL 事务主要用于处理操作量大，复杂度高的数据。比如说�
 ### 12.2 事务自动提交开启和关闭
 
 ```sql
+#查看事务是否自动提交
+mysql> show variables like 'autocommit';  
++---------------+-------+
+| Variable_name | Value |
++---------------+-------+
+| autocommit    | OFF   |
++---------------+-------+
+1 row in set, 1 warning (0.01 sec)
 # 关闭mysql事务的自动提交
 mysql> set autocommit = 0;
 Query OK, 0 rows affected (0.00 sec)
@@ -2665,6 +2680,30 @@ Query OK, 0 rows affected (0.00 sec)
 + repeatable read 可重复的读;
 + READ COMMITTED;
 + SERIALIZABLE  课串行话;
+
+###  12.5 乐观锁和悲观锁
+
+悲观锁与乐观锁是人们定义出来的概念，你可以理解为一种思想，是处理并发资源的常用手段。
+
+不要把他们与mysql中提供的锁机制(表锁，行锁，排他锁，共享锁)混为一谈。
+
+一、悲观锁
+
+顾名思义，就是对于数据的处理持悲观态度，总认为会发生并发冲突，获取和修改数据时，别人会修改数据。所以在整个数据处理过程中，需要将数据锁定。
+
+悲观锁的实现，通常依靠数据库提供的锁机制实现，比如mysql的排他锁，select .... for update来实现悲观锁
+
+二、乐观锁
+
+顾名思义，就是对数据的处理持乐观态度，乐观的认为数据一般情况下不会发生冲突，只有提交数据更新时，才会对数据是否冲突进行检测。
+
+如果发现冲突了，则返回错误信息给用户，让用户自已决定如何操作。
+
+乐观锁的实现不依靠数据库提供的锁机制，需要我们自已实现，实现方式一般是记录数据版本，一种是通过版本号，一种是通过时间戳。
+
+给表加一个版本号或时间戳的字段，读取数据时，将版本号一同读出，数据更新时，将版本号加1。
+
+当我们提交数据更新时，判断当前的版本号与第一次读取出来的版本号是否相等。如果相等，则予以更新，否则认为数据过期，拒绝更新，让用户重新操作
 
 ## 13 视图(view)
 
@@ -2964,6 +3003,36 @@ Query OK, 0 rows affected (0.01 sec)
 >
 > 实际上，索引也是一张表，该表保存了主键与索引字段，并指向实体表的记录。
 
+```sql
+DELIMITER $$
+-- 写函数之前必须要写，标志
+CREATE FUNCTION mock_data ()
+RETURNS INT
+BEGIN
+	DECLARE num INT DEFAULT 1000000;
+	DECLARE i INT DEFAULT 0;
+	WHILE i < num DO
+		INSERT INTO `app_user`(`name`,`email`,`phone`,`gender`)
+		VALUES(CONCAT('用户',i),'19224305@qq.com','123456789',FLOOR(RAND()*2));
+		SET i=i+1;
+	END WHILE;
+	RETURN i;
+END;
+
+SELECT mock_data();
+-- 0.5sec
+
+SELECT * FROM app_user WHERE NAME ="用户9999" 
+
+EXPLAIN SELECT * FROM app_user WHERE NAME ="用户9999" 
+--  0.001
+
+CREATE INDEX name_app_user ON app_user(NAME);
+--  0.001
+EXPLAIN SELECT * FROM app_user WHERE NAME ="用户9999" 
+
+```
+
 ### 16.1 在已经存在的表添加索引
 
 ```sql
@@ -2975,11 +3044,18 @@ Records: 0  Duplicates: 0  Warnings: 0
 
 ### 16.2 使用索引
 
+使用索引以后数据只查一行 就找到需要的数据 速度很快
+
+![image-20210528114259566](_media/image-20210528114259566.png)
+
 ## 17. 数据库的备份和恢复
 
 > 
 
-## 18数据库三范式
+## 18.数据库三范式
+
+1. 建表的时候 表一定要有一个主键
+2. 表的字段最多保存一个值
 
 
 

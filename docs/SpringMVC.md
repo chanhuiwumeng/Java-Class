@@ -1798,7 +1798,213 @@ public class LoginController {
 
 ## 15 纯java代码开发springmvc
 
+![image-20210409171439067](_media/image-20210409171439067.png)
+
+```java
+package com.xdkj;
+
+import com.xdkj.config.BeansConfig;
+import com.xdkj.config.WebmvcConfig;
+import org.springframework.web.WebApplicationInitializer;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
+
+/**
+ * ClassName MyWebApplicationInitializer
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-09-16:25
+ */
+public class MyWebApplicationInitializer extends AbstractAnnotationConfigDispatcherServletInitializer implements WebApplicationInitializer {
+    /*服务器启动的时候
+    *  加载web.xml
+    *       spring-bean.xml
+    *       DispatcherServlet
+    *       spring-mvc.xml
+    * */
+    @Override
+    public void onStartup(ServletContext servletContext) throws ServletException {
+        // Load Spring web application configuration
+        AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+        context.register(WebmvcConfig.class);
+
+        // Create and register the DispatcherServlet
+        DispatcherServlet servlet = new DispatcherServlet(context);
+        ServletRegistration.Dynamic registration = servletContext.addServlet("app", servlet);
+        registration.setLoadOnStartup(1);
+        registration.addMapping("/");
+    }
+    /*diaspatcherservlet映射路径*/
+    @Override
+    protected String[] getServletMappings() {
+        return new String[]{"/"};
+    }
+    /*spring-beans.xml配置*/
+    @Override
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class[]{BeansConfig.class};
+    }
+    /*spring-mvc.xml配置*/
+    @Override
+    protected Class<?>[] getServletConfigClasses() {
+        return new Class[]{WebmvcConfig.class};
+    }
+}
+
+```
+
+```java
+package com.xdkj.config;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
+
+/**
+ * ClassName WebmvcConfig
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-09-16:22
+ */
+@Configuration //spring-mvc.xml
+@EnableWebMvc  //注解驱动
+@ComponentScan("com.xdkj")
+public class WebmvcConfig {
+
+    //注入bean的方式去配置
+    /* 类型 */
+    @Bean
+    @Qualifier
+    public InternalResourceViewResolver  internalResourceViewResolver(){
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+            viewResolver.setViewClass(JstlView.class);
+            viewResolver.setPrefix("/WEB-INF/jsp/");
+            viewResolver.setSuffix(".jsp");
+            return  viewResolver;
+    }
+
+
+}
+
+```
+
+```java
+package com.xdkj.config;
+
+import com.xdkj.service.StudentService;
+import com.xdkj.service.impl.StudentServiceImpl;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * ClassName BeansConfig
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-09-16:27
+ */
+@Configuration  //spring-beans.xml
+@ComponentScan
+public class BeansConfig {
+
+    @Bean
+    public StudentService  service(){
+        return  new StudentServiceImpl();
+    }
+
+}
+
+```
+
+```java
+package com.xdkj.controller;
+
+import com.xdkj.service.StudentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+/**
+ * ClassName HelloController
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-09-16:20
+ */
+@Controller
+public class HelloController {
+
+    @Autowired
+    StudentService studentService;
+
+    @GetMapping("/list")
+    public String list(){
+        System.out.println(studentService.queryAll());
+        return "list";
+    }
+}
+
+```
+
+```java
+package com.xdkj.service;
+
+import java.util.List;
+
+public interface StudentService {
+    List<String> queryAll();
+}
+
+```
+
+```java
+package com.xdkj.service.impl;
+
+import com.xdkj.service.StudentService;
+
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * ClassName StudentServiceImpl
+ * Description:
+ *
+ * @Author:一尘
+ * @Version:1.0
+ * @Date:2021-04-09-16:42
+ */
+public class StudentServiceImpl  implements StudentService {
+    @Override
+    public List<String> queryAll() {
+        return Arrays.asList("Student","Teacher","王老师");
+    }
+}
+
+```
+
+![image-20210409171558061](_media/image-20210409171558061.png)
+
+![image-20210409171619214](_media/image-20210409171619214.png)
+
 ## 16. 异常处理机制
+
+
 
 ## 17 日志
 
@@ -1835,8 +2041,6 @@ private static Logger logger = LoggerFactory.getLogger(HelloController.class);
     }
 }
 ```
-
-
 
 ## 19  SSM整合
 
