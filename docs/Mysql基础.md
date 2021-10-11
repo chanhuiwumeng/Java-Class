@@ -2657,9 +2657,12 @@ mysql> select * from student;
 
 ### 12.4 事务的隔离级别
 
+[事务隔离级别](https://blog.csdn.net/zhangvalue/article/details/88527378)
+
 **默认的事务隔离级别**
 
 ```sql
+# mysql5.7
 mysql> select @@tx_isolation;
 +-----------------+
 | @@tx_isolation  |
@@ -2667,6 +2670,14 @@ mysql> select @@tx_isolation;
 | REPEATABLE-READ |
 +-----------------+
 1 row in set (0.00 sec)
+#mysql 8
+mysql> show variables like 'transaction_isolation';
++-----------------------+-----------------+
+| Variable_name         | Value           |
++-----------------------+-----------------+
+| transaction_isolation | REPEATABLE-READ |
++-----------------------+-----------------+
+1 row in set, 1 warning (0.00 sec)
 ```
 
 **设置事务的隔离机制级别**
@@ -2677,9 +2688,95 @@ Query OK, 0 rows affected (0.00 sec)
 ```
 
 + read uncommitted; 读未提交
-+ repeatable read 可重复的读;
-+ READ COMMITTED;
++ **A客户端 **
+
+```sql
+
+mysql> set session transaction isolation level read uncommitted;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> begin ;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> update student set name = "王大拿" where id = 4;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from student;
++----+--------+--------------+
+| id | name   | addresss     |
++----+--------+--------------+
+|  1 | admin  | 陕西省西安市 |
+|  2 | 张三   | 陕西省西安市 |
+|  3 | joke   | 陕西省西安市 |
+|  4 | 王大拿 | 陕西省西安市 |
++----+--------+--------------+
+4 rows in set (0.00 sec)
+
+mysql> select * from student;
++----+--------+--------------+
+| id | name   | addresss     |
++----+--------+--------------+
+|  1 | admin  | 陕西省西安市 |
+|  2 | joke   | 陕西省西安市 |
+|  3 | joke   | 陕西省西安市 |
+|  4 | 王大拿 | 陕西省西安市 |
++----+--------+--------------+
+4 rows in set (0.00 sec)
+```
+
+**B客户端**
+
+```sql
+mysql> begin;                 
+Query OK, 0 rows affected (0.0
+                              
+mysql> select * from student; 
++----+-------+--------------+ 
+| id | name  | addresss     | 
++----+-------+--------------+ 
+|  1 | admin | 陕西省西安市 |       
+|  2 | joke  | 陕西省西安市 |       
+|  3 | joke  | 陕西省西安市 |       
+|  4 | 李逵  | 陕西省西安市 |         
++----+-------+--------------+ 
+4 rows in set (0.00 sec)      
+                              
+mysql> update student set name
+Query OK, 1 row affected (0.00
+Rows matched: 1  Changed: 1  W
+                              
+mysql> rollback;              
+Query OK, 0 rows affected (0.0
+                              
+mysql> conmmit;               
+ERROR 1064 (42000): You have a
+t corresponds to your MySQL se
+onmmit' at line 1             
+mysql> commit;                
+Query OK, 0 rows affected (0.0
+                              
+mysql> select * from student; 
++----+-------+--------------+ 
+| id | name  | addresss     | 
++----+-------+--------------+ 
+|  1 | admin | 陕西省西安市 |       
+|  2 | joke  | 陕西省西安市 |       
+|  3 | joke  | 陕西省西安市 |       
+|  4 | 李逵  | 陕西省西安市 |         
++----+-------+--------------+ 
+```
+
++ repeatable read 可重复的读(默认的);
++ READ COMMITTED;![image-20210927103706243](_media/image-20210927103706243.png)
+
 + SERIALIZABLE  课串行话;
+
+```sql
+mysql> set session transaction isolation level serializable; 设置事务隔离级别。
+```
+
+![image-20210927104822272](_media/image-20210927104822272.png)
 
 ###  12.5 乐观锁和悲观锁
 
