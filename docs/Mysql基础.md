@@ -3156,3 +3156,40 @@ Records: 0  Duplicates: 0  Warnings: 0
 
 
 
+## 19 使用数据库图形化工具连接mysql
+
+![img](_media/20190212161315326.png)
+
+```sql
+mysql> select host, user from user;
++-----------+------------------+
+| host      | user             |
++-----------+------------------+
+| localhost | mysql.infoschema |
+| localhost | mysql.session    |
+| localhost | mysql.sys        |
+| localhost | root             |
++-----------+------------------+
+4 rows in set (0.01 sec)
+
+mysql> select host,password, user from user;
+ERROR 1054 (42S22): Unknown column 'password' in 'field list'
+mysql> select host,plugin, user from user;
++-----------+-----------------------+------------------+
+| host      | plugin                | user             |
++-----------+-----------------------+------------------+
+| localhost | caching_sha2_password | mysql.infoschema |
+| localhost | caching_sha2_password | mysql.session    |
+| localhost | caching_sha2_password | mysql.sys        |
+| localhost | mysql_native_password | root             |
++-----------+-----------------------+------------------+
+4 rows in set (0.00 sec)
+```
+
+```sql
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '新密码';
+```
+
+修改mysql8 root 用户的加密方式 修改完成以后就可以连接了
+
+![image-20220517094154592](_media/image-20220517094154592.png)

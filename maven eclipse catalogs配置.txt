@@ -1,0 +1,3 @@
+https://repo1.maven.org/maven2/
+官网配置
+添加到本地的eclipse的maven archetype 的catalogs本地
